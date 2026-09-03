@@ -1,0 +1,264 @@
+<!doctype html>
+<!--
+  The min-width: auto gotcha. Week-3 deck, act 5.
+
+  "I set overflow: hidden and it still overflows." / "Why is my sidebar squashing the
+  content instead of the other way round?" / "flex: 1 and it STILL won't fit."
+
+  All three are the same bug. A flex item's `min-width` computes to `auto`, not to 0 —
+  which means it refuses to shrink below the width of its own content. A long unbroken
+  string, a wide <pre>, or a table inside a flex item will therefore push the whole row
+  wider than its container, and no amount of `flex-shrink` will stop it, because shrink
+  is only allowed to go as far as the minimum.
+
+  The fix is one declaration — `min-width: 0` on the ITEM — and it is the single most
+  useful line in this week for anyone who later builds a real app layout.
+
+  LEGACY_AUDIT §8 lists this as having no legacy source. It is also why every `.cols`
+  child in this course's own slide theme carries `min-width: 0`.
+
+  DEMO MOVE: turn on the long word. The row bursts its container and the page gains a
+  horizontal scrollbar. Ask the room to fix it with flex-shrink — set it to 4, 10,
+  whatever; nothing happens. THEN tick min-width: 0. One line, and the text truncates
+  the way they expected in the first place.
+
+  The readout compares the row's width with the container's, so "bursting" is a number.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>min-width: auto — why flex items refuse to shrink</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      /* The heading is a small-caps label; the declaration inside it is not. */
+      h2 code {
+        text-transform: none;
+        letter-spacing: normal;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font: 600 13px/1.5 ui-monospace, Menlo, monospace;
+        cursor: pointer;
+      }
+      .controls input[type='checkbox'] {
+        accent-color: #1d4ed8;
+        margin-right: 4px;
+      }
+      .controls input[type='range'] {
+        accent-color: #1d4ed8;
+        vertical-align: middle;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      /* The container is a scroll container so a bursting row is visible INSIDE the
+         demo rather than giving the whole page a scrollbar — the page must stay clean
+         at 375px or it fails the responsive gate for the wrong reason. */
+      .rail {
+        padding: 10px;
+        border: 3px solid #b91c1c;
+        border-radius: 10px;
+        background: #fff5f5;
+        overflow-x: auto;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+      .sidebar {
+        flex: 0 0 150px;
+        padding: 10px;
+        border: 2px solid #15803d;
+        border-radius: 8px;
+        background: #dcfce7;
+        color: #14532d;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .content {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #1d4ed8;
+        border-radius: 8px;
+        background: #dbeafe;
+        color: #1e3a8a;
+        font-size: 14px;
+        overflow: hidden;
+      }
+      .content p {
+        margin: 0 0 6px;
+      }
+      .content .long {
+        display: none;
+        font-family: ui-monospace, Menlo, monospace;
+        font-weight: 700;
+      }
+      .row.longword .content .long {
+        display: block;
+      }
+      /* THE FIX. One declaration, on the item. */
+      .row.fixed .content {
+        min-width: 0;
+      }
+      .row.truncate .content .long {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font: 13px/1.7 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        white-space: pre-wrap;
+      }
+      .verdict {
+        margin: 10px 0 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 2px solid #15803d;
+        background: #dcfce7;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .verdict.bad {
+        border-color: #b91c1c;
+        background: #fef2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <label><input type="checkbox" id="longword" />put a long unbreakable string in the content</label>
+      <label><input type="checkbox" id="fixed" /><code>min-width: 0</code> on .content</label>
+      <label><input type="checkbox" id="truncate" />+ text-overflow: ellipsis</label>
+      <label for="shrink">flex-shrink on .content</label>
+      <input type="range" id="shrink" min="0" max="10" step="1" value="1" />
+      <output id="shrink-out" for="shrink">1</output>
+    </div>
+
+    <h2>A 150px sidebar and a <code>flex: 1</code> content column</h2>
+    <div class="rail" id="rail">
+      <div class="row" id="row">
+        <div class="sidebar">sidebar<br />150px</div>
+        <div class="content" id="content">
+          <p>The content column is <code>flex: 1</code>, so it should take what is left.</p>
+          <p class="long">https://ruppin.example/a-very-long-unbreakable-url-of-the-kind-users-paste-into-things</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const row = document.getElementById('row');
+      const rail = document.getElementById('rail');
+      const content = document.getElementById('content');
+      const out = document.getElementById('out');
+      const verdict = document.getElementById('verdict');
+      const shrink = document.getElementById('shrink');
+      const shrinkOut = document.getElementById('shrink-out');
+      const toggles = {
+        longword: document.getElementById('longword'),
+        fixed: document.getElementById('fixed'),
+        truncate: document.getElementById('truncate'),
+      };
+
+      function render() {
+        row.classList.toggle('longword', toggles.longword.checked);
+        row.classList.toggle('fixed', toggles.fixed.checked);
+        row.classList.toggle('truncate', toggles.truncate.checked && toggles.fixed.checked);
+        content.style.flexShrink = shrink.value;
+        shrinkOut.textContent = shrink.value;
+
+        requestAnimationFrame(() => {
+          const rowWidth = Math.round(row.scrollWidth);
+          const railWidth = Math.round(rail.clientWidth) - 20;
+          const burst = rowWidth > railWidth + 1;
+          const minWidth = getComputedStyle(content).minWidth;
+
+          verdict.className = burst ? 'verdict bad' : 'verdict';
+          verdict.textContent = burst
+            ? 'The row is ' + (rowWidth - railWidth) + 'px wider than its container.'
+            : 'The row fits its container.';
+
+          out.textContent =
+            '  container inner width   ' +
+            railWidth +
+            'px\n' +
+            '  the flex row wants      ' +
+            rowWidth +
+            'px\n' +
+            '  .content min-width      ' +
+            minWidth +
+            '\n' +
+            '  .content flex-shrink    ' +
+            shrink.value +
+            '\n\n' +
+            (!toggles.longword.checked
+              ? '  Nothing is wrong yet. The content is ordinary text, which can wrap, so its\n' +
+                '  minimum content width is small and flex-shrink has room to work.\n\n' +
+                '  Tick the first box to give it something that cannot wrap.'
+              : toggles.fixed.checked
+                ? '  min-width: 0 lifts the floor. The item may now shrink below its content,\n' +
+                  '  so `flex: 1` finally means what it looked like it meant, and the overflow\n' +
+                  '  is handled by the item\'s own `overflow: hidden`.\n\n' +
+                  (toggles.truncate.checked
+                    ? '  With text-overflow: ellipsis the string is now truncated politely —\n' +
+                      '  which is only possible once min-width stopped forcing it to full size.'
+                    : '  Tick the third box to truncate it with an ellipsis instead of clipping.')
+                : '  A flex item\'s min-width computes to AUTO, not 0 — it will not shrink below\n' +
+                  '  the width of its own content, and that URL cannot be broken.\n\n' +
+                  '  So flex-shrink is powerless here. Drag it to 10 and watch nothing happen:\n' +
+                  '  shrink is only allowed to shrink as far as the minimum, and the minimum\n' +
+                  '  is the whole string.\n\n' +
+                  '  The fix is not on the container and not on flex-shrink. It is one\n' +
+                  '  declaration on the ITEM:  min-width: 0.');
+        });
+      }
+
+      for (const control of [...Object.values(toggles), shrink]) {
+        control.addEventListener('input', render);
+        control.addEventListener('change', render);
+      }
+      addEventListener('resize', render);
+      render();
+    </script>
+  </body>
+</html>

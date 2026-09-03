@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" role="img" aria-label="A browser window beside a phone, both showing the same page laid out in three columns">
+  <!-- Authored for this course. Flat, licence-clean, and it explains something:
+       the same content laid out wide and narrow. Colours are hard-coded because an
+       <img> cannot read the page's custom properties. -->
+  <rect width="420" height="320" fill="none" />
+
+  <!-- Browser window -->
+  <rect x="8" y="30" width="270" height="200" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="3" />
+  <rect x="8" y="30" width="270" height="26" rx="10" fill="#e2e8f0" />
+  <rect x="8" y="46" width="270" height="10" fill="#e2e8f0" />
+  <circle cx="26" cy="43" r="4.5" fill="#f87171" />
+  <circle cx="42" cy="43" r="4.5" fill="#fbbf24" />
+  <circle cx="58" cy="43" r="4.5" fill="#4ade80" />
+
+  <!-- its nav -->
+  <rect x="22" y="68" width="60" height="9" rx="4.5" fill="#334155" />
+  <rect x="176" y="68" width="26" height="9" rx="4.5" fill="#cbd5e1" />
+  <rect x="210" y="68" width="26" height="9" rx="4.5" fill="#cbd5e1" />
+  <rect x="244" y="68" width="20" height="9" rx="4.5" fill="#6366f1" />
+
+  <!-- its hero -->
+  <rect x="22" y="92" width="150" height="13" rx="4" fill="#1e293b" />
+  <rect x="22" y="112" width="110" height="8" rx="4" fill="#94a3b8" />
+  <rect x="22" y="128" width="52" height="16" rx="8" fill="#6366f1" />
+
+  <!-- its three columns — the point of the picture -->
+  <rect x="22" y="160" width="72" height="54" rx="7" fill="#eef2ff" stroke="#6366f1" stroke-width="2" />
+  <rect x="103" y="160" width="72" height="54" rx="7" fill="#eef2ff" stroke="#6366f1" stroke-width="2" />
+  <rect x="184" y="160" width="72" height="54" rx="7" fill="#eef2ff" stroke="#6366f1" stroke-width="2" />
+
+  <!-- Phone -->
+  <rect x="300" y="52" width="104" height="216" rx="16" fill="#ffffff" stroke="#94a3b8" stroke-width="3" />
+  <rect x="336" y="60" width="32" height="6" rx="3" fill="#cbd5e1" />
+
+  <!-- its nav: collapsed to a single control -->
+  <rect x="314" y="80" width="44" height="8" rx="4" fill="#334155" />
+  <rect x="374" y="78" width="16" height="12" rx="3" fill="#6366f1" />
+
+  <!-- its hero -->
+  <rect x="314" y="102" width="70" height="10" rx="4" fill="#1e293b" />
+  <rect x="314" y="118" width="52" height="7" rx="3.5" fill="#94a3b8" />
+
+  <!-- its three columns, now stacked -->
+  <rect x="314" y="138" width="76" height="36" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="2" />
+  <rect x="314" y="182" width="76" height="36" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="2" />
+  <rect x="314" y="226" width="76" height="36" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="2" />
+</svg>

@@ -1,0 +1,180 @@
+<!doctype html>
+<!--
+  How much room is there, actually. Week-10 deck, act 5.
+
+  Everybody says "about 5MB". This page finds out, in the browser it is running in, by
+  writing 64KB blocks until `setItem` throws — and then reports three things the slide
+  version of that sentence does not:
+
+  1. THE NUMBER, measured. Written before the failure, in KB and in items of this
+     application's size.
+  2. THE ERROR'S NAME, printed. It is `QuotaExceededError` in Chromium and WebKit and
+     `NS_ERROR_DOM_QUOTA_REACHED` in Firefox, which is precisely why a `catch` that
+     branches on the name is a bug and a `catch` that branches on "the write failed" is
+     not.
+  3. WHAT THE APPLICATION LOOKS LIKE WHEN IT HAPPENS. Two panels: one whose `save` has
+     an empty `catch {}` and one whose `save` returns a status the UI shows. Both keep
+     running. Only one of them tells the truth, and the difference is what the user
+     finds out when they close the tab.
+
+  THE QUOTA IS SHARED BY THE ORIGIN, so what this measures is how much room is left
+  after every other project on 127.0.0.1 — which is the honest version of the number and
+  the reason the answer changes between two machines in the same room.
+
+  It cleans up after itself in a `finally`, including when the tab is closed mid-run.
+
+  DEMO MOVE: run it, read the number aloud, then divide by the size of one item.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>How much room</title>
+  </head>
+
+  <body>
+    <h2>Fill it until it says no</h2>
+
+    <div class="bar">
+      <button id="run" type="button" class="primary">fill localStorage</button>
+      <button id="clean" type="button">clean up</button>
+      <span class="sep"></span>
+      <span class="note" id="already"></span>
+    </div>
+
+    <p class="big" id="number">—</p>
+    <p class="verdict" id="verdict">Nothing written yet.</p>
+
+    <div class="layout">
+      <div class="panel bad">
+        <h3>save() with an empty catch</h3>
+        <pre>
+function save(items) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(items));
+  } catch {}
+}</pre>
+        <p class="note" id="silent">the application says nothing</p>
+      </div>
+      <div class="panel good">
+        <h3>save() that returns what happened</h3>
+        <pre>
+function save(state) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(payload));
+    return 'saved';
+  } catch (error) {
+    console.warn('[storage] write failed', error);
+    return 'full';
+  }
+}</pre>
+        <p class="note" id="loud">the application says nothing yet either</p>
+      </div>
+    </div>
+
+    <p class="note">
+      The quota belongs to the <b>origin</b>, not to this page — so what was measured is what was
+      left over after every other project you have run on this host and port. Two laptops in the
+      same room give two different numbers, and both are right.
+    </p>
+
+    <script>
+      const PREFIX = 'demo08.block.';
+      const BLOCK = 64 * 1024;
+      const ITEM_BYTES = new Blob([
+        JSON.stringify({
+          id: 'a1',
+          title: 'קמח מלא',
+          number: 2,
+          category: 'יבשים',
+          created: '2026-09-01T08:00:00.000Z',
+        }),
+      ]).size;
+
+      const used = () => {
+        let total = 0;
+        try {
+          for (let i = 0; i < localStorage.length; i += 1) {
+            const key = localStorage.key(i);
+            total += new Blob([key + localStorage.getItem(key)]).size;
+          }
+        } catch {
+          return -1;
+        }
+        return total;
+      };
+
+      const clean = () => {
+        try {
+          for (const key of Object.keys(localStorage)) {
+            if (key.startsWith(PREFIX)) localStorage.removeItem(key);
+          }
+        } catch {
+          /* blocked — there is nothing to clean */
+        }
+      };
+
+      const report = () => {
+        const bytes = used();
+        document.querySelector('#already').textContent =
+          bytes < 0
+            ? 'this browser has blocked storage for this origin'
+            : `this origin is currently holding ${(bytes / 1024).toFixed(1)} KB`;
+      };
+
+      addEventListener('pagehide', clean);
+
+      document.querySelector('#run').addEventListener('click', () => {
+        clean();
+        const chunk = 'ש'.repeat(BLOCK / 2);
+        let written = 0;
+        let n = 0;
+        let error = null;
+
+        try {
+          for (; n < 400; n += 1) {
+            localStorage.setItem(PREFIX + n, chunk);
+            written += new Blob([chunk]).size;
+          }
+        } catch (e) {
+          error = e;
+        } finally {
+          const el = document.querySelector('#verdict');
+          document.querySelector('#number').textContent =
+            `${(written / 1024 / 1024).toFixed(2)} MB`;
+
+          if (error === null) {
+            el.className = 'verdict';
+            el.textContent =
+              `Wrote ${(written / 1024).toFixed(0)} KB in ${n} blocks without hitting a limit — ` +
+              `raise the block count if you want to find the ceiling on this machine.`;
+          } else {
+            el.className = 'verdict no';
+            el.textContent =
+              `Failed on block ${n}, after ${(written / 1024).toFixed(0)} KB. ` +
+              `The error is named "${error.name}" (${error.constructor.name}), and that name is ` +
+              `DIFFERENT in Firefox — which is why you branch on "the write failed" and never on ` +
+              `the name. That is roughly ${Math.floor(written / ITEM_BYTES).toLocaleString()} items ` +
+              `of ${ITEM_BYTES} bytes each.`;
+
+            document.querySelector('#silent').textContent =
+              'the application still says nothing — and the last change the user made is not on disk';
+            document.querySelector('#loud').textContent =
+              'the application shows: "אין מקום פנוי לשמירה, והשינוי האחרון לא נשמר."';
+          }
+          clean();
+          report();
+        }
+      });
+
+      document.querySelector('#clean').addEventListener('click', () => {
+        clean();
+        report();
+      });
+
+      report();
+    </script>
+  </body>
+</html>

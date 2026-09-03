@@ -1,0 +1,129 @@
+/* ============================================================================
+   styles.css — home assignment 1.
+
+   ONE file. THREE pages. That is the assignment.
+
+   If you did the week-2 class assignment, most of this file already exists —
+   copy it in and carry on from section 6. If you did not, work down the order
+   below; it is the same order, and it is not decoration.
+
+     1  the reset          three lines, before anything else
+     2  the tokens         every decision the site makes, named, in one place
+     3  the page ground    body: colour, background, font, line-height, measure
+     4  typography         the heading scale, paragraphs, small print
+     5  the regions        header, nav (+ the current page), main, sections, footer
+     6  the components     the table, the form, the aside, details — and the two
+                           that only exist on your third page: article, blockquote
+     7  the states         :hover and :focus-visible
+
+   ── The rule that makes this a three-page site and not three pages
+
+   NOTHING IN THIS FILE MAY KNOW WHICH PAGE IT IS ON. No `.home-heading`, no
+   `#notes-page h2`. Every rule targets an element or a state, and then a fourth
+   page you write next month arrives already designed.
+
+   If you find yourself needing a page-specific rule, that is worth stopping for:
+   nine times out of ten the answer is that the two pages should look the same
+   and one of them is using the wrong element.
+
+   ── Forbidden this week, same as the class assignment
+
+     no  display: flex / grid      weeks 3 and 4
+     no  position: absolute        week 3
+     no  !important                it is not a fix
+     no  style="" in the HTML, no <style> block
+     no  framework, no CDN, no copied stylesheet
+
+   The auto-grader checks the RENDERED pages, not the text of this file.
+   ============================================================================ */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   1 — THE RESET
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* CODE HERE */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   2 — THE TOKENS
+
+   At least five `--color-*`, five `--space-*`, two `--radius-*` and three
+   `--font-*`. Colours in hsl(), built from ONE hue at different lightnesses.
+   Named for the job, never for the value.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* CODE HERE */
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   3 — THE PAGE GROUND
+
+   body: font family, base size, line-height, colour, background, and a
+   max-width in `ch` so a line never runs the full width of a monitor.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+body {
+  /* CODE HERE */
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   4 — TYPOGRAPHY
+
+   h1, h2, h3 from the scale. Headings want a tighter line-height than body text.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* CODE HERE */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   5 — THE REGIONS, AND THE CURRENT PAGE
+
+   header · nav · main · section · footer, with space from the scale.
+
+   The nav appears on all three pages and must show WHICH page you are on. The
+   marker belongs in the markup, on an attribute a screen reader already
+   understands — the brief names it — and this is where you select on it.
+   A class called `.active` would be a second source of truth for the same fact,
+   and the two would eventually disagree.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* CODE HERE */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   6 — THE COMPONENTS
+
+     table       collapse the borders, pad the cells, make the header row read
+                 as a header row
+     form        readable labels, comfortable fields, a real button.
+                 `font: inherit` on the controls is not optional
+     aside       a raised surface
+     details     enough padding that the summary is worth clicking
+     article     your third page: an entry that would make sense elsewhere
+     blockquote  a quotation that does not read as an indented paragraph
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* CODE HERE */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   7 — THE STATES
+
+   a · a:hover · a:focus-visible · button:hover · button:focus-visible.
+   Never `outline: none` with nothing in its place.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* CODE HERE */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   8 — STRETCH: RESPONSIVE IMAGES, DARK THEME, MOTION
+
+   Images: `max-width: 100%` and `height: auto`, or a portrait breaks the layout
+   on a phone. (The `width` and `height` attributes stay in the HTML — they
+   reserve the space before the file loads so the page does not jump.)
+
+   Dark theme: one `@media (prefers-color-scheme: dark)` block, the same token
+   names, different values, and NO changes below the token block.
+
+   Motion: a transition under 200ms that respects `prefers-reduced-motion` —
+   and you can do that without `!important`. Put the duration in a token.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* CODE HERE */

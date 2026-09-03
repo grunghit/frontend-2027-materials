@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 60" width="80" height="60" role="img" aria-label="A small route map">
+  <rect width="80" height="60" rx="6" fill="#e7f1f8" />
+  <path d="M0 44 Q20 30 40 40 T80 32 V60 H0 Z" fill="#8fc6a4" />
+  <path d="M10 54 C24 42 22 34 36 30 S56 20 70 14" fill="none" stroke="#a05a2c" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 4" />
+  <circle cx="70" cy="14" r="4" fill="#a52822" />
+</svg>

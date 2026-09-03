@@ -1,0 +1,64 @@
+<!doctype html>
+<!-- INTENTIONALLY INVALID — do not "fix" this file.
+
+     LIVE CODING BREAK 2. Exactly three things are wrong, and the validator finds all three.
+     Run the validator against this file in front of the class and read the output together:
+
+       npx html-validate weeks/week-01-html-git/demos/06-validator/01-broken/index.html
+
+     The three breaks, and the line each lives on, are listed in instructor-notes-he.md.
+     Do not tell the class what they are — make them read the messages.
+
+     tools/gates.mjs asserts this file FAILS validation. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trip report — Golan, March</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #14181f;
+        background: #fff;
+      }
+      img {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+      }
+      a {
+        color: #0b5f8f;
+      }
+      a:focus-visible {
+        outline: 3px solid #0b5f8f;
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Trip report — Golan, March</h1>
+    </header>
+
+    <main>
+      <section id="route">
+        <h2>The route</h2>
+        <p>Seventeen kilometres, most of it uphill, all of it in the rain.</p>
+      </div>
+
+      <section id="route">
+        <h2>The photographs</h2>
+        <img src="../02-fixed/images/trail.svg" width="120" height="120" />
+      </section>
+    </main>
+
+    <footer>
+      <p><a href="../02-fixed/index.html">The version that validates</a></p>
+    </footer>
+  </body>
+</html>

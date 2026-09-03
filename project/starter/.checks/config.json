@@ -1,0 +1,21 @@
+{
+  "//": "Project knobs for the public check set. The publisher copies this to project/.checks/config.json, replacing the template default.",
+  "//entry": "index.html — the list page. The other two are reached from it, and the checks follow the links rather than guessing their names.",
+  "//required": "The SIX layer files, the tsconfig and its source, and the four documents. Deliberately NOT listed: item.html and summary.html by name — requirement 2 lets a student name their three pages, and a required-file check that hardcodes them would fail a correct project for a filename.",
+  "entry": "index.html",
+  "requiredFiles": [
+    "index.html",
+    "js/app.js",
+    "js/state.js",
+    "js/render.js",
+    "js/events.js",
+    "js/storage.js",
+    "js/api.js",
+    "tsconfig.json",
+    "README.md",
+    "PROJECT_PLAN.md",
+    "PROMPTS.md",
+    "AI_USAGE.md",
+    "vendor/tailwind.js"
+  ]
+}

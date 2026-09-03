@@ -1,0 +1,128 @@
+<!doctype html>
+<!--
+  What stringify does with things JSON cannot represent. Week-10 deck, act 2.
+
+  Twelve values, each stringified on its own and inside an object and inside an array,
+  because THE THREE ANSWERS ARE DIFFERENT and that is the part nobody remembers. Every
+  cell is the real return value of the real call, produced in this browser at load time.
+
+  The three columns are the whole slide:
+
+      JSON.stringify(v)          alone
+      JSON.stringify({ v })      as a property
+      JSON.stringify([v])        as an array member
+
+  `undefined` and a function are DROPPED as properties, become `null` as members, and
+  return `undefined` — not a string — on their own. That last one is the trap: it means
+  `localStorage.setItem(k, JSON.stringify(x))` can store the five characters
+  "undefined" and blow up on the way back in.
+
+  Two values THROW rather than drop, and they are shown as throwing: a BigInt and a
+  circular reference. A demo that lists them alongside the silent ones without saying
+  which is which teaches that they are the same kind of problem, and they are not — one
+  you find immediately and one you find in three weeks.
+
+  DEMO MOVE: cover the last column and take a vote on the function row.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>What stringify drops</title>
+  </head>
+
+  <body>
+    <h2>Twelve values, three ways. Every cell is a real return value.</h2>
+
+    <div class="scroll-x">
+      <table>
+        <thead>
+          <tr>
+            <th>the value</th>
+            <th><code>stringify(v)</code></th>
+            <th><code>stringify({ v })</code></th>
+            <th><code>stringify([v])</code></th>
+            <th>what happened</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="verdict no" id="verdict"></p>
+    <p class="note">
+      The two rows that <b>throw</b> are the lucky ones. Everything else on this table fails
+      silently, which means it fails later, somewhere else, in a function that has nothing to do
+      with storage.
+    </p>
+
+    <script>
+      const circular = { name: 'shelf' };
+      circular.self = circular;
+
+      const CASES = [
+        ['a string', () => 'קמח', 'kept'],
+        ['a number', () => 2, 'kept'],
+        ['true', () => true, 'kept'],
+        ['null', () => null, 'kept'],
+        ['undefined', () => undefined, 'DROPPED as a property, null in an array'],
+        ['a function', () => function describe() {}, 'DROPPED as a property, null in an array'],
+        ['a Symbol', () => Symbol('shelf'), 'DROPPED as a property, null in an array'],
+        ['NaN', () => NaN, 'becomes null — the number is gone, quietly'],
+        ['Infinity', () => Infinity, 'becomes null — same'],
+        ['a Date', () => new Date('2026-09-01T08:00:00Z'), 'becomes a STRING, via Date.toJSON'],
+        ['a Map', () => new Map([['a', 1]]), 'becomes {} — the entries are gone'],
+        ['a Set', () => new Set([1, 2]), 'becomes {} — the members are gone'],
+        ['a BigInt', () => 10n, 'THROWS — TypeError'],
+        ['a circular object', () => circular, 'THROWS — TypeError'],
+      ];
+
+      const attempt = (fn) => {
+        try {
+          const out = fn();
+          return { text: out === undefined ? 'undefined  (not a string!)' : out, threw: false };
+        } catch (error) {
+          return { text: `throws ${error.constructor.name}`, threw: true };
+        }
+      };
+
+      let silent = 0;
+      let loud = 0;
+
+      document.querySelector('#rows').replaceChildren(
+        ...CASES.map(([label, make, note]) => {
+          const alone = attempt(() => JSON.stringify(make()));
+          const asProp = attempt(() => JSON.stringify({ v: make() }));
+          const inArray = attempt(() => JSON.stringify([make()]));
+
+          const threw = alone.threw || asProp.threw || inArray.threw;
+          const lossless =
+            !threw && asProp.text === JSON.stringify({ v: make() }) && note === 'kept';
+          if (threw) loud += 1;
+          else if (!lossless) silent += 1;
+
+          const tr = document.createElement('tr');
+          for (const [text, cls] of [
+            [label, ''],
+            [alone.text, 'mono'],
+            [asProp.text, 'mono'],
+            [inArray.text, 'mono'],
+            [note, threw ? 'good' : note === 'kept' ? 'good' : 'bad'],
+          ]) {
+            const td = document.createElement('td');
+            td.className = cls;
+            td.textContent = text;
+            tr.append(td);
+          }
+          return tr;
+        }),
+      );
+
+      document.querySelector('#verdict').textContent =
+        `${silent} of these ${CASES.length} values change meaning WITHOUT SAYING SO. ` +
+        `${loud} of them throw, and those are the ones you will fix today rather than in March.`;
+    </script>
+  </body>
+</html>

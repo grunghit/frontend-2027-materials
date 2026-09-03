@@ -1,0 +1,327 @@
+<!doctype html>
+<!--
+  auto-fit versus auto-fill. Week-4 deck, act 3. THE HEADLINE DEMO OF THE WEEK.
+
+  Everyone gets this wrong, including people who have shipped both for years, because
+  every blog post explains it with the wrong example. The two keywords are identical
+  under the condition almost all demos happen to use — enough items to fill the row —
+  and they differ only when there are FEWER items than tracks that would fit.
+
+  So this page exists to create that condition on purpose, with a slider, in front of
+  the room.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. TWO grids, one declaration apart, driven by the SAME two sliders. Width and item
+     count are the only variables, and both are under the lecturer's thumb.
+  2. The track count is measured for each grid separately and printed. auto-fill keeps
+     the empty tracks it created — they are real, they are just empty — and auto-fit
+     collapses them to zero width so the items stretch. The readout counts tracks and
+     counts how many of them are 0px, which is the difference stated as arithmetic
+     rather than as a slogan.
+  3. There is an explicit "they are identical right now" state, and the page SAYS so
+     when it is true. A demo that only ever shows the difference teaches students that
+     the two keywords are always different, which is the opposite mistake.
+  4. The container width is a slider rather than the window, so the effect can be shown
+     without resizing the projector and without losing the deck.
+
+  DEMO MOVE: start at 8 items — they look the same, and the readout says so. Now drag
+  the item count DOWN to 2, slowly. At some point the two grids visibly separate. Stop
+  there and ask which one is "right". It is a trick question: neither. Then give the
+  rule at the bottom of the readout.
+
+  Ask the room to predict what happens at 1 item before you drag to 1. Most will guess
+  wrong in an instructive way.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>auto-fit versus auto-fill</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h2 code {
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font:
+          600 13px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+      }
+      input[type='range'] {
+        accent-color: #1d4ed8;
+        vertical-align: middle;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      /* One wrapper whose width both grids inherit, so "the container" is a single
+         number the room can see change. */
+      .frame {
+        max-width: 100%;
+        transition: none;
+      }
+      .stage {
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        border: 3px solid #7a8699;
+        background: #f8fafc;
+      }
+      .stage.fill {
+        border-color: #b45309;
+        background: #fffbeb;
+      }
+      .stage.fit {
+        border-color: #1d4ed8;
+        background: #eff6ff;
+      }
+      .grid {
+        display: grid;
+        gap: 10px;
+      }
+      .fill .grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+      .fit .grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+      .cell {
+        padding: 18px 8px;
+        border-radius: 6px;
+        text-align: center;
+        font:
+          700 12px/1.4 ui-monospace,
+          Menlo,
+          monospace;
+        overflow: hidden;
+      }
+      .fill .cell {
+        background: #fef3c7;
+        border: 2px solid #b45309;
+        color: #7c2d12;
+      }
+      .fit .cell {
+        background: #dbeafe;
+        border: 2px solid #1d4ed8;
+        color: #1e3a8a;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          13px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+      .verdict {
+        margin: 10px 0 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 2px solid #7a8699;
+        background: #f1f5f9;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .verdict.same {
+        border-color: #15803d;
+        background: #dcfce7;
+      }
+      .verdict.differ {
+        border-color: #b45309;
+        background: #fffbeb;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <label for="width">container width</label>
+      <input type="range" id="width" min="200" max="1000" step="10" value="700" />
+      <output id="width-out" for="width">700px</output>
+      <label for="count">items</label>
+      <input type="range" id="count" min="1" max="10" step="1" value="8" />
+      <output id="count-out" for="count">8</output>
+    </div>
+
+    <div class="frame" id="frame">
+      <div class="stage fill">
+        <h2><code>repeat(auto-fill, minmax(140px, 1fr))</code></h2>
+        <div class="grid" id="fill-grid"></div>
+      </div>
+
+      <div class="stage fit">
+        <h2><code>repeat(auto-fit, minmax(140px, 1fr))</code></h2>
+        <div class="grid" id="fit-grid"></div>
+      </div>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const frame = document.getElementById('frame');
+      const fillGrid = document.getElementById('fill-grid');
+      const fitGrid = document.getElementById('fit-grid');
+      const width = document.getElementById('width');
+      const widthOut = document.getElementById('width-out');
+      const count = document.getElementById('count');
+      const countOut = document.getElementById('count-out');
+      const out = document.getElementById('out');
+      const verdict = document.getElementById('verdict');
+
+      /* Read the USED track list. Chromium reports collapsed auto-fit tracks as 0px,
+         which is exactly the observable difference between the two keywords — so the
+         count of zero-width tracks IS the lesson, measured rather than claimed. */
+      const tracksOf = (el) => {
+        const value = getComputedStyle(el).gridTemplateColumns;
+        return value === 'none' ? [] : value.split(/\s+/);
+      };
+
+      function fill(grid, n) {
+        grid.replaceChildren();
+        for (let i = 0; i < n; i += 1) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.textContent = i + 1;
+          grid.append(cell);
+        }
+      }
+
+      function render() {
+        const n = Number(count.value);
+        frame.style.width = width.value + 'px';
+        widthOut.textContent = width.value + 'px';
+        countOut.textContent = n;
+
+        fill(fillGrid, n);
+        fill(fitGrid, n);
+
+        requestAnimationFrame(() => {
+          const fillTracks = tracksOf(fillGrid);
+          const fitTracks = tracksOf(fitGrid);
+          const collapsed = fitTracks.filter((t) => parseFloat(t) === 0).length;
+          const itemWidthFill = Math.round(
+            fillGrid.firstElementChild.getBoundingClientRect().width,
+          );
+          const itemWidthFit = Math.round(fitGrid.firstElementChild.getBoundingClientRect().width);
+          const identical = itemWidthFill === itemWidthFit;
+
+          verdict.className = identical ? 'verdict same' : 'verdict differ';
+          verdict.textContent = identical
+            ? 'Right now these two are identical, and that is the normal case.'
+            : 'auto-fill leaves ' +
+              collapsed +
+              ' empty track' +
+              (collapsed === 1 ? '' : 's') +
+              ' standing. auto-fit collapses them.';
+
+          out.textContent =
+            '  container       ' +
+            width.value +
+            'px\n' +
+            '  items           ' +
+            n +
+            '\n\n' +
+            '  auto-fill  ' +
+            fillTracks.length +
+            ' tracks   first item ' +
+            itemWidthFill +
+            'px\n' +
+            '             ' +
+            fillTracks.join('  ') +
+            '\n\n' +
+            '  auto-fit   ' +
+            fitTracks.length +
+            ' tracks   first item ' +
+            itemWidthFit +
+            'px\n' +
+            '             ' +
+            fitTracks.join('  ') +
+            '\n\n' +
+            (identical
+              ? '  Both keywords worked out that ' +
+                fillTracks.length +
+                ' tracks of at least 140px fit in\n' +
+                '  ' +
+                width.value +
+                'px, and there are enough items to occupy them. With nothing left\n' +
+                '  empty there is nothing to collapse, so the two behave the same.\n\n' +
+                '  This is why almost every tutorial gets away with using them\n' +
+                '  interchangeably — and why almost every student then believes they are\n' +
+                '  the same keyword spelled two ways.\n\n' +
+                '  Drag the item count DOWN until there are fewer items than tracks.'
+              : '  Both created ' +
+                fillTracks.length +
+                ' tracks, because ' +
+                fillTracks.length +
+                ' columns of 140px fit in ' +
+                width.value +
+                'px.\n' +
+                '  Only ' +
+                n +
+                ' of them have an item in them.\n\n' +
+                '  auto-FILL keeps the empty ones. They are real tracks with real width,\n' +
+                '  so the items stay 140-ish and sit at the start of the row.\n' +
+                '  auto-FIT collapses the empty ones to 0px, and because the tracks are\n' +
+                '  minmax(140px, 1FR) the survivors then grow into the freed space.\n\n' +
+                '  The rule, and it is a design decision rather than a correctness one:\n' +
+                '    auto-fit  — I want the items to fill the row, however few there are.\n' +
+                '    auto-fill — I want a stable column rhythm, even where it is empty.\n\n' +
+                '  A three-card feature row wants auto-fit. A calendar or a seating chart\n' +
+                '  wants auto-fill, because a missing item there is information.');
+        });
+      }
+
+      for (const control of [width, count]) {
+        control.addEventListener('input', render);
+      }
+      addEventListener('resize', render);
+      render();
+    </script>
+  </body>
+</html>

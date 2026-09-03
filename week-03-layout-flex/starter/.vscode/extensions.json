@@ -1,0 +1,40 @@
+{
+  // CLAUDE_CODE_BRIEF.md §4.2 — VS Code prompts for these the first time a student
+  // opens the folder. They are not asked to configure anything; the repo does it.
+  //
+  // What each one is FOR is documented in the week-1 setup guide, one line each —
+  // students who know why a tool is there keep it installed.
+  "recommendations": [
+    // Run the page over http. THE rule from week 1: never double-click index.html.
+    // file:// breaks fetch, ES modules and origin-scoped localStorage — a habit formed
+    // in week 1 detonates in weeks 10 and 11.
+    "ritwickdey.liveserver",
+
+    // Format on save, so nobody loses points to indentation and diffs stay reviewable.
+    "esbenp.prettier-vscode",
+
+    // Catches the real JS mistakes (unused vars, == vs ===) before the browser does.
+    "dbaeumer.vscode-eslint",
+
+    // Week 5 onwards: autocomplete and hover-preview for Tailwind utility classes.
+    "bradlc.vscode-tailwindcss",
+
+    // Shows the error inline on the line itself instead of hidden in the Problems panel.
+    // For a class with no TA, this is the single highest-value extension here.
+    "usernamehw.errorlens",
+
+    // HTML validation as you type — the same checks the W3C validator runs in week 1.
+    "htmlhint.vscode-htmlhint",
+
+    // Blame and history inline. Makes "what did I change and when" visible, which is
+    // what makes the weekly commit-SHA submission rule feel real.
+    "eamodio.gitlens",
+
+    // Autocomplete for relative paths. Week 1's most common bug is a broken src/href.
+    "christian-kohler.path-intellisense"
+  ],
+
+  // Nothing here is banned outright; this only suppresses the prompt for extensions
+  // that would fight the course setup.
+  "unwantedRecommendations": []
+}

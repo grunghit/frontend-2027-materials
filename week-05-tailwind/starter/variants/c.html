@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+  ============================================================================
+  CLAUDE'S ANSWER — OPTION C
+
+  Same prompt, third chat. Unedited.
+  ============================================================================
+
+  Claude said about this one:
+
+    "This is mobile-first. The `max-md:` variant handles small screens, where the
+     cards collapse to a single column, and the base `grid-cols-3` takes over from
+     768px up to give three equal columns. Splitting the two cases explicitly like
+     this makes the intent obvious to the next person who reads the file."
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Option C &mdash; feature row</title>
+
+    <script src="../vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-300: hsl(234 100% 78%);
+      }
+    </style>
+  </head>
+
+  <body class="bg-white p-6 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <h1 class="mb-1 text-2xl font-bold">Option C</h1>
+    <p class="mb-6 text-sm text-slate-600 dark:text-slate-400">
+      Resize the window. Then read the code.
+    </p>
+
+    <div id="row" class="grid grid-cols-3 gap-6 max-md:grid-cols-3">
+      <article class="rounded-xl border border-slate-300 p-5 dark:border-slate-700">
+        <h2 class="mt-0 mb-2 text-lg font-semibold text-brand-500 dark:text-brand-300">Uptime</h2>
+        <p class="m-0 text-sm text-slate-600 dark:text-slate-400">
+          Rolling thirty days across every region, including the ones nobody watches.
+        </p>
+      </article>
+      <article class="rounded-xl border border-slate-300 p-5 dark:border-slate-700">
+        <h2 class="mt-0 mb-2 text-lg font-semibold text-brand-500 dark:text-brand-300">Latency</h2>
+        <p class="m-0 text-sm text-slate-600 dark:text-slate-400">
+          Median end to end, measured from the edge rather than from the load balancer.
+        </p>
+      </article>
+      <article class="rounded-xl border border-slate-300 p-5 dark:border-slate-700">
+        <h2 class="mt-0 mb-2 text-lg font-semibold text-brand-500 dark:text-brand-300">Errors</h2>
+        <p class="m-0 text-sm text-slate-600 dark:text-slate-400">
+          Fives only. Fours are somebody else's bug most of the time and are counted apart.
+        </p>
+      </article>
+    </div>
+  </body>
+</html>

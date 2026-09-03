@@ -1,0 +1,397 @@
+<!doctype html>
+<!--
+  INTENTIONALLY THROWS.
+
+  Hoisting and the temporal dead zone. Week-7 deck, act 4.
+
+  This page throws a real, uncaught ReferenceError while it loads, on purpose, and that
+  error is the lesson. It is registered in tools/gates.mjs and the console gate is
+  INVERTED for it: if this page ever loads cleanly, it has stopped teaching and the gate
+  says so. A page that merely printed the error text as a string would look identical and
+  prove nothing.
+
+  Three declarations, the same three lines, three different outcomes:
+      var       undefined, silently, and the bug surfaces somewhere else entirely
+      let       ReferenceError: Cannot access 'x' before initialization
+      function  works, because the whole function is hoisted with its body
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE ERROR IN THE CONSOLE IS REAL AND UNCAUGHT. Open DevTools during the demo. The
+     top block on this page reports what the browser reported, by listening for the
+     `error` event rather than by catching it — so the console and the panel agree
+     because they are the same event, not because I typed the text twice.
+  2. IT SEPARATES "NOT DECLARED" FROM "NOT YET INITIALISED". `typeof undeclaredThing` is
+     the famous safe operation — and `typeof` on a `let` in its dead zone THROWS. That
+     one row is what makes the TDZ a real place rather than a slogan.
+  3. IT SHOWS WHY `var` IS THE WORSE OUTCOME. `let` fails at the line with the mistake.
+     `var` succeeds, produces `undefined`, and fails four functions later in arithmetic.
+     Students read the second one as "better because it did not crash".
+
+  DEMO MOVE: run `var` first and let somebody say "so var is safer". Then run `let`. Then
+  ask which error they would rather receive at two in the morning.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Hoisting and the temporal dead zone</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --err: #b91c1c;
+        --ok: #0f766e;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 4px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .live {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 0 0 14px;
+      }
+      .live h3 {
+        margin: 0 0 5px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--err);
+      }
+      .live p {
+        margin: 0;
+        font-size: 13px;
+        color: #7f1d1d;
+      }
+      .live code {
+        font:
+          13px/1.5 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        background: #fff;
+        border: 1px solid #fecaca;
+        border-radius: 4px;
+        padding: 1px 5px;
+        display: inline-block;
+        margin-top: 5px;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 5px 12px;
+        cursor: pointer;
+        color: inherit;
+      }
+      button[aria-pressed='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      pre {
+        margin: 0;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        border-radius: 10px;
+        padding: 11px 13px;
+        overflow-x: auto;
+        font:
+          13px/1.7 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      pre b {
+        color: #fbbf24;
+        font-weight: 400;
+      }
+      .out {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .out h3 {
+        margin: 0;
+        padding: 7px 11px;
+        background: #f1f5f9;
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font:
+          13px/1.4 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      td {
+        padding: 6px 9px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      td:first-child {
+        color: var(--muted);
+        white-space: nowrap;
+        width: 1%;
+      }
+      td.e {
+        color: var(--err);
+      }
+      td.o {
+        color: var(--ok);
+      }
+      .verdict {
+        padding: 10px 12px;
+        font-size: 13px;
+        background: #f8fafc;
+        border-top: 1px solid var(--line);
+      }
+    </style>
+  </head>
+  <body>
+    <h2>The same three lines, three declarations</h2>
+
+    <div class="live">
+      <h3>What this page did to itself while loading</h3>
+      <p id="live-report">If this line is still here, the deliberate error did not fire &mdash; which is itself a bug.</p>
+    </div>
+
+    <div class="bar">
+      <button type="button" data-kind="var" aria-pressed="true">var</button>
+      <button type="button" data-kind="let" aria-pressed="false">let</button>
+      <button type="button" data-kind="const" aria-pressed="false">const</button>
+      <button type="button" data-kind="function" aria-pressed="false">function</button>
+      <button type="button" data-kind="typeof" aria-pressed="false">typeof, both kinds</button>
+    </div>
+
+    <div class="layout">
+      <pre id="code"></pre>
+      <div class="out">
+        <h3>What actually happened</h3>
+        <table>
+          <tbody id="rows"></tbody>
+        </table>
+        <p class="verdict" id="verdict"></p>
+      </div>
+    </div>
+
+    <!--
+      Registered BEFORE the script that throws, so the listener exists when the error
+      fires. `error` OBSERVES; it does not catch. The error still reaches the console,
+      which is the point — the panel and DevTools are reporting the same event.
+    -->
+    <script>
+      window.addEventListener('error', (event) => {
+        const p = document.getElementById('live-report');
+        if (!p || p.dataset.filled) return;
+        p.dataset.filled = 'yes';
+        p.textContent = 'The browser threw this, uncaught, before you clicked anything. It is in your console too, in red: ';
+        const code = document.createElement('code');
+        code.textContent = event.message;
+        p.append(code);
+      });
+    </script>
+
+    <script>
+      /*
+       * DELIBERATE, UNCAUGHT, AND THE WHOLE REASON THIS FILE CARRIES ITS MARKER.
+       *
+       * Its own script block, so the throw ends this block and nothing else on the page
+       * is affected. `answer` is read one line before it is declared — the temporal dead
+       * zone — and the browser refuses, by name, at the line with the mistake in it.
+       */
+      console.log('the value of answer is', answer);
+      let answer = 42;
+    </script>
+
+    <script>
+      /*
+       * Each variant is a real function that is really called. The `var` and `let` bodies
+       * are ordinary code; nothing is simulated and no message below is a string I typed
+       * to look like an engine.
+       */
+      const VARIANTS = {
+        var: {
+          lines: ['console.log(x);', 'var x = 5;', 'console.log(x);'],
+          run() {
+            const out = [];
+            (function () {
+              // eslint-disable-next-line no-var, vars-on-top, block-scoped-var
+              out.push(['line 1', String(x), false]);
+              var x = 5;
+              out.push(['line 3', String(x), false]);
+            })();
+            return out;
+          },
+          verdict:
+            'No error. `var x` was hoisted to the top of the function and initialised to `undefined`, so line 1 is legal and silent. The mistake is still a mistake — it just gets reported somewhere else, later, usually as NaN.',
+        },
+        let: {
+          lines: ['console.log(x);', 'let x = 5;', 'console.log(x);'],
+          run() {
+            const out = [];
+            try {
+              (function () {
+                out.push(['line 1', String(x), false]);
+                // eslint-disable-next-line no-unused-vars
+                let x = 5;
+              })();
+            } catch (err) {
+              out.push(['line 1', `${err.name}: ${err.message}`, true]);
+            }
+            return out;
+          },
+          verdict:
+            '`let x` IS hoisted — the binding exists from the top of the block. What it is not is initialised. That gap is the temporal dead zone, and reading inside it throws at the line with the mistake in it.',
+        },
+        const: {
+          lines: ['console.log(x);', 'const x = 5;', 'console.log(x);'],
+          run() {
+            const out = [];
+            try {
+              (function () {
+                out.push(['line 1', String(x), false]);
+                // eslint-disable-next-line no-unused-vars
+                const x = 5;
+              })();
+            } catch (err) {
+              out.push(['line 1', `${err.name}: ${err.message}`, true]);
+            }
+            return out;
+          },
+          verdict: '`const` behaves exactly as `let` does here. The dead zone is about `let` and `const` together; it is not a property of reassignment.',
+        },
+        function: {
+          lines: ['greet();', 'function greet() {', "  return 'hello';", '}'],
+          run() {
+            const out = [];
+            (function () {
+              out.push(['line 1', greet(), false]);
+              function greet() {
+                return 'hello';
+              }
+            })();
+            return out;
+          },
+          verdict:
+            'A function DECLARATION is hoisted with its body, so calling it above its own definition works and is normal. Write the same function as `const greet = () => …` and line 1 throws — because that is a `const`, and the rules above apply.',
+        },
+        typeof: {
+          lines: ['typeof neverDeclared;', 'typeof x;', 'let x = 5;'],
+          run() {
+            const out = [];
+            /* Genuinely never declared anywhere in this file. */
+            out.push(['typeof neverDeclared', typeof neverDeclared, false]);
+            try {
+              (function () {
+                out.push(['typeof x', typeof x, false]);
+                // eslint-disable-next-line no-unused-vars
+                let x = 5;
+              })();
+            } catch (err) {
+              out.push(['typeof x', `${err.name}: ${err.message}`, true]);
+            }
+            return out;
+          },
+          verdict:
+            '`typeof` on a name that does not exist anywhere is safe and returns "undefined" — the one operator that never throws, which is why it is used for feature detection. `typeof` on a `let` in its dead zone throws. The dead zone is a real state, not merely an absence.',
+        },
+      };
+
+      const el = (id) => document.getElementById(id);
+      let current = 'var';
+
+      function paint() {
+        const v = VARIANTS[current];
+
+        el('code').textContent = '';
+        for (const line of v.lines) {
+          el('code').append(document.createTextNode(line + '\n'));
+        }
+
+        const rows = el('rows');
+        rows.textContent = '';
+        for (const [where, what, isError] of v.run()) {
+          const tr = document.createElement('tr');
+          const td1 = document.createElement('td');
+          td1.textContent = where;
+          const td2 = document.createElement('td');
+          td2.textContent = what;
+          td2.className = isError ? 'e' : 'o';
+          tr.append(td1, td2);
+          rows.append(tr);
+        }
+
+        el('verdict').textContent = v.verdict;
+
+        for (const b of document.querySelectorAll('.bar button')) {
+          b.setAttribute('aria-pressed', String(b.dataset.kind === current));
+        }
+      }
+
+      for (const b of document.querySelectorAll('.bar button')) {
+        b.addEventListener('click', () => {
+          current = b.dataset.kind;
+          paint();
+        });
+      }
+      paint();
+    </script>
+  </body>
+</html>

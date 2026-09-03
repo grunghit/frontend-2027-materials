@@ -1,0 +1,131 @@
+<!doctype html>
+<!--
+  TYPING A `querySelector`, WHICH IS THE CASTING THEY WILL ACTUALLY NEED.
+  Week-12 deck, act 6.
+
+  FOUR REAL DIAGNOSTICS, from ../tsc-cases/06-dom-cast.ts, two of them on one line:
+
+      'box' is possibly 'null'                       TS18047
+      Property 'value' does not exist on type 'Element'  TS2339
+      'event.target' is possibly 'null'              TS18047
+      Property 'closest' does not exist on type 'EventTarget'  TS2339
+
+  Both halves of `Element | null` are in the way, and both halves of
+  `EventTarget | null` are too. That symmetry is the slide.
+
+  AND THE RUNTIME HALF PROVES THE HELPER IS NOT DECORATION. Press MISSING SELECTOR: the
+  raw `querySelector` path returns `null` and fails a line later with the useless
+  `Cannot read properties of null`; `$()` throws immediately with the selector in the
+  message. Same failure, two distances from the cause.
+
+  DEMO MOVE: read the four messages out loud, then press MISSING SELECTOR and compare the
+  two error strings side by side. The second one names the typo.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>Typing a querySelector</title>
+  </head>
+
+  <body>
+    <h2>Element or null, and neither one is what you wanted</h2>
+
+    <div class="panel">
+      <h3>a form to query</h3>
+      <label for="query">search</label>
+      <input id="query" type="search" value="קמח" />
+      <ul id="rows">
+        <li data-id="a">first</li>
+        <li data-id="b">second</li>
+      </ul>
+    </div>
+
+    <div class="bar">
+      <button id="good" type="button">read the box, both ways</button>
+      <button id="missing" type="button">a selector that matches nothing</button>
+    </div>
+
+    <div class="layout">
+      <div class="panel bad">
+        <h3>raw <code>querySelector</code></h3>
+        <p id="raw-out" class="mono"></p>
+      </div>
+      <div class="panel good">
+        <h3><code>$&lt;T&gt;()</code> — one assertion, in one place</h3>
+        <p id="helper-out" class="mono"></p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>and what <code>tsc --strict</code> says about the raw version</h3>
+      <div id="src" class="src"></div>
+      <p id="tsc-verdict" class="verdict"></p>
+    </div>
+
+    <p class="note">
+      The helper still asserts — the compiler cannot know what the markup contains. It asserts
+      <b>once</b>, with a name, in a file you can search. Forty <code>as HTMLInputElement</code> do
+      the same thing forty times, findably nowhere.
+    </p>
+
+    <script type="module">
+      import { caseNamed, renderSource } from '../shared/compiler.js';
+
+      /** The helper from ts/dom.ts, in the JavaScript it compiles to. */
+      function $(selector, root = document) {
+        const found = root.querySelector(selector);
+        if (found === null) throw new Error(`dom: no element matches ${selector}`);
+        return found;
+      }
+
+      const rawOut = document.querySelector('#raw-out');
+      const helperOut = document.querySelector('#helper-out');
+
+      function attempt(selector) {
+        /* THE RAW PATH. Nothing here is wrong at runtime when the element exists — the
+           problem is what happens a line later when it does not. */
+        try {
+          const box = document.querySelector(selector);
+          rawOut.textContent = `value → ${JSON.stringify(box.value)}`;
+          rawOut.className = 'mono yes';
+        } catch (e) {
+          rawOut.textContent = `💥 ${e.constructor.name}: ${e.message}`;
+          rawOut.className = 'mono no';
+        }
+
+        /* THE HELPER PATH. Same failure, named, at the line that asked. */
+        try {
+          helperOut.textContent = `value → ${JSON.stringify($(selector).value)}`;
+          helperOut.className = 'mono yes';
+        } catch (e) {
+          helperOut.textContent = `${e.constructor.name}: ${e.message}`;
+          helperOut.className = 'mono';
+        }
+      }
+
+      document.querySelector('#good').addEventListener('click', () => attempt('#query'));
+      document.querySelector('#missing').addEventListener('click', () => attempt('#quary'));
+
+      /* The event half, live: `instanceof` is a runtime test the compiler understands. */
+      document.querySelector('#rows').addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const row = event.target.closest('li[data-id]');
+        if (row === null) return;
+        helperOut.textContent = `clicked row → ${row.dataset.id}  (narrowed with instanceof)`;
+        helperOut.className = 'mono yes';
+      });
+
+      const entry = await caseNamed('06-dom-cast.ts');
+      renderSource(document.querySelector('#src'), entry, { from: 1, to: 6 });
+      const tv = document.querySelector('#tsc-verdict');
+      tv.textContent =
+        `${entry.messages.length} diagnostics over the file — ` +
+        entry.messages.map((m) => `line ${m.line} ${m.code}`).join(', ') +
+        '. Two of them are on the same line, and they are the two halves of `Element | null`.';
+      tv.className = 'verdict';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,361 @@
+<!doctype html>
+<!--
+  Three ways to add a row, and what each one destroys. Week-8 deck, act 4.
+
+  The legacy course had one slide about this and it is the single most useful thing in
+  the old DOM lesson (LEGACY_AUDIT.md §2, מצגת 11):
+
+    "Setting element.innerHTML makes the browser render the new content even if it's the
+     same text as before, making existing event handlers stop working — because of the
+     reference change."
+
+  This page is that sentence, run. A row is added to three identical lists by three
+  different methods. Before each run, a click handler is attached to the FIRST row of
+  every list and the element is remembered. After the run the page asks three questions
+  of the real DOM and prints three real answers:
+
+    · is the first row still the same object?     `remembered === list.firstElementChild`
+    · does its handler still fire?                the page dispatches a real click
+    · how long did the insert take?               `performance.now()` around 200 inserts
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE HANDLER IS TESTED BY FIRING IT, NOT BY REASONING ABOUT IT. Each list has a
+     counter that only its handler can increment. After the run the page dispatches a
+     click on the first row; the counter either moves or it does not.
+  2. IDENTITY IS THE EXPLANATION, AND IT IS ONE `===`. The row still LOOKS identical.
+     The check that says why it is dead is the same operator week 7 spent an act on.
+  3. `insertAdjacentHTML` IS THE MIDDLE ANSWER AND IT IS NOT A COMPROMISE. It parses
+     HTML like innerHTML but it does not re-parse what is already there, so the existing
+     rows survive. Students who conclude "innerHTML is banned" have learned the wrong rule.
+  4. THE TIMING IS REAL AND IT IS THE SMALLER REASON. The page says so out loud: at 200
+     rows the difference is milliseconds and the dead handler is forever.
+
+  DEMO MOVE: run it once, then ask which column students expected to fail. Almost everyone
+  predicts the third (createElement) because it looks like the most work.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>innerHTML += , insertAdjacentHTML, createElement</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --true: #0f766e;
+        --false: #b91c1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 5px 11px;
+        cursor: pointer;
+        color: inherit;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .cols {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .col {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 10px 11px;
+      }
+      .col h3 {
+        margin: 0 0 6px;
+        font:
+          600 13px/1.4 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .col p.what {
+        margin: 0 0 8px;
+        font-size: 12.5px;
+        color: var(--muted);
+        min-height: 3.2em;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        max-height: 128px;
+        overflow: auto;
+        background: #fff;
+      }
+      li {
+        padding: 4px 9px;
+        font-size: 13px;
+        border-bottom: 1px solid #eef2f7;
+      }
+      li:last-child {
+        border-bottom: 0;
+      }
+      li.seed {
+        background: #fef3c7;
+        font-weight: 600;
+      }
+      .verdict {
+        margin-top: 9px;
+        font:
+          12.5px/1.7 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .verdict div {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        border-bottom: 1px dashed var(--line);
+        padding: 2px 0;
+      }
+      .yes {
+        color: var(--true);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--false);
+        font-weight: 700;
+      }
+      .say {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        font-size: 13.5px;
+      }
+      .say code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .say.warn {
+        background: #fff7ed;
+        border-color: #fdba74;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Same result on screen · three different documents underneath</h2>
+
+    <div class="bar">
+      <button type="button" id="go" class="primary">add one row to each list</button>
+      <button type="button" id="bench">time 200 inserts</button>
+      <button type="button" id="reset">reset</button>
+      <span id="round" style="font-size: 13px; color: var(--muted)"></span>
+    </div>
+
+    <div class="cols" id="cols"></div>
+
+    <p class="say" id="say">
+      Press <b>add one row</b>. Before each insert a click handler is attached to the first row of
+      every list, and afterwards the page dispatches a real click on it.
+    </p>
+
+    <script>
+      /*
+        Three columns, three insert strategies, everything else identical. `insert` is the
+        only difference between them, which is what makes the comparison worth anything.
+      */
+      const WAYS = [
+        {
+          id: 'inner',
+          name: "list.innerHTML += '<li>…</li>'",
+          what: 'Reads the whole list back as text, appends to that string, and hands the result to the parser.',
+          insert: (list, text) => {
+            list.innerHTML += `<li>${text}</li>`;
+          },
+        },
+        {
+          id: 'adjacent',
+          name: "list.insertAdjacentHTML('beforeend', …)",
+          what: 'Parses the new fragment only, and puts it where you said. Existing children are not touched.',
+          insert: (list, text) => {
+            list.insertAdjacentHTML('beforeend', `<li>${text}</li>`);
+          },
+        },
+        {
+          id: 'create',
+          name: 'list.append(document.createElement(…))',
+          what: 'Builds one element object and attaches it. No HTML is parsed at all, so no string can turn into markup.',
+          insert: (list, text) => {
+            const li = document.createElement('li');
+            li.textContent = text;
+            list.append(li);
+          },
+        },
+      ];
+
+      const state = new Map();
+      let round = 0;
+
+      function build() {
+        const cols = document.getElementById('cols');
+        cols.replaceChildren();
+        state.clear();
+        round = 0;
+        document.getElementById('round').textContent = '';
+
+        for (const way of WAYS) {
+          const col = document.createElement('div');
+          col.className = 'col';
+
+          const h = document.createElement('h3');
+          h.textContent = way.name;
+          const what = document.createElement('p');
+          what.className = 'what';
+          what.textContent = way.what;
+
+          const ul = document.createElement('ul');
+          const seed = document.createElement('li');
+          seed.className = 'seed';
+          seed.textContent = 'row 1 — the one with the handler';
+          ul.append(seed);
+
+          const verdict = document.createElement('div');
+          verdict.className = 'verdict';
+
+          col.append(h, what, ul, verdict);
+          cols.append(col);
+          state.set(way.id, { ul, verdict, clicks: 0, ms: null });
+        }
+        report();
+      }
+
+      /* Attach a fresh handler to the current first row of every list, and remember the
+         element we attached it to. Both are needed: one to test behaviour, one to explain it. */
+      function arm() {
+        for (const way of WAYS) {
+          const s = state.get(way.id);
+          const firstRow = s.ul.firstElementChild;
+          s.armed = firstRow;
+          s.clicks = 0;
+          firstRow.addEventListener('click', () => {
+            s.clicks += 1;
+          });
+        }
+      }
+
+      function report() {
+        for (const way of WAYS) {
+          const s = state.get(way.id);
+          const sameObject = s.armed ? s.armed === s.ul.firstElementChild : null;
+          const rows = s.ul.children.length;
+          const line = (k, v, ok) =>
+            `<div><span>${k}</span><span class="${ok === null ? '' : ok ? 'yes' : 'no'}">${v}</span></div>`;
+          s.verdict.innerHTML =
+            line('rows', String(rows), null) +
+            (s.armed === undefined
+              ? ''
+              : line('remembered === first row', sameObject ? 'true' : 'false', sameObject) +
+                line(
+                  'handler fired',
+                  s.fired === undefined ? '—' : s.fired ? 'yes' : 'no',
+                  s.fired === undefined ? null : s.fired,
+                )) +
+            (s.ms === null ? '' : line('200 inserts', `${s.ms.toFixed(1)} ms`, null));
+        }
+      }
+
+      document.getElementById('go').addEventListener('click', () => {
+        arm();
+        round += 1;
+        for (const way of WAYS) {
+          const s = state.get(way.id);
+          way.insert(s.ul, `row ${s.ul.children.length + 1}`);
+        }
+        /* Fire a REAL click at the row we armed, wherever it is now. */
+        for (const way of WAYS) {
+          const s = state.get(way.id);
+          const nowFirst = s.ul.firstElementChild;
+          nowFirst.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          s.fired = s.clicks > 0;
+        }
+        document.getElementById('round').textContent = `round ${round}`;
+        report();
+        const dead = WAYS.filter((w) => state.get(w.id).fired === false).map((w) => w.id);
+        const say = document.getElementById('say');
+        say.classList.toggle('warn', dead.length > 0);
+        say.innerHTML = dead.length
+          ? 'The first row of the <b>innerHTML +=</b> list looks exactly the same and is a different object. ' +
+            'The old one was thrown away when the browser re-parsed the string, and every listener, ' +
+            '<code>dataset</code> value and focus state went with it. ' +
+            'This is the bug behind “my delete buttons work until I add an item”.'
+          : 'All three rows still respond. Add another round — the innerHTML column dies the moment it re-parses.';
+      });
+
+      document.getElementById('bench').addEventListener('click', () => {
+        for (const way of WAYS) {
+          const s = state.get(way.id);
+          const scratch = document.createElement('ul');
+          /* Off-document on purpose: this measures the DOM work, not the paint. */
+          const t0 = performance.now();
+          for (let i = 0; i < 200; i += 1) way.insert(scratch, `row ${i}`);
+          s.ms = performance.now() - t0;
+        }
+        report();
+        document.getElementById('say').innerHTML =
+          'Timing is the <b>smaller</b> reason and the page will not pretend otherwise: at this size the gap is ' +
+          'a few milliseconds. The reason to care is the row above it — the one that says <code>false</code>.';
+      });
+
+      document.getElementById('reset').addEventListener('click', build);
+      build();
+    </script>
+  </body>
+</html>

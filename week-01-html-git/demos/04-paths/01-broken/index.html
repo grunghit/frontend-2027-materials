@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+  Three broken paths. This file is VALID HTML — html-validate has nothing to say about it.
+  It worked perfectly on the machine of the person who wrote it, and nowhere else.
+  Compare with ../02-fixed/index.html.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paths that only work on my machine</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #14181f;
+        background: #fff;
+      }
+      img {
+        display: block;
+        width: 90px;
+        height: 90px;
+        border: 2px dashed #a52822;
+        border-radius: 8px;
+      }
+      li {
+        margin-bottom: 10px;
+      }
+      code {
+        background: #f1f4f8;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+      a {
+        color: #0b5f8f;
+      }
+      a:focus-visible {
+        outline: 3px solid #0b5f8f;
+        outline-offset: 2px;
+      }
+      .note {
+        color: #a52822;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Three paths, three ways to fail</h1>
+
+    <ol>
+      <li>
+        <p><code>file:///Users/maya/Desktop/site/images/logo.svg</code></p>
+        <img src="file:///Users/maya/Desktop/site/images/logo.svg" alt="Coffee cup logo" />
+        <p class="note">An absolute path into someone's Desktop. Nobody else has that folder.</p>
+      </li>
+
+      <li>
+        <p><code>C:\Users\maya\Desktop\site\images\logo.svg</code></p>
+        <img src="C:\Users\maya\Desktop\site\images\logo.svg" alt="Coffee cup logo" />
+        <p class="note">Same mistake, Windows flavour. Backslashes are not path separators on the web.</p>
+      </li>
+
+      <li>
+        <p><code>/images/logo.svg</code></p>
+        <img src="/images/logo.svg" alt="Coffee cup logo" />
+        <p class="note">
+          A leading slash means "from the root of the server", not "from this folder". On GitHub
+          Pages the root is not where you think it is.
+        </p>
+      </li>
+    </ol>
+
+    <p><a href="/about.html">About (root-absolute link — 404)</a></p>
+  </body>
+</html>

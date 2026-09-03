@@ -1,0 +1,101 @@
+<!doctype html>
+<!--
+  ============================================================================
+  index.html — Home assignment 3. GIVEN, and almost complete.
+
+  You write JavaScript this week, not markup. What is here:
+
+    · the two panels, their headings and their static controls
+    · #pads      — EMPTY. your code builds the seven pads into it
+    · #history   — EMPTY. your code builds the rounds into it
+    · every id and class the grader and your CI look for
+
+  Two places are marked CODE-HERE, and both are in the settings form. Everything
+  else in this file is finished.
+
+  THE ONE RULE ABOUT THIS FILE: no pad, no die face and no round is written here
+  by hand. If you find yourself typing <button>Tom 1</button>, stop — that is the
+  assignment being done backwards.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>חדר המשחקים</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="js/app.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">דלג לתוכן</a>
+
+    <header>
+      <h1>חדר המשחקים</h1>
+      <p class="sub">שתי קוביות, שבע מחיאות, והיסטוריה שנבנית מהנתונים.</p>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <!-- ── הגדרות ─────────────────────────────────────────────────────── -->
+      <section class="panel" aria-labelledby="settings-title">
+        <h2 id="settings-title">שחקנים</h2>
+        <form id="players-form">
+          <div class="field">
+            <label for="player-one" class="CODE-HERE">שם שחקן</label>
+            <input id="player-one" name="playerOne" type="text" value="שחקן א" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="player-two" class="CODE-HERE">שם שחקן</label>
+            <input id="player-two" name="playerTwo" type="text" value="שחקן ב" autocomplete="off" />
+          </div>
+          <button type="submit">עדכן שמות</button>
+        </form>
+        <p id="players-error" class="error" role="status"></p>
+      </section>
+
+      <!-- ── קוביות ─────────────────────────────────────────────────────── -->
+      <section class="panel" aria-labelledby="dice-title">
+        <h2 id="dice-title">קוביות</h2>
+
+        <div class="dice">
+          <figure>
+            <img id="die-one" src="images/dice6.png" alt="קובייה של שחקן א" width="120" height="120" />
+            <figcaption id="name-one">שחקן א</figcaption>
+          </figure>
+          <figure>
+            <img id="die-two" src="images/dice6.png" alt="קובייה של שחקן ב" width="120" height="120" />
+            <figcaption id="name-two">שחקן ב</figcaption>
+          </figure>
+        </div>
+
+        <p id="result" class="result" role="status">לחץ על גלגל כדי להתחיל.</p>
+        <button type="button" id="roll">גלגל</button>
+      </section>
+
+      <!-- ── תופים ──────────────────────────────────────────────────────── -->
+      <section class="panel" aria-labelledby="drums-title">
+        <h2 id="drums-title">תופים</h2>
+        <p class="sub">לחיצה, או המקשים <kbd>w</kbd> <kbd>a</kbd> <kbd>s</kbd> <kbd>d</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>l</kbd>.</p>
+        <div id="pads" class="pads"></div>
+      </section>
+
+      <!-- ── היסטוריה ───────────────────────────────────────────────────── -->
+      <section class="panel" aria-labelledby="history-title">
+        <h2 id="history-title">היסטוריית הסיבובים</h2>
+        <p class="sub">סיבובים: <span id="round-count">0</span></p>
+        <ul id="history" class="history"></ul>
+        <p id="history-empty" class="empty">עוד לא גלגלתם. הסיבוב הראשון יופיע כאן.</p>
+
+        <dl class="stats">
+          <dt>ניצחונות לשחקן א</dt>
+          <dd id="wins-one">0</dd>
+          <dt>ניצחונות לשחקן ב</dt>
+          <dd id="wins-two">0</dd>
+          <dt>הגלגול הגבוה ביותר</dt>
+          <dd id="best-roll">—</dd>
+        </dl>
+      </section>
+    </main>
+  </body>
+</html>

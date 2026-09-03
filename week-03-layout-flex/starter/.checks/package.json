@@ -1,0 +1,14 @@
+{
+  "name": "week-checks",
+  "private": true,
+  "type": "module",
+  "description": "Reduced public check set. Runs in CI on every push, and locally with `node .checks/run-checks.mjs` before you push.",
+  "scripts": {
+    "check": "node run-checks.mjs"
+  },
+  "dependencies": {
+    "html-validate": "^9.7.1",
+    "playwright": "^1.62.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+  The second page — and the reason internal CSS stops being the answer.
+
+  Every rule from index.html has been COPIED here. Nothing links them. Change the brand
+  colour on one page and the other keeps the old one, which is exactly how a site ends up
+  with two slightly different teals and nobody able to say which is correct.
+
+  DEMO MOVE: change #0f766e to #b91c1c in index.html only, then click through. Two pages,
+  two brands, one commit.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Who runs the Ruppin Coffee Club</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font: 16px/1.6 system-ui, sans-serif;
+        color: #1b2027;
+        background: #fff;
+      }
+      header {
+        padding-bottom: 14px;
+        border-bottom: 2px solid #0f766e;
+      }
+      h1 {
+        margin: 0;
+        font-size: 30px;
+        color: #0f766e;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 22px;
+        color: #0f766e;
+      }
+      p {
+        max-width: 60ch;
+      }
+      a {
+        color: #0f766e;
+        font-weight: 700;
+      }
+      footer {
+        padding-top: 14px;
+        border-top: 1px solid #d3dae4;
+        color: #5c6675;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Who runs this</h1>
+      <p>Four people and a rota nobody reads.</p>
+    </header>
+
+    <main>
+      <h2>The rota</h2>
+      <p>Whoever arrives first turns the machine on. This has never once been written down.</p>
+      <p><a href="index.html">Back to the beans</a></p>
+    </main>
+
+    <footer>Run by second-years who should have been revising.</footer>
+  </body>
+</html>

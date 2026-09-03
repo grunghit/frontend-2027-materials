@@ -1,0 +1,296 @@
+/*
+  GIVEN, AND FINISHED. Nothing in this file is part of the assignment, and no point is
+  awarded or lost for anything in it. The one class you need to know about is `.hit`,
+  which is what a pad looks like for the moment after it is struck — your code adds it
+  and takes it away again.
+*/
+:root {
+  color-scheme: light;
+  --ink: #14181f;
+  --muted: #4b5563;
+  --line: #cbd5e1;
+  --panel: #f8fafc;
+  --brand: #4338ca;
+  --bad: #b91c1c;
+  --good: #15803d;
+  --space: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: calc(var(--space) * 2);
+  font:
+    16px/1.6 system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: var(--ink);
+  background: #fff;
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: -100px;
+  inset-inline-start: var(--space);
+  background: var(--brand);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  z-index: 5;
+}
+
+.skip-link:focus {
+  inset-block-start: var(--space);
+}
+
+header,
+main {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+header {
+  margin-block-end: calc(var(--space) * 2);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.7rem;
+}
+
+.sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+main {
+  display: grid;
+  gap: calc(var(--space) * 2);
+}
+
+main:focus {
+  outline: none;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
+}
+
+.panel h2 {
+  margin: 0 0 var(--space);
+  font-size: 1.1rem;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space);
+  align-items: end;
+}
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+input,
+button {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 14px;
+  background: #fff;
+  color: inherit;
+}
+
+input {
+  max-width: 16ch;
+}
+
+button {
+  cursor: pointer;
+}
+
+form button[type='submit'],
+#roll {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 3px solid #b45309;
+  outline-offset: 2px;
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--bad);
+  border-width: 2px;
+}
+
+.error {
+  margin: var(--space) 0 0;
+  min-height: 1.5em;
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.dice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 3);
+  align-items: end;
+}
+
+.dice figure {
+  margin: 0;
+  text-align: center;
+}
+
+.dice img {
+  max-width: 100%;
+  height: auto;
+}
+
+.dice figcaption {
+  margin-block-start: 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.result {
+  margin: var(--space) 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  min-height: 1.8em;
+}
+
+.pads {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--space);
+}
+
+.pads button {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  background: #fff;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pads button {
+    transition: none;
+  }
+}
+
+.pads img {
+  width: 64px;
+  height: 64px;
+}
+
+.pads .pad-key {
+  font:
+    700 0.8rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.pads button.hit {
+  border-color: var(--brand);
+  border-width: 2px;
+  transform: scale(1.06);
+}
+
+ul.history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+ul.history:empty {
+  display: none;
+}
+
+ul.history li {
+  display: flex;
+  align-items: center;
+  gap: var(--space);
+  padding: 6px 12px;
+  border-block-end: 1px solid #eef2f7;
+}
+
+ul.history li:last-child {
+  border-block-end: 0;
+}
+
+ul.history .round-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+ul.history .winner {
+  color: var(--good);
+  font-weight: 700;
+}
+
+.empty {
+  margin: 0;
+  padding: 12px;
+  color: var(--muted);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space);
+  margin: calc(var(--space) * 2) 0 0;
+  padding-block-start: var(--space);
+  border-block-start: 1px solid var(--line);
+}
+
+.stats dt {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.stats dd {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+kbd {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-block-end-width: 2px;
+  border-radius: 5px;
+  padding: 0 5px;
+  background: #fff;
+  font-size: 0.85em;
+}

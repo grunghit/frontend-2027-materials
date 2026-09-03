@@ -1,0 +1,17 @@
+# ── The vendored Tailwind build.
+# It is COMMITTED on purpose, and this file must NOT ignore it: week 13's exam room has
+# no internet, and a project whose stylesheet arrives over the network does not render
+# in it. If you find yourself adding `vendor/` here, stop and read the brief again.
+
+# ── Editor and OS noise
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# ── Nothing else belongs here.
+# There is no build step in this project except `tsc`, and js/types.js — its output —
+# IS committed, because the browser loads it and the grader runs the page as it is in
+# your repository. `node_modules/` is listed below only as a guard: if it ever appears
+# in this folder, something was installed that the course does not allow.
+node_modules/

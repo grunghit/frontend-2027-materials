@@ -1,0 +1,340 @@
+<!doctype html>
+<!--
+  One function, called five ways. Week-7 deck, act 5.
+
+  The same function object — literally the same one, defined once at the top — invoked
+  five different ways, each printing what its own `this` turned out to be. Nothing is
+  redefined between rows, so the only variable in the experiment is the call site, which
+  is the entire claim: `this` is decided by HOW a function is called, not by where it was
+  written.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. IT IS THE SAME FUNCTION IN EVERY ROW, AND THE PAGE PROVES IT. The last column asks
+     `probe === owner.probe` and prints the answer. Students assume the method "belongs
+     to" the object; that column says false-to-that-idea out loud, because both names
+     point at one function and only the call differs.
+  2. THE CALLBACK ROW IS THE MISCONCEPTION, NOT AN EXTRA. Passing `owner.probe` to
+     `setTimeout` or to `map` loses the object — the row shows `undefined` — and that is
+     the bug students actually hit in week 8 when they pass a method to addEventListener.
+     Right beneath it, the same callback as an arrow works, for a reason the page states.
+  3. THE ARROW ROW EXPLAINS WHY IT IS NOT A FIX. An arrow does not have a `this` at all,
+     so it uses the enclosing one. Defined at the top level, the enclosing one is not the
+     object either — so the arrow "fixes" the callback and BREAKS the method. Both are
+     shown, adjacent, which is what stops "always use arrows" from being the takeaway.
+
+  DEMO MOVE: read the five call sites aloud before revealing the results and take a vote
+  on each. The method row is unanimous and the callback row is not; that split is where
+  the act should slow down.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>this, decided by the call site</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --bad: #b91c1c;
+        --good: #0f766e;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      pre.setup {
+        margin: 0 0 13px;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        border-radius: 10px;
+        padding: 11px 13px;
+        overflow-x: auto;
+        font:
+          13px/1.6 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 5px 12px;
+        cursor: pointer;
+        color: inherit;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      label {
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      input[type='checkbox'] {
+        accent-color: var(--accent);
+      }
+      .scroller {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 620px;
+      }
+      th,
+      td {
+        text-align: start;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      thead th {
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-bottom: 2px solid var(--line);
+      }
+      td.call,
+      td.got {
+        font:
+          13px/1.5 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      td.got {
+        font-weight: 700;
+      }
+      td.got.lost {
+        color: var(--bad);
+      }
+      td.got.kept {
+        color: var(--good);
+      }
+      td.why {
+        font-size: 13px;
+        color: var(--muted);
+        max-width: 44ch;
+      }
+      tr.miscon td {
+        background: #fffbeb;
+      }
+      .same {
+        margin: 12px 0 0;
+        padding: 9px 11px;
+        border-radius: 9px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        font-size: 13px;
+      }
+      .same code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .pending {
+        color: var(--muted);
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>One function object, five call sites</h2>
+
+    <pre class="setup">
+const owner = { name: 'the shelf' };
+
+function probe() {
+  return this?.name ?? '(no this)';
+}
+
+owner.probe = probe;          // the SAME function, given a second name</pre>
+
+    <div class="bar">
+      <button type="button" class="primary" id="run">Run all five</button>
+      <label><input type="checkbox" id="arrow" /> define <code>probe</code> as an arrow instead</label>
+    </div>
+
+    <div class="scroller" tabindex="0" role="group" aria-label="the five call sites, scrollable">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">How it is called</th>
+            <th scope="col">this?.name</th>
+            <th scope="col">Why</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="same" id="same"></p>
+
+    <!--
+      A MODULE, deliberately. Modules are strict mode, so `this` in a plain function
+      call is genuinely `undefined` rather than the window — which is what makes row 1
+      tell the truth instead of printing an empty string nobody can interpret. It is also
+      how every file in the project is loaded.
+    -->
+    <script type="module">
+      const el = (id) => document.getElementById(id);
+
+      /*
+       * Everything below is really executed. `useArrow` swaps ONLY the definition of
+       * `probe`; the five call sites are byte-identical between the two runs, so the
+       * checkbox isolates exactly one variable.
+       */
+      function buildWorld(useArrow) {
+        const owner = { name: 'the shelf' };
+        const other = { name: 'a different object' };
+
+        /*
+         * The ONLY difference between the two runs. Both bodies are the same expression,
+         * character for character — `this?.name ?? '(no this)'` — so what the checkbox
+         * changes is the kind of function and nothing else.
+         */
+        const probe = useArrow
+          ? () => this?.name ?? '(no this)'
+          : function probe() {
+              return this?.name ?? '(no this)';
+            };
+
+        owner.probe = probe;
+
+        const rows = [];
+
+        /* 1. Plain call. No object in front of the dot, because there is no dot. */
+        rows.push({
+          call: 'probe()',
+          got: probe(),
+          why: useArrow
+            ? 'An arrow has no `this` of its own, so it takes the enclosing one — which here is the module, not an object.'
+            : 'Nothing before the dot, because there is no dot. In a module (and in strict mode) `this` is `undefined` rather than the window.',
+          kept: false,
+        });
+
+        /* 2. Method call. */
+        rows.push({
+          call: 'owner.probe()',
+          got: owner.probe(),
+          why: useArrow
+            ? 'Still no `this` of its own. The arrow ignores the object it was called through — this is why an arrow is a poor choice for a method.'
+            : 'The object before the dot becomes `this`. This is the rule people think is the only rule.',
+          kept: !useArrow,
+        });
+
+        /* 3. Explicit binding. */
+        rows.push({
+          call: 'probe.call(other)',
+          got: probe.call(other),
+          why: useArrow
+            ? '`call` sets a `this` that the arrow will not read. It is not an error and it does nothing.'
+            : '`call`, `apply` and `bind` say what `this` is, out loud. This is the escape hatch.',
+          kept: !useArrow,
+        });
+
+        /* 4. The callback. The misconception. */
+        rows.push({
+          call: '[1].map(owner.probe)[0]',
+          got: [1].map(owner.probe)[0],
+          why: useArrow
+            ? 'The arrow behaves the same everywhere, which is exactly what makes it right for a callback and wrong for a method.'
+            : 'The function was passed, not called through the object. `map` calls it with no object in front, so the object is gone. This is the bug you will hit in week 8.',
+          miscon: true,
+          kept: false,
+        });
+
+        /* 5. The callback, wrapped. */
+        rows.push({
+          call: '[1].map(() => owner.probe())[0]',
+          got: [1].map(() => owner.probe())[0],
+          why: 'The arrow is the callback; the call inside it is still a method call through `owner`. The fix is not "use an arrow" — it is "keep the dot".',
+          kept: true,
+        });
+
+        return { rows, probe, owner };
+      }
+
+      function paint() {
+        const useArrow = el('arrow').checked;
+        const { rows, probe, owner } = buildWorld(useArrow);
+
+        const tbody = el('rows');
+        tbody.textContent = '';
+        for (const r of rows) {
+          const tr = document.createElement('tr');
+          if (r.miscon) tr.className = 'miscon';
+
+          const c = document.createElement('td');
+          c.className = 'call';
+          c.textContent = r.call;
+
+          const g = document.createElement('td');
+          g.className = `got ${r.kept ? 'kept' : 'lost'}`;
+          g.textContent = r.got;
+
+          const w = document.createElement('td');
+          w.className = 'why';
+          w.textContent = r.why;
+
+          tr.append(c, g, w);
+          tbody.append(tr);
+        }
+
+        /* The identity claim, asked of the engine rather than asserted. */
+        const same = probe === owner.probe;
+        el('same').textContent = '';
+        const code = document.createElement('code');
+        code.textContent = 'probe === owner.probe';
+        const tail = document.createElement('span');
+        tail.textContent = ` is ${same}. There is one function. It does not belong to \`owner\`, it is not a copy, and nothing about it changed between the rows above — only the call site did.`;
+        el('same').append(code, tail);
+      }
+
+      el('run').addEventListener('click', paint);
+      el('arrow').addEventListener('change', paint);
+      paint();
+    </script>
+  </body>
+</html>

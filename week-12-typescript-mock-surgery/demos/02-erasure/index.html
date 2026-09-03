@@ -1,0 +1,159 @@
+<!doctype html>
+<!--
+  WHAT SURVIVES COMPILATION. Week-12 deck, act 1.
+
+  `source.ts` beside `source.js`, both loaded off disk, both real. `source.js` was
+  produced by running `tsc` over `source.ts` with the class assignment's options; it is
+  not a hand-written impression of what the output looks like.
+
+  THE INSTRUMENT IS THE COUNTER. The page counts, in each file, how many lines mention a
+  type and how many are executable, and prints the difference. Twelve lines of type
+  vanish; three functions remain, and all three are guards or arithmetic.
+
+  THE SENTENCE THIS SETS UP, from the legacy deck and worth keeping verbatim:
+  *"TypeScript never changes the runtime behaviour of JavaScript code."*
+
+  And the consequence, which is the one students need: a type describes what SHOULD be in
+  localStorage. The guard is the only thing that finds out what is — because the guard is
+  the only half of this file that will still exist when the page runs.
+
+  DEMO MOVE: press HIGHLIGHT WHAT DISAPPEARED, then ask the room what is left. Somebody
+  will say "the guard". That is the whole slide.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>What survives compilation</title>
+    <style>
+      .gone {
+        background: #fef2f2;
+        color: #b91c1c;
+      }
+      .kept {
+        background: #f0fdfa;
+      }
+      pre.side {
+        margin: 0;
+        overflow-x: auto;
+        font:
+          12.5px/1.55 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      pre.side span {
+        display: block;
+        padding: 0 6px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>The same module, before and after <code>tsc</code></h2>
+
+    <div class="bar">
+      <button id="mark" type="button">highlight what disappeared</button>
+      <button id="clear" type="button">clear</button>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <h3><code>ts/source.ts</code> — what you write</h3>
+        <pre id="ts" class="side"></pre>
+      </div>
+      <div class="panel good">
+        <h3><code>js/source.js</code> — what the browser loads</h3>
+        <pre id="js" class="side"></pre>
+      </div>
+    </div>
+
+    <p id="verdict" class="verdict"></p>
+
+    <p class="note">
+      Both panels are the files on disk. <code>source.js</code> came out of the compiler — run
+      <code>npx tsc source.ts</code> in this folder and the panel changes with it.
+    </p>
+
+    <script type="module">
+      const tsMount = document.querySelector('#ts');
+      const jsMount = document.querySelector('#js');
+      const verdict = document.querySelector('#verdict');
+
+      const [tsText, jsText] = await Promise.all(
+        ['source.ts', 'source.js'].map((f) => fetch(f).then((r) => r.text())),
+      );
+
+      /* The set of lines that belong to a type declaration, found by walking braces. */
+      function typeLines(text) {
+        const lines = text.split('\n');
+        const marked = new Set();
+        let depth = 0;
+        lines.forEach((line, i) => {
+          const t = line.trim();
+          if (depth > 0) {
+            marked.add(i);
+            depth += (t.match(/\{/g) ?? []).length - (t.match(/\}/g) ?? []).length;
+            return;
+          }
+          if (/^(export\s+)?interface\s/.test(t)) {
+            marked.add(i);
+            depth = (t.match(/\{/g) ?? []).length - (t.match(/\}/g) ?? []).length;
+            return;
+          }
+          if (/^(export\s+)?type\s+\w+\s*=/.test(t)) marked.add(i);
+        });
+        return marked;
+      }
+
+      const tsTypeLines = typeLines(tsText);
+
+      function paint(mount, text, marked) {
+        mount.replaceChildren();
+        text.split('\n').forEach((line, i) => {
+          const span = document.createElement('span');
+          span.textContent = line === '' ? ' ' : line;
+          if (marked && marked.has(i)) span.classList.add('gone');
+          mount.append(span);
+        });
+      }
+
+      const executable = (text) =>
+        text.split('\n').filter((l) => l.trim() !== '' && !l.trim().startsWith('//')).length;
+
+      function report() {
+        const tsLines = executable(tsText);
+        const jsLines = executable(jsText);
+        const annotations = (tsText.match(/:\s*(?:readonly\s+)?[A-Za-z_$][\w$<>[\]|'\s]*/g) ?? [])
+          .length;
+        const guardsLeft = (jsText.match(/function\s+\w+/g) ?? []).length;
+        verdict.textContent =
+          `${tsLines} lines in, ${jsLines} lines out · ` +
+          `${tsTypeLines.size} lines of type declaration, ${annotations} annotations — ` +
+          `and ${guardsLeft} functions survived, every one of them a check that runs.`;
+        verdict.className = 'verdict yes';
+      }
+
+      paint(tsMount, tsText, null);
+      paint(jsMount, jsText, null);
+      report();
+
+      document.querySelector('#mark').addEventListener('click', () => {
+        paint(tsMount, tsText, tsTypeLines);
+        /* Nothing to mark on the right: that is the finding, not an oversight. */
+        paint(jsMount, jsText, null);
+        const note = document.createElement('span');
+        note.className = 'kept';
+        note.textContent = '  ← nothing on this side to highlight';
+        jsMount.append(note);
+      });
+
+      document.querySelector('#clear').addEventListener('click', () => {
+        paint(tsMount, tsText, null);
+        paint(jsMount, jsText, null);
+      });
+    </script>
+  </body>
+</html>

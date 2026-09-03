@@ -1,0 +1,167 @@
+<!doctype html>
+<!--
+  "I set a width and nothing happened." Embedded in the week-3 deck (act 2).
+
+  Three links, identical markup, identical declarations — width: 220px, height: 90px,
+  and 30px of vertical margin on all three. The only difference is the `display` value.
+
+  Week 2 taught this as a FACT about elements: width does nothing on an <a>. This is the
+  property behind the fact, and the readout measures all three so the claim is checkable
+  rather than assertable.
+
+  DEMO MOVE: before touching anything, ask the room what the first link's height is. They
+  will say 90. Read the measured number. Then walk the three: inline ignores width, height
+  and vertical margin (horizontal margin still works — point at the gap); inline-block
+  obeys everything and stays on the line; block obeys everything and takes the line.
+
+  The sentence to land: `display` does not decorate the box, it decides WHAT KIND of box
+  it is — and only some kinds of box have a width you can set.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Width on an inline box</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* The one rule that applies to all three. Nothing here mentions display. */
+      .sample a {
+        width: 220px;
+        height: 90px;
+        margin: 30px;
+        padding: 8px;
+        background: #dbeafe;
+        border: 2px solid #1d4ed8;
+        border-radius: 8px;
+        color: #1e3a8a;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .sample a:focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      /* …and the one line that changes. */
+      #one a {
+        display: inline;
+      }
+      #two a {
+        display: inline-block;
+      }
+      #three a {
+        display: block;
+      }
+
+      .sample {
+        padding: 4px 10px;
+        margin-bottom: 10px;
+        border: 2px dashed #94a3b8;
+        border-radius: 8px;
+        background: #fff;
+      }
+      .sample p {
+        margin: 0;
+      }
+      .tag {
+        display: inline-block;
+        margin-bottom: 2px;
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: #0f172a;
+        color: #fff;
+        font: 700 12px/1.7 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font: 13px/1.7 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>The same declarations, three times</h2>
+
+    <div class="sample" id="one">
+      <span class="tag">display: inline</span>
+      <p>Text before <a href="#a">the link</a> and text after it, on the same line.</p>
+    </div>
+
+    <div class="sample" id="two">
+      <span class="tag">display: inline-block</span>
+      <p>Text before <a href="#b">the link</a> and text after it, on the same line.</p>
+    </div>
+
+    <div class="sample" id="three">
+      <span class="tag">display: block</span>
+      <p>Text before <a href="#c">the link</a> and text after it, on the same line.</p>
+    </div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const out = document.getElementById('out');
+      const pad = (v, n) => String(v).padStart(n, ' ');
+      const rows = [];
+
+      for (const id of ['one', 'two', 'three']) {
+        const link = document.querySelector('#' + id + ' a');
+        const style = getComputedStyle(link);
+        const rect = link.getBoundingClientRect();
+
+        /* Measured off the rendered box, so the "asked for 220×90" line below is a
+           comparison with reality and not with another stylesheet. */
+        rows.push(
+          pad(style.display, 13) +
+            '  ' +
+            pad(Math.round(rect.width), 4) +
+            ' × ' +
+            pad(Math.round(rect.height), 3) +
+            '   ' +
+            (Math.round(rect.width) === 220 && Math.round(rect.height) === 90
+              ? 'width and height obeyed'
+              : 'width and height IGNORED — it is an inline box'),
+        );
+      }
+
+      out.textContent =
+        'every one of them asked for  width: 220px;  height: 90px;  margin: 30px;\n\n' +
+        '  display        measured        \n' +
+        '  ' +
+        rows.join('\n  ') +
+        '\n\n' +
+        'An inline box is sized by its content. Vertical margin and padding on one do not\n' +
+        'push anything away either — but HORIZONTAL margin still works, which is why the\n' +
+        'first sample has a gap on the left and right and none above or below.';
+    </script>
+  </body>
+</html>

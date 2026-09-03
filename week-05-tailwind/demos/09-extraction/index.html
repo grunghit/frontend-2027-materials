@@ -1,0 +1,471 @@
+<!doctype html>
+<!--
+  Class soup, and the three ways out of it. Week-5 deck, act 6.
+
+  This is the honest cost of utilities, and it is the last act for a reason: the room has
+  to want the answer before the answer means anything.
+
+  Three panels, left to right, and they are a LADDER rather than a menu:
+
+    1. SOUP        one button repeated six times, each copy typed by hand. The audit
+                   finds the copies that have already drifted apart.
+    2. GALLERY     the button defined ONCE on a components page, everywhere else copied
+                   from it. This is what CA5 asks for and it is what you can do in
+                   week 5, with no JavaScript at all.
+    3. FUNCTION    the same button as a template function. READ-ONLY. This is week 9,
+                   and it is here so you know where the ladder goes.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE DRIFT IS FOUND BY MEASUREMENT. Panel 1's audit reads the computed styles of all
+     six buttons and reports how many distinct renderings there are. There are meant to
+     be one. There are three, and nobody typed a wrong character on purpose — one copy is
+     missing a class, one has px-4 where the others have px-5. That is what six copies of
+     anything does within a fortnight.
+  2. Panel 2 is not "the same thing but tidier". The audit runs the SAME measurement and
+     comes back with one rendering, because there is one source and five copies OF that
+     source. The discipline is what is being graded in CA5, and here is what it buys.
+  3. Panel 3 is deliberately inert - it renders from a function and says so, and the
+     header says "week 9". A forward pointer that shows the destination is worth far more
+     than a promise that one exists. This is the same device week 3 used when it told the
+     room, out loud, that Flexbox could not do the thing week 4 exists for.
+  4. @apply is NOT on this ladder. It is demo 10, on its own, and it is not a rung.
+
+  DEMO MOVE: panel 1 first, and ask the room to find the odd button out by eye. They will
+  find one of the two. Then read the audit and show there were two. Then panel 2 - and
+  the sentence to say is "same markup, one source". Only then panel 3, and only for
+  thirty seconds: "this is where you are going, in four weeks, and it is why week 9
+  exists". Do not teach template literals today.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Class soup and the way out</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      .ladder {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      }
+      .rung {
+        min-width: 0;
+        border: 3px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: #f8fafc;
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+      .rung.soup {
+        border-color: #b91c1c;
+        background: #fff5f5;
+      }
+      .rung.gallery {
+        border-color: #15803d;
+        background: #f0fdf4;
+      }
+      .rung.future {
+        border-color: #7c3aed;
+        background: #f5f3ff;
+      }
+      .rung h2 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .tag {
+        font:
+          700 11px/1.6 ui-monospace,
+          Menlo,
+          monospace;
+        padding: 1px 8px;
+        border-radius: 999px;
+        letter-spacing: 0.04em;
+      }
+      .soup .tag {
+        background: #b91c1c;
+        color: #fff;
+      }
+      .gallery .tag {
+        background: #15803d;
+        color: #fff;
+      }
+      .future .tag {
+        background: #7c3aed;
+        color: #fff;
+      }
+      .rung > p.why {
+        margin: 0;
+        font-size: 13px;
+        color: #334155;
+      }
+      .stage {
+        padding: 10px;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px dashed var(--line);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      pre.code {
+        margin: 0;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: #0f172a;
+        color: #e2e8f0;
+        font:
+          11px/1.6 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        overflow-x: auto;
+        max-height: 210px;
+        /*
+          These blocks scroll on both axes, so every one of them carries `tabindex="0"` in
+          the markup. A scroll container with no tab stop cannot be reached by keyboard —
+          axe calls it `scrollable-region-focusable`. Found by the axe gate added in Run 7.
+        */
+      }
+      .audit {
+        margin: 0;
+        padding: 9px 11px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        border: 1px solid var(--line);
+        font:
+          12px/1.6 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+      .footnote {
+        margin: 14px 0 0;
+        padding: 11px 13px;
+        border-left: 5px solid #1d4ed8;
+        background: #eff6ff;
+        border-radius: 0 10px 10px 0;
+      }
+      .footnote p {
+        margin: 0 0 5px;
+      }
+      .footnote p:last-child {
+        margin-bottom: 0;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+    </style>
+
+    <script src="../vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="ladder">
+      <!-- ── 1. soup ─────────────────────────────────────────────────────── -->
+      <section class="rung soup">
+        <h2><span class="tag">today</span> six copies</h2>
+        <p class="why">
+          The same button, typed out six times. Find the odd ones out by eye before you read the
+          audit.
+        </p>
+        <div class="stage" id="soup">
+          <button
+            type="button"
+            class="cursor-pointer rounded-lg bg-brand-500 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          >
+            Renew
+          </button>
+          <button
+            type="button"
+            class="cursor-pointer rounded-lg bg-brand-500 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          >
+            Deploy
+          </button>
+          <!-- px-4, not px-5. Nobody did this on purpose. -->
+          <button
+            type="button"
+            class="cursor-pointer rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          >
+            Scale
+          </button>
+          <button
+            type="button"
+            class="cursor-pointer rounded-lg bg-brand-500 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          >
+            Restart
+          </button>
+          <!-- the hover: was dropped in a copy-paste. It looks identical until you touch it. -->
+          <button
+            type="button"
+            class="cursor-pointer rounded-lg bg-brand-500 px-5 py-2 text-sm font-semibold text-white"
+          >
+            Roll back
+          </button>
+          <button
+            type="button"
+            class="cursor-pointer rounded-lg bg-brand-500 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          >
+            Archive
+          </button>
+        </div>
+        <pre class="code" tabindex="0">
+&lt;button class="cursor-pointer rounded-lg bg-brand-500
+  px-5 py-2 text-sm font-semibold text-white
+  hover:bg-brand-700"&gt;Renew&lt;/button&gt;
+
+…and five more, each typed out again</pre>
+        <p class="audit" id="a-soup"></p>
+      </section>
+
+      <!-- ── 2. gallery ──────────────────────────────────────────────────── -->
+      <section class="rung gallery">
+        <h2><span class="tag">this week</span> one source</h2>
+        <p class="why">
+          The button is defined once, on <code>components.html</code>, and every use is a copy of
+          <em>that</em> &mdash; by hand, no build step. That is what CA5 asks for.
+          <em>On this page</em> the six are generated from one string, so that the demo has a single
+          source too; the discipline is the same and the audit cannot tell them apart, which is the
+          point.
+        </p>
+        <div class="stage" id="gallery"></div>
+        <pre class="code" tabindex="0">
+components.html — the ONE definition:
+
+  &lt;!-- button / primary --&gt;
+  &lt;button class="cursor-pointer rounded-lg
+    bg-brand-500 px-5 py-2 text-sm font-semibold
+    text-white hover:bg-brand-700"&gt;Label&lt;/button&gt;
+
+everywhere else: copy that line.
+changed your mind? change it there, then re-copy.</pre>
+        <p class="audit" id="a-gallery"></p>
+      </section>
+
+      <!-- ── 3. the destination ──────────────────────────────────────────── -->
+      <section class="rung future">
+        <h2><span class="tag">week 9</span> one function</h2>
+        <p class="why">
+          Read this one; do not write it yet. It needs template literals and functions, which is
+          week 7, and the render pattern it belongs to is week 9. It is here so you know the ladder
+          has a top.
+        </p>
+        <div class="stage" id="future"></div>
+        <pre class="code" tabindex="0">
+const BUTTON =
+  'cursor-pointer rounded-lg bg-brand-500 ' +
+  'px-5 py-2 text-sm font-semibold text-white ' +
+  'hover:bg-brand-700';
+
+const button = (label) =&gt;
+  `&lt;button type="button" class="${BUTTON}"&gt;${label}&lt;/button&gt;`;
+
+LABELS.map(button).join('')</pre>
+        <p class="audit" id="a-future"></p>
+      </section>
+    </div>
+
+    <div class="footnote">
+      <p>
+        <strong>Notice what is not on this ladder.</strong> <code>@apply</code> is not a rung. It
+        looks like the obvious answer and it is demo 10, on its own, because what it actually does
+        is walk you back down to demo 01.
+      </p>
+      <p>
+        <strong>And notice what the ladder is really about.</strong> Not tidiness &mdash; a SINGLE
+        SOURCE. Six copies of anything drift, in any language, in any framework. The rungs differ
+        only in how hard the language makes it to have one copy.
+      </p>
+    </div>
+
+    <script>
+      /* ────────────────────────────────────────────────────────────────────────
+         The single source. Panels 2 and 3 both build from THIS string, which is
+         the demo eating its own cooking: there is one definition on this page and
+         two renderings of it.
+         ──────────────────────────────────────────────────────────────────────── */
+      const BUTTON =
+        'cursor-pointer rounded-lg bg-brand-500 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700';
+
+      const LABELS = ['Renew', 'Deploy', 'Scale', 'Restart', 'Roll back', 'Archive'];
+
+      for (const host of ['gallery', 'future']) {
+        const parent = document.getElementById(host);
+        for (const label of LABELS) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = BUTTON;
+          button.textContent = label;
+          parent.append(button);
+        }
+      }
+
+      /* ── The instrument ──────────────────────────────────────────────────────
+         "Do these render the same?" is a question about COMPUTED STYLE, not about
+         class strings — two different class lists can render identically and two
+         identical-looking lists can not. So the audit fingerprints each button by
+         what the browser resolved it to. */
+      const WATCHED = [
+        'backgroundColor',
+        'color',
+        'paddingTop',
+        'paddingRight',
+        'paddingBottom',
+        'paddingLeft',
+        'borderTopLeftRadius',
+        'fontSize',
+        'fontWeight',
+      ];
+
+      const fingerprint = (el) => {
+        const cs = getComputedStyle(el);
+        return WATCHED.map((p) => cs[p]).join(' | ');
+      };
+
+      /** Hover cannot be forced from script, so it is inspected in the stylesheet:
+       *  does this element carry a class that generates a :hover rule at all? */
+      const hasHoverRule = (el) =>
+        [...el.classList].some((cls) => {
+          const esc = '.' + CSS.escape(cls);
+          let found = false;
+          const walk = (rules) => {
+            for (const rule of rules) {
+              if (
+                rule.selectorText &&
+                rule.selectorText.includes(':hover') &&
+                rule.selectorText.split(',').some((s) => s.trim().startsWith(esc))
+              ) {
+                found = true;
+              }
+              if (rule.cssRules) walk(rule.cssRules);
+            }
+          };
+          for (const sheet of document.styleSheets) {
+            try {
+              walk(sheet.cssRules);
+            } catch {
+              /* not ours */
+            }
+          }
+          return found;
+        });
+
+      function audit(hostId, outId, story) {
+        const buttons = [...document.getElementById(hostId).querySelectorAll('button')];
+        const prints = buttons.map(fingerprint);
+        const distinct = [...new Set(prints)];
+        const withHover = buttons.filter(hasHoverRule).length;
+
+        /* Two different kinds of drift, and they have to be reported separately or the
+           readout undercounts. A missing `hover:` does not change any COMPUTED value —
+           hover cannot be forced from script — so it is invisible to the fingerprint and
+           has to be found in the stylesheet instead. That is also precisely why it is the
+           more dangerous of the two: nothing on screen is wrong. */
+        const oddByRender = buttons
+          .map((b, i) => ({ label: b.textContent.trim(), print: prints[i] }))
+          .filter((b) => prints.filter((p) => p === b.print).length < buttons.length / 2)
+          .map((b) => b.label);
+
+        const oddByHover = buttons.filter((b) => !hasHoverRule(b)).map((b) => b.textContent.trim());
+
+        document.getElementById(outId).textContent =
+          '  ' +
+          buttons.length +
+          ' buttons, meant to be identical.\n' +
+          '  distinct renderings: ' +
+          distinct.length +
+          '\n' +
+          '  carrying a hover rule: ' +
+          withHover +
+          ' of ' +
+          buttons.length +
+          '\n' +
+          (oddByRender.length ? '  renders differently: ' + oddByRender.join(', ') + '\n' : '') +
+          (oddByHover.length ? '  has no hover state: ' + oddByHover.join(', ') + '\n' : '') +
+          '\n' +
+          story(distinct.length, withHover, buttons.length, oddByRender.concat(oddByHover));
+      }
+
+      const ready = async () => {
+        for (let frame = 0; frame < 120; frame++) {
+          if (getComputedStyle(document.querySelector('#soup button')).paddingLeft !== '0px') break;
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+
+        audit('soup', 'a-soup', (distinct, hover, total, odd) =>
+          distinct > 1 || hover < total
+            ? '  Two of the six have already drifted, and neither drift was a decision.\n' +
+              '  One has px-4 where the rest have px-5 — four pixels, invisible in a row.\n' +
+              '  One lost its hover: in a copy-paste and looks perfect until you touch it,\n' +
+              '  which is worse, because nothing on screen is wrong.\n\n' +
+              '  Six copies of anything drift. This is not a Tailwind problem — it is what\n' +
+              '  copies are. The question is only how hard your tools make it to have one.'
+            : '  (all six identical — which means somebody fixed this file)',
+        );
+
+        audit('gallery', 'a-gallery', (distinct, hover, total) =>
+          distinct === 1 && hover === total
+            ? '  One rendering, all six carrying hover. Same markup as the left panel and\n' +
+              '  the same six buttons on screen — the difference is entirely in where the\n' +
+              '  definition LIVES. Change the source and re-copy, and all six move together\n' +
+              '  because there was only ever one decision.\n\n' +
+              '  This is a discipline, not a mechanism, and disciplines can be broken. That\n' +
+              '  is exactly why CA5 measures it: every instance of every component is\n' +
+              '  fingerprinted like this, and the row fails if two disagree.'
+            : '  (something has drifted here too — which would be a bug in this demo)',
+        );
+
+        audit(
+          'future',
+          'a-future',
+          () =>
+            '  One rendering, and now it is not a discipline — it is impossible to get wrong.\n' +
+            '  There is one string and six calls, so "re-copy" is not a step anybody can\n' +
+            '  forget to do.\n\n' +
+            '  That is the whole reason week 9 exists, and it is not really about buttons:\n' +
+            '  once markup is produced by a function, it can be produced from DATA. Which is\n' +
+            '  the entire architecture of your project.',
+        );
+      };
+      ready();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,208 @@
+/*
+  The stylesheet for the Debug Challenge. It is CORRECT and it is not part of the
+  exercise — no fault is planted here. Read it if you like; do not go looking in it.
+*/
+:root {
+  color-scheme: light;
+  --ink: #14181f;
+  --muted: #5c6675;
+  --line: #cbd5e1;
+  --panel: #f8fafc;
+  --brand: #4338ca;
+  --bad: #b91c1c;
+  --space: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: calc(var(--space) * 2);
+  font:
+    16px/1.6 system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: var(--ink);
+  background: #fff;
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: -100px;
+  inset-inline-start: var(--space);
+  background: var(--brand);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  z-index: 5;
+}
+
+.skip-link:focus {
+  inset-block-start: var(--space);
+}
+
+header {
+  max-width: 62rem;
+  margin: 0 auto calc(var(--space) * 2);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+main {
+  max-width: 62rem;
+  margin: 0 auto;
+  display: grid;
+  gap: calc(var(--space) * 2);
+}
+
+main:focus {
+  outline: none;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
+}
+
+.panel h2 {
+  margin: 0 0 var(--space);
+  font-size: 1.05rem;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space);
+  align-items: end;
+}
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+input,
+button {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: #fff;
+  color: inherit;
+}
+
+input {
+  max-width: 18ch;
+}
+
+button {
+  cursor: pointer;
+}
+
+form button[type='submit'] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 3px solid #b45309;
+  outline-offset: 2px;
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--bad);
+  border-width: 2px;
+}
+
+.error {
+  margin: var(--space) 0 0;
+  min-height: 1.5em;
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space);
+  margin: 0;
+}
+
+.totals dt {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.totals dd {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+#lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: calc(var(--space) * 2);
+}
+
+ul.guests {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: #fff;
+  min-height: 5rem;
+}
+
+ul.guests li {
+  display: flex;
+  align-items: center;
+  gap: var(--space);
+  padding: 6px 10px;
+  border-block-end: 1px solid #eef2f7;
+}
+
+ul.guests li:last-child {
+  border-block-end: 0;
+}
+
+ul.guests .name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+ul.guests .seats {
+  color: var(--muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+li.confirmed .name {
+  font-weight: 700;
+}
+
+.empty {
+  color: var(--muted);
+  padding: 10px;
+  margin: 0;
+}

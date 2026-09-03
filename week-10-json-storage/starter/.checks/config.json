@@ -1,0 +1,18 @@
+{
+  "//": "Week 10 knobs for the public check set. The publisher copies this to starter/.checks/config.json, replacing the template default.",
+  "//entry": "index.html — the list page. Every check runs against it; the summary and detail pages need no changes this week.",
+  "//required": "The three pages, the FIVE layer files and the data module. js/storage.js is the new one, and a starter that has lost it cannot be graded at all.",
+  "entry": "index.html",
+  "requiredFiles": [
+    "index.html",
+    "item.html",
+    "summary.html",
+    "js/app.js",
+    "js/items.js",
+    "js/state.js",
+    "js/render.js",
+    "js/events.js",
+    "js/storage.js",
+    "vendor/tailwind.js"
+  ]
+}

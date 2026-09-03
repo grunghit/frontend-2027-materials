@@ -1,0 +1,368 @@
+<!doctype html>
+<!--
+  State variants. Week-5 deck, act 4.
+
+  Five specimens - hover:, focus-visible:, active:, group-hover:, peer-checked: - each
+  next to the CSS it generated, read live out of document.styleSheets. The panel at the
+  bottom reports which of them are ACTIVE at this instant, refreshed on every pointer
+  and keyboard event, so the room can watch a variant switch on rather than be told it
+  does.
+
+  Two of the five are the ones students get wrong, and both are wrong for the same
+  reason: they look like they need JavaScript and they do not.
+
+    group-hover:   hovering a PARENT styles a CHILD.        `:is(:where(.group):hover *)`
+    peer-checked:  a checkbox styles its SIBLING.           `:is(:where(.peer):checked ~ *)`
+
+  Both generate an ordinary selector. Reading that selector out loud is the whole lesson:
+  there is no framework at run time, there is no state, there is a combinator.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE GENERATED SELECTOR IS THE POINT, and it is read out of the browser rather than
+     typed here. `hover:` turning out to be `@media (hover: hover)` around a plain
+     `:hover` is a fact students can verify, and it answers a question they have not
+     asked yet: why the hover style does not stick on their phone.
+  2. focus-visible: is a specimen rather than a footnote, because it is the accessibility
+     line graded in every assignment since week 1, and the only one of the five you cannot
+     demonstrate with a mouse. The panel tells you to press Tab, and lights up when you do.
+  3. The live panel distinguishes "this rule exists" from "this rule is applying right
+     now". Students conflate the two constantly, and the two-column readout is the fix.
+  4. active: is included precisely because it is nearly useless on its own and the room
+     should see that: it lasts as long as the mouse button is down.
+
+  DEMO MOVE: mouse over the first three yourself, then stop touching the mouse and say
+  "now do the fourth one with the keyboard". Somebody will reach for the mouse anyway.
+  Tab to it from the address bar, slowly. Then do group-hover, and ask the room how many
+  lines of JavaScript are running. It is zero, and they will not believe it until you
+  read the selector out.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>State variants, live</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+      .card {
+        min-width: 0;
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: #f8fafc;
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+      .card.live {
+        border-color: #15803d;
+        background: #f0fdf4;
+      }
+      .card h3 {
+        margin: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+        font:
+          700 13px/1.4 ui-monospace,
+          Menlo,
+          monospace;
+        color: #1d4ed8;
+      }
+      .badge {
+        font:
+          700 11px/1.6 ui-monospace,
+          Menlo,
+          monospace;
+        padding: 1px 7px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        color: #475569;
+      }
+      .card.live .badge {
+        background: #15803d;
+        color: #fff;
+      }
+      .stage {
+        padding: 12px;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px dashed var(--line);
+      }
+      .css {
+        margin: 0;
+        font:
+          11.5px/1.6 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+        color: #334155;
+        background: #f1f5f9;
+        border-radius: 6px;
+        padding: 7px 9px;
+      }
+      .hint {
+        margin: 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .readout {
+        margin: 14px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          12.5px/1.7 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+    </style>
+
+    <script src="../vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grid">
+      <div class="card" data-variant="hover" data-probe="#b-hover">
+        <h3><span>hover:</span><span class="badge">idle</span></h3>
+        <div class="stage">
+          <button
+            type="button"
+            id="b-hover"
+            class="cursor-pointer rounded-lg bg-brand-500 px-4 py-2 font-semibold text-white hover:bg-brand-700"
+          >
+            point at me
+          </button>
+        </div>
+        <pre class="css"></pre>
+        <p class="hint">Notice the media query. This is why hover never sticks on a phone.</p>
+      </div>
+
+      <div class="card" data-variant="focus-visible" data-probe="#b-focus">
+        <h3><span>focus-visible:</span><span class="badge">idle</span></h3>
+        <div class="stage">
+          <button
+            type="button"
+            id="b-focus"
+            class="cursor-pointer rounded-lg bg-slate-200 px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          >
+            reach me with Tab
+          </button>
+        </div>
+        <pre class="css"></pre>
+        <p class="hint">The one you cannot demonstrate with a mouse, and the one always graded.</p>
+      </div>
+
+      <div class="card" data-variant="active" data-probe="#b-active">
+        <h3><span>active:</span><span class="badge">idle</span></h3>
+        <div class="stage">
+          <button
+            type="button"
+            id="b-active"
+            class="cursor-pointer rounded-lg bg-brand-500 px-4 py-2 font-semibold text-white active:translate-y-px active:bg-brand-700"
+          >
+            hold the button down
+          </button>
+        </div>
+        <pre class="css"></pre>
+        <p class="hint">Lasts exactly as long as the mouse button is down. Rarely enough on its own.</p>
+      </div>
+
+      <div class="card" data-variant="group-hover" data-probe="#g-child">
+        <h3><span>group-hover:</span><span class="badge">idle</span></h3>
+        <div class="stage">
+          <a
+            href="#nowhere"
+            class="group block rounded-lg border border-slate-300 bg-white p-3 no-underline hover:border-brand-500"
+          >
+            <span class="block font-semibold text-slate-900">Gateway</span>
+            <span id="g-child" class="block text-sm text-slate-500 group-hover:text-brand-500">
+              hover anywhere on the card &mdash; this line changes
+            </span>
+          </a>
+        </div>
+        <pre class="css"></pre>
+        <p class="hint">Parent hovered, child styled. Zero JavaScript &mdash; read the selector.</p>
+      </div>
+
+      <div class="card" data-variant="peer-checked" data-probe="#p-sibling">
+        <h3><span>peer-checked:</span><span class="badge">idle</span></h3>
+        <div class="stage">
+          <label class="flex cursor-pointer items-center gap-2">
+            <input type="checkbox" class="peer size-4 accent-brand-500" />
+            <span id="p-sibling" class="text-slate-500 peer-checked:font-semibold peer-checked:text-brand-500">
+              email me when a deploy fails
+            </span>
+          </label>
+        </div>
+        <pre class="css"></pre>
+        <p class="hint">A checkbox styling its sibling. Also zero JavaScript.</p>
+      </div>
+    </div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      /* Utility -> the element whose class list carries it, and the property to watch. */
+      const SPECIMENS = [
+        ['hover', 'hover:bg-brand-700', '#b-hover', 'backgroundColor'],
+        ['focus-visible', 'focus-visible:outline-brand-500', '#b-focus', 'outlineColor'],
+        ['active', 'active:bg-brand-700', '#b-active', 'backgroundColor'],
+        ['group-hover', 'group-hover:text-brand-500', '#g-child', 'color'],
+        ['peer-checked', 'peer-checked:text-brand-500', '#p-sibling', 'color'],
+      ];
+
+      function rulesFor(cls) {
+        const esc = '.' + CSS.escape(cls);
+        const found = [];
+        const walk = (rules, context) => {
+          for (const rule of rules) {
+            if (
+              rule.selectorText &&
+              rule.selectorText.split(',').some((s) => s.trim().startsWith(esc))
+            ) {
+              found.push({ context, selector: rule.selectorText, body: rule.style.cssText });
+            }
+            if (rule.cssRules) {
+              const label =
+                rule.conditionText !== undefined && rule.media !== undefined
+                  ? '@media ' + rule.conditionText
+                  : context;
+              walk(rule.cssRules, label);
+            }
+          }
+        };
+        for (const sheet of document.styleSheets) {
+          try {
+            walk(sheet.cssRules, null);
+          } catch {
+            /* not ours */
+          }
+        }
+        return found;
+      }
+
+      /* The baseline: what each watched property computes to with no state applied. A
+         variant is "applying right now" when the live value differs from this. Captured
+         once, after the first compile, rather than assumed — the unstyled value of
+         `outline-color` in particular is not what anyone would guess. */
+      const baseline = new Map();
+
+      function paintCss() {
+        for (const [name, cls] of SPECIMENS) {
+          const card = document.querySelector('[data-variant="' + name + '"]');
+          const hits = rulesFor(cls);
+          card.querySelector('.css').textContent = hits.length
+            ? hits
+                .map(
+                  (h) =>
+                    (h.context ? h.context + '\n' : '') +
+                    h.selector +
+                    ' {\n  ' +
+                    h.body.split(';').map((d) => d.trim()).filter(Boolean).join(';\n  ') +
+                    ';\n}',
+                )
+                .join('\n\n')
+            : '(not generated yet)';
+        }
+      }
+
+      function refresh() {
+        const active = [];
+        for (const [name, , selector, property] of SPECIMENS) {
+          const el = document.querySelector(selector);
+          const now = getComputedStyle(el)[property];
+          const base = baseline.get(name);
+          const on = base !== undefined && now !== base;
+          if (on) active.push(name);
+          const card = document.querySelector('[data-variant="' + name + '"]');
+          card.classList.toggle('live', on);
+          card.querySelector('.badge').textContent = on ? 'APPLYING' : 'idle';
+        }
+
+        document.getElementById('out').textContent =
+          '  applying right now: ' +
+          (active.length ? active.join(', ') : 'none — nothing is hovered, focused or checked') +
+          '\n\n' +
+          '  Two columns, and students collapse them constantly:\n' +
+          '    the rule EXISTS       — always true, it is in the stylesheet above\n' +
+          '    the rule APPLIES      — only while the state is true\n' +
+          '  A variant that is not applying is not broken. It is waiting.\n\n' +
+          '  The two worth reading out loud:\n\n' +
+          '    group-hover:  the generated selector ends in  :is(:where(.group):hover *)\n' +
+          '                  "an element inside a hovered .group". A descendant combinator\n' +
+          '                  and a pseudo-class. That is the entire mechanism.\n\n' +
+          '    peer-checked: the generated selector ends in  :is(:where(.peer):checked ~ *)\n' +
+          '                  "a later sibling of a checked .peer". The ~ is the general\n' +
+          '                  sibling combinator from week 2, and the reason the checkbox\n' +
+          '                  must come FIRST in the markup — CSS cannot look backwards.\n\n' +
+          '  No JavaScript is running in either. Nothing on this page is watching state;\n' +
+          '  the browser is applying a selector, which is what it has always done.';
+      }
+
+      /* Wait for the first compile, take the baseline, then track everything. */
+      const settle = async () => {
+        for (let frame = 0; frame < 90; frame++) {
+          if (rulesFor('hover:bg-brand-700').length) break;
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        paintCss();
+        for (const [name, , selector, property] of SPECIMENS) {
+          baseline.set(name, getComputedStyle(document.querySelector(selector))[property]);
+        }
+        refresh();
+      };
+
+      for (const type of ['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keyup', 'keydown', 'focusin', 'focusout', 'change', 'click']) {
+        addEventListener(type, () => requestAnimationFrame(refresh), true);
+      }
+
+      settle();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,174 @@
+<!doctype html>
+<!--
+  Home assignment 2 — rebuild this layout. DO NOT CHANGE THIS FILE, except for the
+  one section the stretch tier asks you to add.
+
+  The markup is finished, semantic and validating. Every region already has a
+  landmark and a class, because the thing being assessed this time is LAYOUT and a
+  grader cannot measure a layout whose selectors move.
+
+  The shape of the page:
+
+    .site          the page shell. Header, hero, features, work + sidebar, footer.
+    .hero          two regions that swap between stacked and side by side.
+    .features      a card row of unknown length. No media query.
+    .work          a list beside a sidebar at wide widths, stacked on a phone.
+    .card, .item   components. Their INSIDES are Flexbox, not Grid.
+
+  target.png is what you are rebuilding. Look at it at the three widths in the
+  brief before you write a line.
+
+  This is the Agency exercise from the old course, rebuilt. The original used
+  `float: left` and `float: right` for its two columns, a floated image for text
+  wrap, `min-height: 95vh` for a sticky footer, and a single
+  `@media (max-width: 680px)`. Every one of those is something weeks 3 and 4 teach
+  against, which is why this is a rebuild rather than a restyle.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Meridian &mdash; a creative design agency</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="site">
+      <header class="site-header">
+        <a class="brand" href="#main">
+          <img src="images/logo.jpg" alt="Meridian" width="160" height="160" />
+          <span>Meridian</span>
+        </a>
+        <nav class="site-nav" aria-label="Main">
+          <ul>
+            <li><a href="#features">What we do</a></li>
+            <li><a href="#work">Work</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <main class="main" id="main" tabindex="-1">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-text">
+            <p class="kicker">Design and build</p>
+            <h1 id="hero-title">We are a creative design agency</h1>
+            <p class="lede">
+              We make websites that are quick to read, quick to load and quick to change. No
+              templates, no theme licences, and nothing you cannot maintain yourself.
+            </p>
+            <p class="actions">
+              <a class="button" href="#work">See the work</a>
+              <a class="button button--quiet" href="#contact">Talk to us</a>
+            </p>
+          </div>
+          <figure class="hero-figure">
+            <img
+              src="images/beautiful-800.jpg"
+              srcset="images/beautiful-400.jpg 400w, images/beautiful-800.jpg 800w"
+              sizes="(min-width: 60em) 40vw, 100vw"
+              alt="A hand holding a flower just above still water"
+              width="800"
+              height="534"
+            />
+          </figure>
+        </section>
+
+        <section class="features" id="features" aria-labelledby="features-title">
+          <h2 id="features-title" class="section-title">What we do</h2>
+          <div class="feature-row">
+            <article class="card">
+              <h3>Beauty</h3>
+              <p>
+                We work closely with you to design something that looks like your business rather
+                than like the last five sites you saw.
+              </p>
+              <p class="card-foot"><a href="#work">Recent work</a></p>
+            </article>
+            <article class="card">
+              <h3>Construction</h3>
+              <p>
+                Built from scratch in HTML and CSS by people who will still understand it in a year,
+                which is more than can be said for most page builders.
+              </p>
+              <p class="card-foot"><a href="#work">How we build</a></p>
+            </article>
+            <article class="card">
+              <h3>Care</h3>
+              <p>Accessible, fast, and tested on the things people actually own.</p>
+              <p class="card-foot"><a href="#contact">Our promise</a></p>
+            </article>
+          </div>
+        </section>
+
+        <section class="work" id="work" aria-labelledby="work-title">
+          <h2 id="work-title" class="section-title">Selected work</h2>
+
+          <div class="work-body">
+            <ul class="work-list">
+              <li class="item">
+                <img
+                  src="images/construction-800.jpg"
+                  srcset="images/construction-400.jpg 400w, images/construction-800.jpg 800w"
+                  sizes="(min-width: 60em) 22vw, 100vw"
+                  alt="A steel lattice tower seen from below against a pale sky"
+                  width="800"
+                  height="534"
+                />
+                <div class="item-body">
+                  <h3>Northline Steel</h3>
+                  <p>A product catalogue that finally works on a phone in a yard.</p>
+                  <p class="item-foot"><time datetime="2027-01">January 2027</time></p>
+                </div>
+              </li>
+              <li class="item">
+                <img
+                  src="images/beautiful-800.jpg"
+                  srcset="images/beautiful-400.jpg 400w, images/beautiful-800.jpg 800w"
+                  sizes="(min-width: 60em) 22vw, 100vw"
+                  alt="A hand holding a flower just above still water"
+                  width="800"
+                  height="534"
+                />
+                <div class="item-body">
+                  <h3>Still Water</h3>
+                  <p>
+                    A small shop with a big catalogue, rebuilt so that search is the first thing on
+                    the page instead of the last.
+                  </p>
+                  <p class="item-foot"><time datetime="2026-11">November 2026</time></p>
+                </div>
+              </li>
+            </ul>
+
+            <aside class="sidebar" aria-labelledby="sidebar-title">
+              <h3 id="sidebar-title">How we work</h3>
+              <ol>
+                <li>We read what you have.</li>
+                <li>We agree what the page is for.</li>
+                <li>We build the smallest version that is genuinely useful.</li>
+                <li>We hand it over with the source.</li>
+              </ol>
+              <p class="sidebar-foot"><a href="#contact">Start a project</a></p>
+            </aside>
+          </div>
+        </section>
+
+        <!-- STRETCH TIER: your own section goes here. Markup and layout both.
+             Keep it semantic, give it a heading, and make it work at all three
+             widths like everything above it. -->
+      </main>
+
+      <footer class="site-footer" id="contact">
+        <p class="footer-line">Create. Develop. Design.</p>
+        <ul class="footer-links">
+          <li><a href="#main">Top of page</a></li>
+          <li><a href="#features">What we do</a></li>
+          <li><a href="#work">Work</a></li>
+        </ul>
+      </footer>
+    </div>
+  </body>
+</html>

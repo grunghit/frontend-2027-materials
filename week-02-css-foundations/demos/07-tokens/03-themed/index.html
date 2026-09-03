@@ -1,0 +1,272 @@
+<!doctype html>
+<!--
+  Design tokens — stage 3 of 3: the payoff.
+
+  This page has a complete dark theme. Compare it with ../02-tokens/ and count the
+  changes below the token block.
+
+      Rules changed:      0
+      Selectors changed:  0
+      Properties changed: 0
+
+  The ONLY addition is a second block of token values. Every rule underneath still says
+  `var(--color-text)`, and `--color-text` now means something different. That is what
+  tokens buy: the page describes relationships, and the theme supplies the values.
+
+  ── Two ways in, and they must agree
+
+    @media (prefers-color-scheme: dark)   the reader's own operating-system setting
+    [data-theme="dark"] on <html>          an explicit choice on this page
+
+  The media block is guarded with :not([data-theme="light"]) so that a reader who has
+  chosen light on this page is not overruled by their OS. Getting that guard wrong is
+  the usual bug: the toggle appears to work in one direction only.
+
+  DEMO MOVE: press the toggle. Then scroll the stylesheet in front of the room and show
+  that nothing below :root moved. Then say: this is the challenge tier of this week's
+  assignment, and it needs NO JavaScript — the media query alone is enough. The button
+  here exists only because a lecture hall projector is not going to change its OS
+  setting mid-slide.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruppin Coffee Club — themed by tokens alone</title>
+    <style>
+      /* ── Light: the values the page was designed with. ─────────────────────── */
+      :root {
+        color-scheme: light dark;
+
+        --color-bg: hsl(0 0% 100%);
+        --color-surface: hsl(210 40% 98%);
+        --color-border: hsl(214 25% 86%);
+        --color-text: hsl(215 25% 13%);
+        --color-text-muted: hsl(215 14% 40%);
+        --color-accent: hsl(175 77% 26%);
+        --color-accent-strong: hsl(175 79% 21%);
+
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.5rem;
+        --space-6: 2rem;
+
+        --radius-md: 12px;
+
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-size-sm: 0.875rem;
+        --font-size-base: 1.0625rem;
+        --font-size-lg: 1.375rem;
+        --font-size-xl: 1.875rem;
+
+        --leading-tight: 1.15;
+        --leading-normal: 1.6;
+
+        --measure: 62ch;
+      }
+
+      /* ── Dark: SEVEN VALUES. Nothing else in this file knows it happened. ───
+         Same hues, moved lightness — which is only cheap because the palette was
+         built in hsl in the first place. The accent gets lighter and less
+         saturated, because a colour that reads well on white is too dark on a
+         dark ground: contrast is a relationship, not a property of a colour. */
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --color-bg: hsl(215 28% 9%);
+          --color-surface: hsl(215 24% 14%);
+          --color-border: hsl(215 16% 28%);
+          --color-text: hsl(210 30% 96%);
+          --color-text-muted: hsl(214 16% 72%);
+          --color-accent: hsl(172 60% 60%);
+          --color-accent-strong: hsl(172 66% 72%);
+        }
+      }
+
+      /* The explicit choice, which must win in both directions. */
+      :root[data-theme='dark'] {
+        --color-bg: hsl(215 28% 9%);
+        --color-surface: hsl(215 24% 14%);
+        --color-border: hsl(215 16% 28%);
+        --color-text: hsl(210 30% 96%);
+        --color-text-muted: hsl(214 16% 72%);
+        --color-accent: hsl(172 60% 60%);
+        --color-accent-strong: hsl(172 66% 72%);
+      }
+
+      /* ── Everything from here down is IDENTICAL to ../02-tokens/. ──────────── */
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: var(--space-6) var(--space-5);
+        font-family: var(--font-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--leading-normal);
+        color: var(--color-text);
+        background: var(--color-bg);
+      }
+
+      header {
+        max-width: var(--measure);
+        margin: 0 auto var(--space-5);
+        padding-bottom: var(--space-3);
+        border-bottom: 3px solid var(--color-accent);
+      }
+
+      h1 {
+        margin: 0 0 var(--space-1);
+        font-size: var(--font-size-xl);
+        line-height: var(--leading-tight);
+        color: var(--color-accent);
+      }
+
+      .tagline {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+      }
+
+      main {
+        max-width: var(--measure);
+        margin: 0 auto;
+      }
+
+      h2 {
+        margin: var(--space-5) 0 var(--space-2);
+        font-size: var(--font-size-lg);
+        line-height: var(--leading-tight);
+        color: var(--color-accent);
+      }
+
+      p {
+        margin: 0 0 var(--space-3);
+      }
+
+      .card {
+        margin-bottom: var(--space-4);
+        padding: var(--space-3) var(--space-4);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+      }
+
+      .card h3 {
+        margin: 0 0 var(--space-1);
+        font-size: var(--font-size-base);
+        color: var(--color-accent);
+      }
+
+      .card p {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+      }
+
+      a {
+        color: var(--color-accent);
+        font-weight: 700;
+      }
+
+      a:hover {
+        color: var(--color-accent-strong);
+      }
+
+      a:focus-visible {
+        outline: 3px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+
+      footer {
+        max-width: var(--measure);
+        margin: var(--space-6) auto 0;
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--color-border);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+      }
+
+      /* The toggle is demo furniture, not part of the theme. */
+      .toggle {
+        max-width: var(--measure);
+        margin: 0 auto var(--space-4);
+      }
+      .toggle button {
+        font: inherit;
+        font-size: var(--font-size-sm);
+        padding: var(--space-2) var(--space-4);
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        background: var(--color-surface);
+        color: var(--color-text);
+        cursor: pointer;
+      }
+      .toggle button:focus-visible {
+        outline: 3px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="toggle">
+      <button type="button" id="theme" aria-pressed="false">switch theme</button>
+    </div>
+
+    <header>
+      <h1>Ruppin Coffee Club</h1>
+      <p class="tagline">Third floor, next to the printer that never works.</p>
+    </header>
+
+    <main>
+      <h2>This week</h2>
+      <p>Two coffees on the bar, both washed, both from producers we can actually name.</p>
+
+      <div class="card">
+        <h3>Ethiopia, Guji</h3>
+        <p>Stone fruit, jasmine, and the faint taste of someone else paying.</p>
+      </div>
+
+      <div class="card">
+        <h3>Colombia, Huila</h3>
+        <p>Caramel and red apple. The safe one, and there is no shame in that.</p>
+      </div>
+
+      <h2>Joining</h2>
+      <p>Turn up. <a href="#top">Put your name on the rota</a> if you want a key.</p>
+    </main>
+
+    <footer>Run by second-years who should have been revising.</footer>
+
+    <script>
+      /* Six lines, and none of them touch a colour: the button only writes
+         data-theme, and the stylesheet does the rest. */
+      const button = document.getElementById('theme');
+      const root = document.documentElement;
+      const systemDark = matchMedia('(prefers-color-scheme: dark)');
+
+      function isDark() {
+        const chosen = root.getAttribute('data-theme');
+        return chosen ? chosen === 'dark' : systemDark.matches;
+      }
+
+      function sync() {
+        button.setAttribute('aria-pressed', String(isDark()));
+        button.textContent = isDark() ? 'switch to light' : 'switch to dark';
+      }
+
+      button.addEventListener('click', () => {
+        root.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+        sync();
+      });
+      systemDark.addEventListener('change', sync);
+      sync();
+    </script>
+  </body>
+</html>

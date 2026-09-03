@@ -1,0 +1,260 @@
+<!doctype html>
+<!--
+  ============================================================================
+  THE LIST PAGE. One of three.
+
+  ── HOW TO RUN THIS. Not optional.
+
+  Open THIS folder as the workspace root in VS Code, then `Open with Live Server` on
+  this file. Never by double-clicking.
+
+  On file:// three separate things break, and each one is a rule from an earlier week
+  coming true at once:
+    · js/app.js does not load       — an ES module is blocked by CORS
+    · data/catalogue.json is refused — fetch cannot read a local file
+    · nothing persists              — localStorage is scoped to an opaque origin
+
+  ── HOW THIS MARKUP IS ORGANISED, AND WHY THE JAVASCRIPT CARES
+
+  Two kinds of element, and mixing them up is the bug render.js rule 1 exists to stop:
+
+    STATIC   everything written here. Never rebuilt. Every input, every select, the
+             live region, the notice strip, the nav, the toolbar.
+    MOUNTS   the empty elements — #search-results, #list, #notice — which render.js
+             fills and refills on every state change.
+
+  Anything a user can type into is static, so a re-render cannot pull the caret out
+  from under them.
+
+  ── THE TWO SCRIPTS IN <head> ARE ORDERED
+
+  js/theme.js must run BEFORE vendor/tailwind.js, and neither may carry defer or
+  async. See the header of js/theme.js for why. Get it wrong and the page renders
+  unstyled with no error — theme.js logs one if that happens.
+
+  ── WHAT IS GIVEN AND WHAT IS YOURS
+
+  The page chrome, the mounts, the toolbar and the search form are given, correct and
+  accessible. Every `CODE HERE` is yours. Do not delete the given markup to start
+  over — the accessible bits (the skip link, the labels, the live regions, the focus
+  rings) are the parts requirement 29–36 are graded on, and they are already right.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <!-- CODE HERE — your application's name, in the language of its interface -->
+    <title>הפרויקט שלי</title>
+
+    <meta name="description" content="" />
+
+    <script src="js/theme.js"></script>
+    <script src="vendor/tailwind.js"></script>
+  </head>
+
+  <body class="min-h-dvh bg-paper text-ink antialiased">
+    <!--
+      The skip link. First focusable thing in the document, hidden until focused.
+
+      `sr-only` alone would leave it permanently invisible and therefore useless to the
+      sighted keyboard user it is mostly for; `focus:not-sr-only` brings it back on Tab.
+      Hiding it with `display:none` instead would remove it from the tab order — a skip
+      link that cannot be reached by keyboard is a decoration.
+    -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded-pill focus:bg-brand focus:px-4 focus:py-2 focus:font-semibold focus:text-brand-ink"
+      >דלג לתוכן הראשי</a
+    >
+
+    <header class="border-b border-line bg-surface">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-4">
+        <p class="text-lg font-bold text-brand">הפרויקט שלי</p>
+        <!--
+          `aria-current="page"` on the link to the page you are already on. Without it
+          every item in the nav is announced identically and there is no way to tell,
+          without sight, which one you are looking at. The underline and the announced
+          state are the same fact told twice — which is the rule: never a colour alone,
+          and never a style alone either.
+        -->
+        <nav aria-label="ניווט ראשי">
+          <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
+            <li>
+              <a
+                href="index.html"
+                aria-current="page"
+                class="rounded-pill text-brand underline decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                >הרשימה</a
+              >
+            </li>
+            <li>
+              <a
+                href="summary.html"
+                class="rounded-pill text-ink hover:text-brand hover:underline motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                >סיכום</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1" class="mx-auto max-w-6xl px-4 py-8">
+      <!--
+        Exactly ONE h1 per page, and it describes the page (requirement 33).
+
+        The `CODE-HERE` class is the marker: replace the TEXT, then delete the class.
+        A starter never ships markup that fails the validator, so these carry
+        placeholder text rather than an empty element with a comment in it — an empty
+        heading is an html-validate error, and you should never see one in a file I
+        gave you.
+      -->
+      <h1 class="CODE-HERE text-2xl font-bold text-ink sm:text-3xl">שם היישום</h1>
+      <p class="CODE-HERE mt-2 max-w-measure text-ink-muted">משפט אחד: מה זה, ולמי.</p>
+
+      <!--
+        The notice strip. `role="status"` announces changes politely without stealing
+        focus — right for "added", wrong for an error the user must deal with first.
+
+        `aria-live` is on the WRAPPER, which render.js never replaces; it writes the
+        contents. Replacing a live region element means the screen reader is watching a
+        node that is no longer in the document, and the announcement is lost silently
+        while the page still passes every automated check.
+
+        In the document flow, not fixed. A toast pinned over the corner of the viewport
+        is the most commonly missed feedback on the web, and one containing an undo
+        button that vanishes after eight seconds is a trap for anyone reading slowly.
+      -->
+      <div id="notice" role="status" aria-live="polite" class="mt-6 empty:mt-0"></div>
+
+      <!-- ── The network-backed region ─────────────────────────────────────── -->
+      <section aria-labelledby="search-heading" class="mt-8">
+        <h2 id="search-heading" class="CODE-HERE text-xl font-bold text-ink">חיפוש</h2>
+
+        <!--
+          A real <form> with a real submit button, so Enter works from inside the field
+          with no keydown handler of yours.
+
+          It validates on SUBMIT, not while typing — and if your endpoint rate-limits
+          (Nominatim allows one request per second), submit is the only correct choice.
+        -->
+        <form id="search-form" class="mt-4 flex flex-wrap items-end gap-3" novalidate>
+          <div class="flex min-w-60 grow flex-col gap-1">
+            <!--
+              A real <label for>. `placeholder` is NOT a label: it disappears the moment
+              there is text in the field, it is announced inconsistently, and its
+              contrast is below AA by design.
+            -->
+            <label for="search-term" class="CODE-HERE text-sm font-semibold text-ink"
+              >מה לחפש</label
+            >
+            <input
+              type="search"
+              id="search-term"
+              name="term"
+              autocomplete="off"
+              class="rounded-card border border-control bg-paper px-4 py-2 text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            />
+          </div>
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center rounded-pill bg-brand px-5 py-2 font-semibold text-brand-ink hover:bg-brand-strong motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          >
+            חפש
+          </button>
+        </form>
+
+        <!--
+          The search's own live region — separate from #notice, because the two say
+          different kinds of thing: this reports the state of a request the user
+          started, that reports the result of an action the user took.
+
+          ONE SHORT SENTENCE goes in here (`searchAnnouncement` in render.js). A live
+          region that reads out the whole results panel interrupts the user with forty
+          words when four would do.
+        -->
+        <p id="search-status" role="status" aria-live="polite" class="sr-only"></p>
+
+        <!-- MOUNT. The four states are rendered in here. -->
+        <div id="search-results" class="mt-5"></div>
+      </section>
+
+      <!-- ── The collection ────────────────────────────────────────────────── -->
+      <section aria-labelledby="list-heading" class="mt-12">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 id="list-heading" class="CODE-HERE text-xl font-bold text-ink">האוסף שלי</h2>
+            <!-- Written by render.js. It reads "N of M": after a filter those two
+                 numbers differ, and the difference is what explains a short list. -->
+            <p id="list-count" class="mt-1 text-sm text-ink-muted"></p>
+          </div>
+        </div>
+
+        <!--
+          The toolbar is STATIC. The text input in particular must never sit inside a
+          rendered region: it filters on every keystroke, so that region would be
+          rebuilt under the caret on every keystroke.
+
+          The <select>s ARE re-rendered (their options are derived) and that is safe —
+          only their children are replaced, not the elements themselves.
+        -->
+        <div
+          class="mt-4 flex flex-wrap items-end gap-4 rounded-card border border-line bg-surface p-4"
+        >
+          <div class="flex min-w-52 grow flex-col gap-1">
+            <label for="list-query" class="text-sm font-semibold text-ink">סינון לפי טקסט</label>
+            <input
+              type="search"
+              id="list-query"
+              autocomplete="off"
+              class="rounded-card border border-control bg-paper px-4 py-2 text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <!-- CODE HERE — the label for YOUR filter (category, status, genre…) -->
+            <label for="list-filter" class="text-sm font-semibold text-ink">סינון</label>
+            <select
+              id="list-filter"
+              class="rounded-card border border-control bg-paper px-4 py-2 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >
+              <option value="all">הכול</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="list-sort" class="text-sm font-semibold text-ink">סדר</label>
+            <select
+              id="list-sort"
+              class="rounded-card border border-control bg-paper px-4 py-2 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >
+              <!-- CODE HERE — at least TWO sort keys (requirement 8). The `value` of
+                   each is what lands in state.sort, so keep them short and in English. -->
+              <option value="added-desc">נוספו לאחרונה</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- MOUNT. The collection, and its three empty states, are rendered in here. -->
+        <div id="list" class="mt-6"></div>
+      </section>
+    </main>
+
+    <footer class="mt-16 border-t border-line bg-surface">
+      <p class="mx-auto max-w-6xl px-4 py-6 text-sm text-ink-muted">
+        <!-- CODE HERE — your name, and credit the API you used -->
+      </p>
+    </footer>
+
+    <noscript>
+      <p class="mx-auto max-w-6xl px-4 py-6 text-danger">
+        העמוד הזה בונה את התוכן שלו ב-JavaScript, ולכן הוא לא יעבוד כשהוא כבוי.
+      </p>
+    </noscript>
+    <!-- `type="module"` is deferred by definition, so the DOM is ready when app.js
+         runs. That is why there is no DOMContentLoaded listener anywhere here. -->
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

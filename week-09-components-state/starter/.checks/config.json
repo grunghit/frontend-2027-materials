@@ -1,0 +1,18 @@
+{
+  "//": "Week 9 knobs for the public check set. The publisher copies this to starter/.checks/config.json, replacing the template default.",
+  "//entry": "index.html — the list page. Every check runs against it; the summary and detail pages are stretch tier and are graded privately.",
+  "//required": "The three pages, the four layer files, the data module and the observation sheet. js/summary.js is deliberately NOT here: part ג deletes it, and a student who finished the stretch tier must not be told a file is missing.",
+  "entry": "index.html",
+  "requiredFiles": [
+    "index.html",
+    "item.html",
+    "summary.html",
+    "js/app.js",
+    "js/items.js",
+    "js/state.js",
+    "js/render.js",
+    "js/events.js",
+    "observations-he.md",
+    "vendor/tailwind.js"
+  ]
+}

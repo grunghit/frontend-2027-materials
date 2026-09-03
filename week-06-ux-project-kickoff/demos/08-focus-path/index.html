@@ -1,0 +1,477 @@
+<!doctype html>
+<!--
+  The tab order, drawn on the page. Week-6 deck, act 5.
+
+  Hold Tab down and the demo draws the path focus actually takes — a numbered line from
+  stop to stop, over the real layout. Three switches break it in the three ways that
+  happen in practice, and the drawing shows each one immediately.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE PATH IS DRAWN FROM `document.activeElement`, not from a guess. It records where
+     focus really went, in the order it really went there, so a scrambled order is a
+     visibly crossed line rather than a claim.
+  2. POSITIVE `tabindex` IS SHOWN AS THE TRAP IT IS. Turn it on and the line jumps to the
+     third field, then the first, then out of the panel entirely to the rest of the
+     document before coming back. Every element is still reachable — which is why the
+     usual check ("can you tab to everything?") passes on a page nobody can use.
+  3. THE DIALOG IS THE PAYOFF. Open it with focus management off and Tab walks straight
+     out of the dialog and into the page behind it, while the dialog is still on screen.
+     Turn management on and focus moves into the dialog, stays there, and returns to the
+     button that opened it. That last part — returning focus — is the half everybody
+     forgets, and the demo marks the return stop in a different colour.
+
+  DEMO MOVE: open the dialog with management OFF and press Tab six times while narrating
+  what you can see happening on screen: "I am now typing into a field I cannot see,
+  underneath a dialog." Nobody forgets it after that.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The tab order, drawn</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --bad: #b3123b;
+        --good: #0f6b52;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-bottom: 12px;
+        font-size: 12.5px;
+        align-items: center;
+      }
+      .bar label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+      input[type='checkbox'] {
+        accent-color: var(--bad);
+      }
+      button {
+        font: inherit;
+        font-size: 13px;
+        padding: 5px 12px;
+        border: 1px solid #7a8699;
+        border-radius: 999px;
+        background: #fff;
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      /* The "no focus ring" switch. Nothing replaces it, which is the point. */
+      body[data-ring='off'] :focus,
+      body[data-ring='off'] :focus-visible {
+        outline: none;
+      }
+
+      #arena {
+        position: relative;
+      }
+      .panel {
+        position: relative;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+        gap: 12px;
+      }
+      .row {
+        display: grid;
+        gap: 3px;
+      }
+      .row label {
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .row input,
+      .row select {
+        font: inherit;
+        font-size: 14px;
+        padding: 5px 8px;
+        border: 1px solid #7a8699;
+        border-radius: 6px;
+        width: 100%;
+      }
+      .actions {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* The overlay the path is drawn onto. */
+      svg#path {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: visible;
+      }
+      svg#path line {
+        stroke: var(--accent);
+        stroke-width: 2;
+        stroke-dasharray: 5 4;
+      }
+      svg#path circle {
+        fill: var(--accent);
+      }
+      svg#path circle.out {
+        fill: var(--bad);
+      }
+      svg#path circle.restored {
+        fill: var(--good);
+      }
+      svg#path text {
+        fill: #fff;
+        font:
+          700 10px/1 ui-monospace,
+          Menlo,
+          monospace;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+
+      dialog {
+        border: 2px solid var(--accent);
+        border-radius: 12px;
+        padding: 16px;
+        max-width: 340px;
+        font: inherit;
+      }
+      dialog::backdrop {
+        background: rgb(20 24 31 / 0.45);
+      }
+      dialog h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+      }
+      dialog p {
+        margin: 0 0 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      dialog .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .readout {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 12.5px;
+      }
+      .readout ol {
+        margin: 6px 0 0;
+        padding-inline-start: 20px;
+        font:
+          12.5px/1.6 ui-monospace,
+          Menlo,
+          monospace;
+      }
+      .readout li.out {
+        color: var(--bad);
+        font-weight: 700;
+      }
+      .verdict {
+        margin-top: 10px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border-left: 4px solid var(--line);
+        background: #f8fafc;
+        font-size: 12.5px;
+      }
+      .verdict.bad {
+        border-left-color: var(--bad);
+        background: #fff1f4;
+      }
+      .verdict.good {
+        border-left-color: var(--good);
+        background: #eefaf5;
+      }
+    </style>
+  </head>
+
+  <body data-ring="on">
+    <div class="bar">
+      <label><input type="checkbox" id="sw-tabindex" /> positive tabindex on three fields</label>
+      <label><input type="checkbox" id="sw-ring" /> remove the focus ring</label>
+      <label><input type="checkbox" id="sw-manage" checked /> manage focus in the dialog</label>
+      <button type="button" id="clear">clear the path</button>
+    </div>
+
+    <h2>hold Tab. the path is drawn from where focus actually went</h2>
+
+    <div id="arena">
+      <div class="panel" id="panel">
+        <div class="row">
+          <label for="f1">Full name</label>
+          <input type="text" id="f1" />
+        </div>
+        <div class="row">
+          <label for="f2">Phone</label>
+          <input type="text" id="f2" />
+        </div>
+        <div class="row">
+          <label for="f3">Email</label>
+          <input type="text" id="f3" />
+        </div>
+        <div class="row">
+          <label for="f4">Class</label>
+          <select id="f4">
+            <option>Beginner yoga</option>
+            <option>Classical guitar</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button type="button" id="submit">Register</button>
+          <button type="button" id="open">Cancel registration…</button>
+        </div>
+      </div>
+      <svg id="path" aria-hidden="true"></svg>
+    </div>
+
+    <div class="readout">
+      <b>the stops, in order</b>
+      <ol id="stops"></ol>
+      <p class="verdict" id="verdict">Press Tab to begin.</p>
+    </div>
+
+    <dialog id="dialog" aria-labelledby="dlg-title">
+      <h3 id="dlg-title">Cancel this registration?</h3>
+      <p>This cannot be undone — which is exactly when a confirmation is the right choice.</p>
+      <div class="actions">
+        <button type="button" id="dlg-cancel">Keep it</button>
+        <button type="button" id="dlg-confirm">Cancel it</button>
+      </div>
+    </dialog>
+
+    <script>
+      const panel = document.getElementById('panel');
+      const svg = document.getElementById('path');
+      const stopsList = document.getElementById('stops');
+      const verdict = document.getElementById('verdict');
+      const dialog = document.getElementById('dialog');
+      const opener = document.getElementById('open');
+
+      /** Every stop focus has visited, in order. */
+      let stops = [];
+      let opensWith = null;
+
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+
+      const describe = (el) => {
+        if (!el || el === document.body) return 'document body';
+        const label = el.id
+          ? document.querySelector(`label[for="${el.id}"]`)?.textContent?.trim()
+          : null;
+        const text = (label ?? el.textContent?.trim() ?? '').slice(0, 26);
+        const tag = el.tagName.toLowerCase();
+        const ti = el.tabIndex > 0 ? ` tabindex=${el.tabIndex}` : '';
+        return `<${tag}>${text ? ` "${text}"` : ''}${ti}`;
+      };
+
+      function draw() {
+        svg.textContent = '';
+        const arena = document.getElementById('arena').getBoundingClientRect();
+
+        const points = stops
+          .map((s) => {
+            if (!s.el.isConnected) return null;
+            const r = s.el.getBoundingClientRect();
+            if (r.width === 0 && r.height === 0) return null;
+            return {
+              x: r.left - arena.left + r.width / 2,
+              y: r.top - arena.top + r.height / 2,
+              ...s,
+            };
+          })
+          .filter(Boolean);
+
+        for (let i = 1; i < points.length; i++) {
+          const line = document.createElementNS(SVG_NS, 'line');
+          line.setAttribute('x1', points[i - 1].x);
+          line.setAttribute('y1', points[i - 1].y);
+          line.setAttribute('x2', points[i].x);
+          line.setAttribute('y2', points[i].y);
+          svg.append(line);
+        }
+
+        points.forEach((p, i) => {
+          const c = document.createElementNS(SVG_NS, 'circle');
+          c.setAttribute('cx', p.x);
+          c.setAttribute('cy', p.y);
+          c.setAttribute('r', 11);
+          if (p.outside) c.classList.add('out');
+          if (p.restored) c.classList.add('restored');
+          const t = document.createElementNS(SVG_NS, 'text');
+          t.setAttribute('x', p.x);
+          t.setAttribute('y', p.y);
+          t.textContent = String(i + 1);
+          svg.append(c, t);
+        });
+
+        stopsList.textContent = '';
+        stops.forEach((s, i) => {
+          const li = document.createElement('li');
+          li.textContent = `${describe(s.el)}${s.outside ? '  ← outside the panel' : ''}${s.restored ? '  ← focus returned here' : ''}`;
+          if (s.outside) li.className = 'out';
+          stopsList.append(li);
+        });
+
+        judge();
+      }
+
+      function judge() {
+        verdict.className = 'verdict';
+        if (stops.length < 2) {
+          verdict.textContent = 'Press Tab to begin.';
+          return;
+        }
+
+        const ring = document.body.dataset.ring === 'on';
+        const positive = [...panel.querySelectorAll('[tabindex]')].some((el) => el.tabIndex > 0);
+        const escaped = stops.some((s) => s.outside);
+
+        if (!ring) {
+          verdict.classList.add('bad');
+          verdict.textContent =
+            'The order may well be fine — and it does not matter, because nothing on screen shows where focus is. ' +
+            'A page you can tab through blind is a page you cannot use.';
+          return;
+        }
+        if (positive) {
+          verdict.classList.add('bad');
+          verdict.textContent =
+            'Crossed. Positive tabindex pulls those three fields to the FRONT of the whole document, ahead of ' +
+            'everything with tabindex 0 — so the order is now scrambled and it depends on the rest of the page. ' +
+            'Every element is still reachable, which is why "can you tab to everything" passes here.';
+          return;
+        }
+        if (escaped) {
+          verdict.classList.add('bad');
+          verdict.textContent =
+            'Focus left the dialog while the dialog was still open — so the user is now typing into a field they ' +
+            'cannot see, underneath it. This is the whole reason focus management exists.';
+          return;
+        }
+        verdict.classList.add('good');
+        verdict.textContent =
+          'A straight path in document order, with a visible ring at every stop. ' +
+          (stops.some((s) => s.restored)
+            ? 'And focus RETURNED to the button that opened the dialog — the half everybody forgets.'
+            : 'Now open the dialog and watch what happens.');
+      }
+
+      document.addEventListener('focusin', (event) => {
+        const el = event.target;
+        if (!(el instanceof HTMLElement)) return;
+        const outside = dialog.open && !dialog.contains(el);
+        const restored = el === opener && stops.some((s) => dialog.contains(s.el));
+        stops.push({ el, outside, restored });
+        if (stops.length > 14) stops.shift();
+        draw();
+      });
+
+      document.getElementById('clear').addEventListener('click', () => {
+        stops = [];
+        draw();
+      });
+
+      /* ── The switches ─────────────────────────────────────────────────── */
+      document.getElementById('sw-tabindex').addEventListener('change', (e) => {
+        const values = { f1: 3, f2: 1, f3: 2 };
+        for (const [id, value] of Object.entries(values)) {
+          const el = document.getElementById(id);
+          if (e.target.checked) el.tabIndex = value;
+          else el.removeAttribute('tabindex');
+        }
+        stops = [];
+        draw();
+      });
+
+      document.getElementById('sw-ring').addEventListener('change', (e) => {
+        document.body.dataset.ring = e.target.checked ? 'off' : 'on';
+        judge();
+      });
+
+      /* ── The dialog ───────────────────────────────────────────────────── */
+      const manage = document.getElementById('sw-manage');
+
+      opener.addEventListener('click', () => {
+        opensWith = document.activeElement;
+        stops = [];
+        /*
+          `showModal()` versus `show()` is the whole demonstration.
+
+          `showModal` puts the dialog in the top layer and makes the rest of the document
+          inert — the browser does the focus trapping, for free, and Escape closes it.
+          `show` renders the same box and traps nothing: Tab walks straight out of it and
+          into the page behind, while the dialog is still on screen.
+
+          So "manage focus" here is not a hand-rolled key handler. It is using the element
+          the platform already provides, the way it was meant to be used — which is the
+          same lesson as the radio group in act 5.
+        */
+        if (manage.checked) dialog.showModal();
+        else dialog.show();
+        draw();
+      });
+
+      const close = () => {
+        dialog.close();
+        /*
+          RETURN FOCUS. Without this the user is dropped to the top of the document and
+          has to tab back through everything to get where they were. `showModal` restores
+          focus on its own in modern browsers; doing it explicitly costs one line and
+          works either way.
+        */
+        if (manage.checked && opensWith instanceof HTMLElement) opensWith.focus();
+        draw();
+      };
+
+      document.getElementById('dlg-cancel').addEventListener('click', close);
+      document.getElementById('dlg-confirm').addEventListener('click', close);
+
+      addEventListener('resize', draw);
+      draw();
+    </script>
+  </body>
+</html>

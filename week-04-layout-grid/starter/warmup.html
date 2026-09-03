@@ -1,0 +1,142 @@
+<!doctype html>
+<!--
+  CA4, part one — the two warm-ups. DO NOT CHANGE THIS FILE.
+
+  Everything here is finished markup. Your work is in styles.css, sections 3 and 4.
+
+  Two reproduce-this-picture exercises, both from the old course and both modernised:
+
+    THE PAINTING   the original specified every track in pixels, on a 748x748 canvas.
+                   Yours has to be the same painting at any width, which means the
+                   tracks are proportions and not measurements.
+
+    THE BOARD      the original shipped 64 squares with the colours already written
+                   onto them, so the exercise never touched selection at all. These 64
+                   are bare. Colour them with a selector.
+
+  images/mondrian.png and images/chess.png show what each should look like.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grid warm-ups &mdash; the painting and the board</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="warmups">
+    <header class="page-head">
+      <p class="kicker">Week 4 &middot; part one</p>
+      <h1>Two pictures, made of tracks</h1>
+      <p class="lede">
+        Neither of these is a page. They are here because a grid is easiest to see when the thing it
+        is holding is a shape rather than a paragraph. Do them in order &mdash; the second one takes
+        four minutes once the first has clicked.
+      </p>
+      <p class="nav-back"><a href="index.html">Go to part two &mdash; the dashboard</a></p>
+    </header>
+
+    <main>
+      <section class="task" aria-labelledby="painting-title">
+        <h2 id="painting-title">The painting</h2>
+        <p>
+          Four columns, four rows, nine coloured regions. The black lines are not borders and not
+          elements &mdash; look at what is behind them.
+        </p>
+
+        <div class="mondrian">
+          <div class="m-red"></div>
+          <div class="m-white-top"></div>
+          <div class="m-white-left"></div>
+          <div class="m-white-centre"></div>
+          <div class="m-blue"></div>
+          <div class="m-white-right"></div>
+          <div class="m-white-foot"></div>
+          <div class="m-yellow"></div>
+          <div class="m-black"></div>
+        </div>
+      </section>
+
+      <section class="task" aria-labelledby="board-title">
+        <h2 id="board-title">The board</h2>
+        <p>
+          Sixty-four squares, eight by eight, alternating. They must stay square at every window
+          width, and not one of them carries a class.
+        </p>
+
+        <div class="board">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-foot">
+      <p>
+        Part two is the dashboard. <a href="index.html">Open it</a> when both pictures are right.
+      </p>
+    </footer>
+  </body>
+</html>

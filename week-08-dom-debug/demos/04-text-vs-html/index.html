@@ -1,0 +1,418 @@
+<!doctype html>
+<!--
+  textContent, innerHTML, innerText — and the reason that is not performance.
+  Week-8 deck, act 5.
+
+  One string, assigned to all three properties of three identical boxes. The page then
+  reports what actually happened, including whether the string RAN.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE ATTACK IS REAL AND IT IS HARMLESS. The payload increments a counter on `window`.
+     Nothing is stolen and nothing leaves the page, but the counter moves, and a number
+     that moved is not arguable. Students who have been told "innerHTML is dangerous"
+     have never seen it be dangerous.
+  2. `<script>` DOES NOT RUN, AND THAT IS WHY PEOPLE THINK THEY ARE SAFE. The second
+     preset is a plain `<script>alert(1)</script>`, and it does nothing at all — the HTML
+     parser refuses to execute script elements inserted this way. Everyone tests with
+     that one, concludes innerHTML is fine, and ships the third preset's hole.
+  3. THE PAYLOAD IS THE SHAPE OF A REAL FIELD. The default string is a product review,
+     and the injected version is what a review box gets from someone who is not a student.
+     The lesson is not "avoid innerHTML", it is "never put text a user typed into it".
+  4. innerText IS MEASURED AGAINST textContent RATHER THAN DESCRIBED. The fixed sample
+     below has a `display: none` span and an uppercase CSS transform. The two properties
+     return different strings and the page prints both, with lengths.
+
+  DEMO MOVE: run preset 2 first and let the room relax. Then run preset 3.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>textContent vs innerHTML vs innerText</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --true: #0f766e;
+        --false: #b91c1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 9px;
+      }
+      input,
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 5px 11px;
+        color: inherit;
+      }
+      input {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        flex: 1 1 30ch;
+        min-width: 18ch;
+        font-size: 13px;
+      }
+      button {
+        cursor: pointer;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:focus-visible,
+      input:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      .presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .presets button {
+        font-size: 12.5px;
+        padding: 3px 9px;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .cols {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .col {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 10px 11px;
+      }
+      .col h3 {
+        margin: 0 0 7px;
+        font:
+          600 13px/1.4 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .box {
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px 10px;
+        min-height: 64px;
+        font-size: 13.5px;
+        overflow-wrap: anywhere;
+      }
+      .verdict {
+        margin-top: 8px;
+        font:
+          12.5px/1.7 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .verdict div {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        border-bottom: 1px dashed var(--line);
+        padding: 2px 0;
+      }
+      .yes {
+        color: var(--true);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--false);
+        font-weight: 700;
+      }
+      .alarm {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border-radius: 9px;
+        font-size: 13.5px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+      }
+      .alarm.hit {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #7f1d1d;
+        font-weight: 600;
+      }
+      .alarm code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .inner-vs {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 10px 12px;
+      }
+      .inner-vs h3 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      #sample {
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px 10px;
+        font-size: 13.5px;
+      }
+      #sample .shout {
+        text-transform: uppercase;
+      }
+      #sample .gone {
+        display: none;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 9px;
+        font:
+          12.5px/1.5 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      th,
+      td {
+        text-align: start;
+        padding: 4px 7px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+        overflow-wrap: anywhere;
+      }
+      thead th {
+        font-family: system-ui, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <h2>One string · three properties · one of them executes it</h2>
+
+    <div class="bar">
+      <label for="src">the “review” a user typed</label>
+      <input id="src" type="text" spellcheck="false" value="Great grinder, 5 stars" />
+      <button type="button" id="apply" class="primary">assign to all three</button>
+    </div>
+
+    <div class="presets" id="presets"></div>
+
+    <div class="cols">
+      <div class="col">
+        <h3>box.textContent = s</h3>
+        <div class="box" id="b-text"></div>
+        <div class="verdict" id="v-text"></div>
+      </div>
+      <div class="col">
+        <h3>box.innerHTML = s</h3>
+        <div class="box" id="b-html"></div>
+        <div class="verdict" id="v-html"></div>
+      </div>
+      <div class="col">
+        <h3>box.innerText = s</h3>
+        <div class="box" id="b-inner"></div>
+        <div class="verdict" id="v-inner"></div>
+      </div>
+    </div>
+
+    <p class="alarm" id="alarm">
+      A counter on <code>window</code> is watching. If the string ever runs, it goes up — and this
+      box turns red.
+    </p>
+
+    <div class="inner-vs">
+      <h3>innerText is not textContent, and the difference is CSS</h3>
+      <div id="sample">
+        The kettle is <span class="shout">loud</span
+        ><span class="gone"> — internal note, do not ship</span>.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">property</th>
+            <th scope="col">what it returned</th>
+            <th scope="col">length</th>
+          </tr>
+        </thead>
+        <tbody id="ivt"></tbody>
+      </table>
+      <p style="margin: 8px 0 0; font-size: 13px; color: var(--muted)">
+        <code>textContent</code> reads the tree. <code>innerText</code> reads the rendered result,
+        so it drops the hidden span, and to know what is hidden it has to lay the page out first.
+        That is the performance footnote — and it is a footnote.
+      </p>
+    </div>
+
+    <script>
+      /*
+        `window.__ran` is an accessor, not a plain number. An injected `onerror` fires on its
+        own schedule — later than the assignment, later than a setTimeout(0) — so a demo that
+        READ the counter after a fixed delay reported "nothing ran" for a payload that had, in
+        fact, run. Measured. The setter re-draws the alarm at the moment the payload writes,
+        which is both correct and closer to what the page is claiming: something happened, and
+        the page found out because the attacker's code told it.
+      */
+      let ranCount = 0;
+      Object.defineProperty(window, '__ran', {
+        get: () => ranCount,
+        set: (v) => {
+          ranCount = v;
+          alarm();
+        },
+      });
+
+      const PRESETS = [
+        { label: 'plain text', value: 'Great grinder, 5 stars' },
+        { label: 'markup, not script', value: 'Great grinder, <b>5 stars</b>' },
+        { label: 'a script tag (does nothing!)', value: '<script>window.__ran++<\/script>' },
+        /*
+          MEASURED, not assumed. `<svg onload>` inserted this way does NOT fire in Chromium,
+          and a demo whose attack quietly fails teaches that innerHTML is safe. These two do
+          fire, and neither of them touches the network or writes anything to the console —
+          so the only evidence that something happened is the counter, which is the point.
+        */
+        {
+          label: 'the one that actually runs',
+          value: '<img src="data:," onerror="window.__ran++" alt="">5 stars',
+        },
+        {
+          label: 'and it is not about images',
+          value:
+            '<svg><animate onbegin="window.__ran++" attributeName="x" dur="1s"></animate></svg>Nice grinder',
+        },
+      ];
+
+      const boxes = {
+        text: document.getElementById('b-text'),
+        html: document.getElementById('b-html'),
+        inner: document.getElementById('b-inner'),
+      };
+
+      const esc = (s) =>
+        s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+
+      let lastSource = '';
+
+      function apply() {
+        const s = document.getElementById('src').value;
+        lastSource = s;
+        window.__ran = 0;
+
+        boxes.text.textContent = s;
+        boxes.html.innerHTML = s;
+        boxes.inner.innerText = s;
+
+        /* An onload/onerror handler on an injected element fires as its own task, so the
+           verdict is read on the next turn of the loop rather than immediately. This is
+           week 7's event loop being useful for the first time. */
+        setTimeout(report, 0);
+      }
+
+      function report() {
+        const line = (k, v, ok) =>
+          `<div><span>${k}</span><span class="${ok === null ? '' : ok ? 'yes' : 'no'}">${esc(v)}</span></div>`;
+
+        for (const [key, box] of Object.entries(boxes)) {
+          const els = box.querySelectorAll('*').length;
+          document.getElementById(`v-${key}`).innerHTML =
+            line('child elements created', String(els), null) +
+            line('shows the characters you typed', els === 0 ? 'yes' : 'no', els === 0);
+        }
+
+        alarm();
+      }
+
+      function alarm() {
+        const s = lastSource;
+        const box = document.getElementById('alarm');
+        const ran = ranCount > 0;
+        box.classList.toggle('hit', ran);
+        box.innerHTML = ran
+          ? `The string <b>executed</b> — <code>window.__ran</code> is now ${ranCount}. ` +
+            'Nobody clicked anything. Assigning to <code>innerHTML</code> handed a stranger’s text to the HTML parser, ' +
+            'and an attribute in it was JavaScript. In a real review box that code runs with the logged-in ' +
+            'user’s session. <b>This is what “XSS” means, and it is the reason, not the speed.</b>'
+          : s.includes('<script')
+            ? 'Nothing ran — and this is the trap. A <code>&lt;script&gt;</code> element inserted through ' +
+              '<code>innerHTML</code> is <b>never executed</b> by the parser. Test with this one and you will ' +
+              'conclude that innerHTML is safe. Now press the next preset.'
+            : 'Nothing ran. <code>window.__ran</code> is 0.';
+      }
+
+      for (const p of PRESETS) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = p.label;
+        b.addEventListener('click', () => {
+          document.getElementById('src').value = p.value;
+          apply();
+        });
+        document.getElementById('presets').append(b);
+      }
+      document.getElementById('apply').addEventListener('click', apply);
+
+      /* The innerText / textContent table, filled from the real element. */
+      const sample = document.getElementById('sample');
+      const rows = [
+        ['textContent', sample.textContent.replace(/\s+/g, ' ').trim()],
+        ['innerText', sample.innerText.replace(/\s+/g, ' ').trim()],
+        ['innerHTML', sample.innerHTML.replace(/\s+/g, ' ').trim()],
+      ];
+      document.getElementById('ivt').innerHTML = rows
+        .map(([k, v]) => `<tr><th scope="row">${k}</th><td>${esc(v)}</td><td>${v.length}</td></tr>`)
+        .join('');
+
+      apply();
+    </script>
+  </body>
+</html>

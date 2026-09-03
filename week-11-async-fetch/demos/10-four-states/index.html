@@ -1,0 +1,317 @@
+<!doctype html>
+<!--
+  The four states, and the thirty-two combinations. Week-11 deck, act 7. This is where
+  week 6 gets paid.
+
+  TWO PANELS BUILT FROM THE SAME DATA. The left one keeps four booleans; the right one
+  keeps one field with five values and derives the rest. The five buttons drive BOTH.
+
+  THEN PRESS "the sequence a real user produces". It replays what actually happens —
+  type, wait, get results, type again, the server fails, retry, nothing matches — and
+  after each step the page checks the LEFT panel for an IMPOSSIBLE COMBINATION: two
+  regions visible at once, or none at all.
+
+  THE LEFT PANEL FAILS, AND IT FAILS THE WAY REAL CODE DOES: not because the four
+  booleans are set wrongly on purpose, but because ONE of them is not cleared. The source
+  is on screen; the missing line is a `isEmpty = false` in the error branch, and it is
+  exactly the line that gets left out when a fifth state is added six weeks later.
+
+  THE COUNTER IS THE ARGUMENT. Four booleans are sixteen combinations, five states are
+  thirty-two — and either way, only five of them mean anything. A field cannot be in two
+  of its values; four booleans have nothing stopping them.
+
+  ── THE FIFTH STATE IS `idle`, AND IT IS THE ONE PEOPLE MISS
+
+  Empty is "I asked and there was nothing". Idle is "nobody has asked". Collapsing them
+  greets every new user with "no results found" for a search they have not run — which is
+  the single most common first-load bug in an application like this one.
+
+  DEMO MOVE: press "error" and then "empty" on the left panel, slowly. Two panels light
+  up. Then say: "nobody wrote that. Somebody forgot to un-write it."
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>idle · loading · error · empty · results</title>
+  </head>
+
+  <body>
+    <h2>Five states, two ways to keep them</h2>
+
+    <div class="bar">
+      <button type="button" id="s-idle">idle</button>
+      <button type="button" id="s-loading">loading</button>
+      <button type="button" id="s-results" class="primary">results</button>
+      <button type="button" id="s-empty">empty</button>
+      <button type="button" id="s-error">error</button>
+      <span class="sep"></span>
+      <button type="button" id="replay">the sequence a real user produces</button>
+      <button type="button" id="reset">reset</button>
+    </div>
+
+    <div class="layout">
+      <div class="panel bad">
+        <h3>four booleans</h3>
+        <pre id="src-bad">
+let isLoading = false;
+let isError   = false;
+let isEmpty   = false;
+let results   = [];</pre>
+        <div id="ui-bad" style="border: 1px dashed var(--line); border-radius: 8px; padding: 8px">
+          <p id="bad-idle" hidden>Type something to search.</p>
+          <p id="bad-loading" hidden>Searching…</p>
+          <p id="bad-empty" hidden>Nothing matched.</p>
+          <p id="bad-error" hidden class="no">Could not reach the catalogue.</p>
+          <ul class="rows" id="bad-results"></ul>
+        </div>
+        <p class="verdict" id="bad-verdict">—</p>
+      </div>
+
+      <div class="panel good">
+        <h3>one field, five values</h3>
+        <pre id="src-good">
+state.search = { status, results, error };
+
+view = status === 'loading' ? 'loading'
+     : status === 'error'   ? 'error'
+     : status === 'idle'    ? 'idle'
+     : results.length === 0 ? 'empty'
+     : 'results';</pre>
+        <div
+          id="ui-good"
+          data-state="idle"
+          style="border: 1px dashed var(--line); border-radius: 8px; padding: 8px"
+        >
+          <p id="good-idle" hidden>Type something to search.</p>
+          <p id="good-loading" hidden>Searching…</p>
+          <p id="good-empty" hidden>Nothing matched.</p>
+          <p id="good-error" hidden class="no">Could not reach the catalogue.</p>
+          <ul class="rows" id="good-results"></ul>
+        </div>
+        <p class="verdict" id="good-verdict">—</p>
+      </div>
+    </div>
+
+    <div class="scroll-x" style="margin-top: 12px">
+      <table>
+        <thead>
+          <tr>
+            <th>step</th>
+            <th>what happened</th>
+            <th>four booleans: regions visible</th>
+            <th>one field: regions visible</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="note" id="verdict"></p>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+      const ROWS = ['פפריקה מעושנת', 'פלפל שחור', 'כמון טחון'];
+
+      /* ── LEFT: four booleans, and one missing line ──────────────────────── */
+      const bad = { isLoading: false, isError: false, isEmpty: false, results: [] };
+
+      function setBad(kind) {
+        /*
+         * THE BUG, AND IT IS AN OMISSION RATHER THAN A MISTAKE. Each branch sets what it
+         * needs. The `error` branch never clears `isEmpty`, and the `empty` branch never
+         * clears `isError` — which is precisely the shape of the real defect: the fourth
+         * flag was added months after the first three, and every existing branch had to
+         * be revisited to clear it. One was missed.
+         */
+        if (kind === 'idle') {
+          bad.isLoading = false;
+          bad.isError = false;
+          bad.isEmpty = false;
+          bad.results = [];
+        } else if (kind === 'loading') {
+          bad.isLoading = true;
+          bad.isError = false;
+          /* isEmpty not cleared — a spinner under "nothing matched" */
+        } else if (kind === 'results') {
+          bad.isLoading = false;
+          bad.isError = false;
+          bad.isEmpty = false;
+          bad.results = ROWS;
+        } else if (kind === 'empty') {
+          bad.isLoading = false;
+          bad.isEmpty = true;
+          bad.results = [];
+          /* isError not cleared */
+        } else if (kind === 'error') {
+          bad.isLoading = false;
+          bad.isError = true;
+          bad.results = [];
+          /* isEmpty not cleared */
+        }
+        paintBad();
+      }
+
+      function paintBad() {
+        /* Each region asks its OWN question, which is what makes contradictions
+           reachable. Nothing here computes a single answer that the four could be
+           checked against — there is no single answer to compute. */
+        el('bad-idle').hidden =
+          bad.isLoading || bad.isError || bad.isEmpty || bad.results.length > 0;
+        el('bad-loading').hidden = !bad.isLoading;
+        el('bad-empty').hidden = !bad.isEmpty;
+        el('bad-error').hidden = !bad.isError;
+        el('bad-results').replaceChildren(
+          ...bad.results.map((row) => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.className = 'name';
+            name.textContent = row;
+            li.append(name);
+            return li;
+          }),
+        );
+        return countVisible('bad');
+      }
+
+      /* ── RIGHT: one field, five values ──────────────────────────────────── */
+      const good = { status: 'idle', results: [], error: null };
+
+      function setGood(kind) {
+        if (kind === 'idle') Object.assign(good, { status: 'idle', results: [], error: null });
+        else if (kind === 'loading') Object.assign(good, { status: 'loading', error: null });
+        else if (kind === 'results')
+          Object.assign(good, { status: 'done', results: ROWS, error: null });
+        else if (kind === 'empty')
+          Object.assign(good, { status: 'done', results: [], error: null });
+        else if (kind === 'error')
+          Object.assign(good, { status: 'error', results: [], error: 'boom' });
+        paintGood();
+      }
+
+      /* THE DERIVATION. One value, computed once, and everything below reads it. There
+         is no combination of flags to get wrong because there are no flags. */
+      const viewOf = (s) =>
+        s.status === 'loading'
+          ? 'loading'
+          : s.status === 'error'
+            ? 'error'
+            : s.status === 'idle'
+              ? 'idle'
+              : s.results.length === 0
+                ? 'empty'
+                : 'results';
+
+      function paintGood() {
+        const view = viewOf(good);
+        el('ui-good').dataset.state = view;
+        el('good-idle').hidden = view !== 'idle';
+        el('good-loading').hidden = view !== 'loading';
+        el('good-empty').hidden = view !== 'empty';
+        el('good-error').hidden = view !== 'error';
+        el('good-results').replaceChildren(
+          ...(view === 'results' ? good.results : []).map((row) => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.className = 'name';
+            name.textContent = row;
+            li.append(name);
+            return li;
+          }),
+        );
+        return countVisible('good');
+      }
+
+      function countVisible(side) {
+        const n = ['idle', 'loading', 'empty', 'error']
+          .map((k) => !el(`${side}-${k}`).hidden)
+          .filter(Boolean).length;
+        const withRows = n + (el(`${side}-results`).children.length > 0 ? 1 : 0);
+        const verdict = el(`${side}-verdict`);
+        verdict.className = 'verdict ' + (withRows === 1 ? 'ok' : 'no');
+        verdict.textContent =
+          withRows === 1
+            ? '1 region visible — which is the only number that ever means anything'
+            : `${withRows} regions visible at once`;
+        return withRows;
+      }
+
+      const set = (kind) => {
+        const b = (setBad(kind), paintBad());
+        const g = (setGood(kind), paintGood());
+        return { b, g };
+      };
+
+      for (const kind of ['idle', 'loading', 'results', 'empty', 'error']) {
+        el(`s-${kind}`).addEventListener('click', () => {
+          for (const other of ['idle', 'loading', 'results', 'empty', 'error']) {
+            el(`s-${other}`).classList.toggle('primary', other === kind);
+          }
+          set(kind);
+        });
+      }
+
+      /* ── The replay ─────────────────────────────────────────────────────── */
+      /*
+       * A REAL JOURNEY, AND THE ORDER IS CHOSEN. The first draft ran
+       * idle-loading-results-loading-error-loading-empty and produced exactly ONE
+       * contradiction out of seven, because `empty` never came BEFORE anything — so
+       * the un-cleared `isEmpty` had nothing to collide with and the demo was making
+       * its point once, by luck.
+       *
+       * This order reaches each omission in turn, and all three are things people have
+       * actually shipped:
+       *   step 4  a spinner on top of the previous results
+       *   step 6  a spinner on top of "nothing matched"
+       *   step 7  "nothing matched" underneath "could not reach the catalogue"
+       */
+      const SEQUENCE = [
+        ['idle', 'the page loads. Nobody has searched.'],
+        ['loading', 'the user types "פפ"'],
+        ['results', 'three matches come back'],
+        ['loading', 'the user types another letter'],
+        ['empty', 'nothing matched'],
+        ['loading', 'the user types again'],
+        ['error', 'the network drops'],
+        ['results', 'the retry works'],
+      ];
+
+      el('replay').addEventListener('click', async () => {
+        el('rows').replaceChildren();
+        let broken = 0;
+        for (const [i, [kind, what]] of SEQUENCE.entries()) {
+          const { b, g } = set(kind);
+          if (b !== 1) broken += 1;
+          const tr = document.createElement('tr');
+          for (const [text, cls] of [
+            [String(i + 1), ''],
+            [what, ''],
+            [String(b), b === 1 ? 'good' : 'bad'],
+            [String(g), g === 1 ? 'good' : 'bad'],
+          ]) {
+            const td = document.createElement('td');
+            td.textContent = text;
+            if (cls) td.className = cls;
+            tr.append(td);
+          }
+          el('rows').append(tr);
+          el('verdict').textContent =
+            `${i + 1} of ${SEQUENCE.length} steps · the four-boolean panel showed a ` +
+            `contradiction on ${broken} of them. Nobody wrote that combination. ` +
+            `Somebody forgot to un-write one.`;
+          await new Promise((r) => setTimeout(r, 700));
+        }
+      });
+
+      el('reset').addEventListener('click', () => {
+        el('rows').replaceChildren();
+        el('verdict').textContent = '';
+        set('idle');
+      });
+
+      set('results');
+    </script>
+  </body>
+</html>

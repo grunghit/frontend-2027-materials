@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The stand-in image, for an item your endpoint has no picture for and for every item
+  in your offline catalogue (data/catalogue.json should ship no image URLs - a
+  catalogue that needs the network to draw its pictures is not an offline catalogue).
+
+  Authored rather than sourced: licence-clean, 1.5 KB, works with no network, and it
+  says "no cover" instead of being a stock photograph of headphones.
+
+  TWO CONSTRAINTS THIS FILE LIVES UNDER, both recorded in COURSE_STATE.md:
+
+  1. IT IS REFERENCED AS <img>, so it cannot read the page's CSS custom properties.
+     The palette here is hard-coded and has to be kept in step with js/theme.js by
+     hand. Every illustration in this course has the same limitation.
+  2. IT HAS TO WORK ON BOTH RAMPS. It sits on `bg-surface-2`, which is near-white in
+     light mode and near-black in dark. So the drawing uses one mid-tone violet-grey
+     that holds up against both grounds rather than a light fill that would vanish on
+     one of them, and it paints its own square ground instead of trusting the page's.
+
+  In SVG a CSS rule beats a presentation attribute, so a `fill="…"` override on an
+  element that also carries a class is silently ignored. There are no classes here at
+  all — every fill is an attribute, which is why it stays predictable.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 400 400"
+  width="400"
+  height="400"
+  role="img"
+  aria-label="אין תמונה"
+>
+  <rect width="400" height="400" fill="#6b6178" />
+
+  <!-- The sleeve: a lighter square inset from the edge. -->
+  <rect x="42" y="42" width="316" height="316" rx="10" fill="#8d8599" />
+
+  <!-- The disc, peeking out of the sleeve as a record does. -->
+  <circle cx="200" cy="200" r="118" fill="#3b3545" />
+  <circle cx="200" cy="200" r="96" fill="none" stroke="#584f66" stroke-width="2" />
+  <circle cx="200" cy="200" r="76" fill="none" stroke="#584f66" stroke-width="2" />
+  <circle cx="200" cy="200" r="56" fill="none" stroke="#584f66" stroke-width="2" />
+
+  <!-- The label, then the spindle hole. -->
+  <circle cx="200" cy="200" r="38" fill="#8d8599" />
+  <circle cx="200" cy="200" r="7" fill="#3b3545" />
+</svg>

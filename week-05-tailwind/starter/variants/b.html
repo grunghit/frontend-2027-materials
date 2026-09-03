@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  ============================================================================
+  CLAUDE'S ANSWER — OPTION B
+
+  Same prompt, second chat. Unedited.
+  ============================================================================
+
+  Claude said about this one:
+
+    "This uses Flexbox. The container stacks vertically by default and becomes a
+     row from the `md` breakpoint. Each card gets `flex-1` so the three share the
+     available width equally, and `basis-0` makes that share ignore the differing
+     amounts of text. Flexbox also lets an individual card opt out of the equal
+     split later without touching the container."
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Option B &mdash; feature row</title>
+
+    <script src="../vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-300: hsl(234 100% 78%);
+      }
+    </style>
+  </head>
+
+  <body class="bg-white p-6 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <h1 class="mb-1 text-2xl font-bold">Option B</h1>
+    <p class="mb-6 text-sm text-slate-600 dark:text-slate-400">
+      Resize the window. Then read the code.
+    </p>
+
+    <div id="row" class="flex flex-col gap-6 md:flex-row">
+      <article
+        class="rounded-xl border border-slate-300 p-5 md:flex-1 md:basis-0 dark:border-slate-700"
+      >
+        <h2 class="mt-0 mb-2 text-lg font-semibold text-brand-500 dark:text-brand-300">Uptime</h2>
+        <p class="m-0 text-sm text-slate-600 dark:text-slate-400">
+          Rolling thirty days across every region, including the ones nobody watches.
+        </p>
+      </article>
+      <article
+        class="rounded-xl border border-slate-300 p-5 md:flex-1 md:basis-0 dark:border-slate-700"
+      >
+        <h2 class="mt-0 mb-2 text-lg font-semibold text-brand-500 dark:text-brand-300">Latency</h2>
+        <p class="m-0 text-sm text-slate-600 dark:text-slate-400">
+          Median end to end, measured from the edge rather than from the load balancer.
+        </p>
+      </article>
+      <article
+        class="rounded-xl border border-slate-300 p-5 md:flex-1 md:basis-0 dark:border-slate-700"
+      >
+        <h2 class="mt-0 mb-2 text-lg font-semibold text-brand-500 dark:text-brand-300">Errors</h2>
+        <p class="m-0 text-sm text-slate-600 dark:text-slate-400">
+          Fives only. Fours are somebody else's bug most of the time and are counted apart.
+        </p>
+      </article>
+    </div>
+  </body>
+</html>

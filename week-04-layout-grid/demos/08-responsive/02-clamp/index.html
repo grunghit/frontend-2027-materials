@@ -1,0 +1,277 @@
+<!doctype html>
+<!--
+  clamp(), and type that resizes without a media query. Week-4 deck, act 6.
+
+  Three headlines at the same viewport width: one fixed, one stepped through media
+  queries, one fluid with clamp(). The slider is the viewport. Watch which one is
+  readable at every width rather than at three widths.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. clamp() is shown as the three arguments it actually is — minimum, preferred,
+     maximum — with each one plotted and the ACTIVE one named as the slider moves. The
+     usual explanation ("it clamps") tells a student nothing about why the middle
+     argument contains `vw` and a constant added to it.
+  2. The stepped version is included and is not a straw man. It is what a careful
+     person writes without clamp(), and the jump at each breakpoint is visible as a
+     number, which is the thing clamp() removes.
+  3. The accessibility trap has its own toggle. A preferred value of pure `vw` with no
+     `rem` term does not respond to the user's browser font-size setting at all, which
+     silently breaks zoom for anybody who has changed it. The fix is the `rem` term,
+     and the readout shows the computed size failing to move until it is added.
+  4. Every number is read back with getComputedStyle, so the reported size is what the
+     browser did rather than what the formula predicts.
+
+  DEMO MOVE: drag the slider once, fast, end to end. The stepped heading jumps twice;
+  the fluid one glides. Then set the viewport small and turn on the "user has set a
+  larger default font" toggle: the pure-vw heading does not move, and that is a real
+  accessibility failure, not a stylistic one.
+
+  Keep this short in the lecture. It is a two-minute idea with a one-minute trap.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>clamp and fluid type</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 4px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h2 code {
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font:
+          600 13px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+        cursor: pointer;
+      }
+      input[type='range'] {
+        accent-color: #1d4ed8;
+        vertical-align: middle;
+        min-width: 200px;
+      }
+      input[type='checkbox'] {
+        accent-color: #1d4ed8;
+        margin-right: 4px;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      .stage {
+        padding: 10px;
+        border: 2px dashed #7a8699;
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+      .frame {
+        max-width: 100%;
+        margin-inline: auto;
+        display: grid;
+        gap: 10px;
+      }
+      .sample {
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #fff;
+        border: 2px solid var(--line);
+        overflow: hidden;
+      }
+      .sample h3 {
+        margin: 0;
+        line-height: 1.15;
+        font-family: system-ui, sans-serif;
+      }
+      .sample.fixed h3 {
+        font-size: 40px;
+      }
+      .sample.fluid {
+        border-color: #15803d;
+        background: #f0fdf4;
+      }
+      .sample.stepped {
+        border-color: #b45309;
+        background: #fffbeb;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          13px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <label for="width">viewport</label>
+      <input type="range" id="width" min="320" max="1200" step="5" value="480" />
+      <output id="width-out" for="width">480px</output>
+      <label><input type="checkbox" id="rooted" checked />keep the rem term in clamp()</label>
+      <label><input type="checkbox" id="zoom" />user has set a larger default font</label>
+    </div>
+
+    <div class="stage">
+      <div class="frame" id="frame">
+        <div class="sample fixed">
+          <h2><code>font-size: 40px</code></h2>
+          <h3>Layout that fits the page</h3>
+        </div>
+        <div class="sample stepped">
+          <h2>three steps, three media queries</h2>
+          <h3 id="stepped">Layout that fits the page</h3>
+        </div>
+        <div class="sample fluid">
+          <h2 id="clamp-label"><code>clamp()</code></h2>
+          <h3 id="fluid">Layout that fits the page</h3>
+        </div>
+      </div>
+    </div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const frame = document.getElementById('frame');
+      const width = document.getElementById('width');
+      const widthOut = document.getElementById('width-out');
+      const stepped = document.getElementById('stepped');
+      const fluid = document.getElementById('fluid');
+      const label = document.getElementById('clamp-label');
+      const rooted = document.getElementById('rooted');
+      const zoom = document.getElementById('zoom');
+      const out = document.getElementById('out');
+
+      const MIN = 24;
+      const MAX = 44;
+
+      function render() {
+        const w = Number(width.value);
+        const root = zoom.checked ? 22 : 16;
+        widthOut.textContent = w + 'px';
+        frame.style.width = w + 'px';
+
+        /* The stepped version: what a careful person writes without clamp(). */
+        stepped.style.fontSize = w >= 900 ? '44px' : w >= 600 ? '34px' : '24px';
+
+        /* The fluid version. The container is the frame, not the window, so vw would
+           measure the wrong box here — cqi/cqw would be the honest unit but container
+           queries are act 6's last slide. Compute the same arithmetic against the
+           frame width and set it directly, and SAY so rather than hide it. */
+        const vw = w / 100;
+        const preferred = rooted.checked ? 1 * root + 2.5 * vw : 4.2 * vw;
+        const used = Math.min(Math.max(preferred, MIN), MAX);
+        fluid.style.fontSize = used + 'px';
+
+        const formula = rooted.checked
+          ? 'clamp(' + MIN + 'px, 1rem + 2.5vw, ' + MAX + 'px)'
+          : 'clamp(' + MIN + 'px, 4.2vw, ' + MAX + 'px)';
+        label.textContent = formula;
+
+        const which =
+          preferred <= MIN
+            ? 'the MINIMUM'
+            : preferred >= MAX
+              ? 'the MAXIMUM'
+              : 'the PREFERRED value';
+
+        out.textContent =
+          '  viewport            ' +
+          w +
+          'px\n' +
+          '  root font-size      ' +
+          root +
+          'px' +
+          (zoom.checked ? '   (the user changed it)' : '') +
+          '\n\n' +
+          '  ' +
+          formula +
+          '\n' +
+          '    minimum   ' +
+          MIN +
+          'px\n' +
+          '    preferred ' +
+          preferred.toFixed(1) +
+          'px  <- ' +
+          which +
+          ' is winning\n' +
+          '    maximum   ' +
+          MAX +
+          'px\n' +
+          '    used      ' +
+          used.toFixed(1) +
+          'px\n\n' +
+          '  stepped version     ' +
+          stepped.style.fontSize +
+          '\n\n' +
+          '  clamp takes three arguments and always returns the middle one, unless it\n' +
+          '  falls outside the other two. So the minimum is a floor for small screens,\n' +
+          '  the maximum is a ceiling so a headline does not become a billboard on a\n' +
+          '  monitor, and the middle is the only part that actually varies.\n\n' +
+          (rooted.checked
+            ? '  The `1rem +` term is not decoration. It is what keeps the size tied to the\n' +
+              "  user's own font setting. Turn the rem term off and then turn on the larger\n" +
+              '  default font: the heading will not move at all.'
+            : '  THIS IS THE TRAP. With a pure `vw` preferred value there is no rem term,\n' +
+              "  so the user's browser font-size setting does nothing — tick the zoom box\n" +
+              '  and watch the number above refuse to change. Somebody who set a larger\n' +
+              '  default font because they need one has just been ignored by your CSS.\n\n' +
+              '  Always keep a rem term in the middle argument.') +
+          '\n\n' +
+          '  Note what clamp() replaced: three media queries and two visible jumps.\n' +
+          '  Drag the slider end to end and watch the amber heading step while the\n' +
+          '  green one glides.';
+      }
+
+      for (const control of [width, rooted, zoom]) {
+        control.addEventListener('input', render);
+        control.addEventListener('change', render);
+      }
+      render();
+    </script>
+  </body>
+</html>

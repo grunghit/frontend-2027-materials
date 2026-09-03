@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Illustrated portrait of Maya wearing round glasses">
+  <rect width="240" height="240" rx="18" fill="#e7f1f8" />
+  <path d="M40 224c0-42 36-66 80-66s80 24 80 66z" fill="#0b5f8f" />
+  <circle cx="120" cy="98" r="44" fill="#f3d4b8" />
+  <path d="M76 92a44 44 0 0 1 88 0c0-30-20-44-44-44S76 62 76 92z" fill="#3a2c22" />
+  <circle cx="104" cy="102" r="13" fill="none" stroke="#3a2c22" stroke-width="3" />
+  <circle cx="140" cy="102" r="13" fill="none" stroke="#3a2c22" stroke-width="3" />
+  <path d="M117 102h10M91 100l-8-3M153 100l8-3" stroke="#3a2c22" stroke-width="3" fill="none" />
+  <path d="M110 124q10 8 20 0" stroke="#3a2c22" stroke-width="3" fill="none" stroke-linecap="round" />
+</svg>

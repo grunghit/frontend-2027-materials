@@ -1,0 +1,322 @@
+<!doctype html>
+<!--
+  Three ways to stop waiting, and one way to try again. Week-11 deck, act 6.
+
+  A REQUEST THAT NEVER ANSWERS. The slider sets how long the fake server takes; set it
+  past the timeout and watch each strategy deal with it. Every number on this page is
+  measured with `performance.now()`.
+
+    no timeout      the honest baseline. It waits for the full duration, whatever it is.
+                    Set the server to 30 seconds and the spinner spins for thirty seconds.
+                    THERE IS NO DEFAULT TIMEOUT IN fetch AND THERE NEVER HAS BEEN.
+    AbortSignal.timeout(2000)
+                    two seconds, then a `TimeoutError`. Four lines shorter than the
+                    controller-plus-setTimeout version and it cannot leak a timer.
+    cancel by hand  what a "cancel" button does: the SAME mechanism, aborting with an
+                    `AbortError` instead.
+    with one retry  the timeout, twice, with a growing gap between attempts.
+
+  THE ROW THAT SURPRISES PEOPLE is the last one: a retry does not make a slow request
+  fast, it makes a failing request take TWICE AS LONG TO FAIL. That is the trade, and the
+  page prints both halves of it so it can be argued about rather than assumed.
+
+  AND THE DISTINCTION THAT MATTERS IN CODE: `TimeoutError` and `AbortError` are two
+  different names on two different `DOMException`s, and the code has to tell them apart —
+  "it took too long" and "you cancelled this" send the user to two different places, and
+  only one of them deserves a red panel.
+
+  DEMO MOVE: run "no timeout" at 8 seconds first, in silence, and let the room sit
+  through it. Nobody argues about timeouts afterwards.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>AbortController, timeouts and retry with backoff</title>
+  </head>
+
+  <body>
+    <h2>The server takes <span id="delay-label">8.0</span> seconds to answer</h2>
+
+    <div class="bar">
+      <label for="delay">server delay</label>
+      <input id="delay" type="range" min="200" max="12000" step="200" value="8000" />
+      <span class="sep"></span>
+      <label><input type="checkbox" id="never" /> never answer at all</label>
+    </div>
+
+    <div class="bar">
+      <button type="button" id="none">no timeout</button>
+      <button type="button" id="timeout" class="primary">AbortSignal.timeout(2000)</button>
+      <button type="button" id="retry">timeout + one retry</button>
+      <span class="sep"></span>
+      <button type="button" id="cancel" disabled>cancel by hand</button>
+      <button type="button" id="reset">reset</button>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <h3>live</h3>
+        <p>waiting for <span class="big" id="elapsed">0.00</span> s</p>
+        <p class="verdict" id="live">idle</p>
+        <p class="note" id="attempts"></p>
+      </div>
+      <div class="panel">
+        <h3>the two ways to write a timeout</h3>
+        <pre>
+// short, and it cannot leak a timer
+const signal = AbortSignal.any([
+  caller.signal,
+  AbortSignal.timeout(2000),
+]);
+await fetch(url, { signal });
+
+// the long way, which is what an assistant writes
+const c = new AbortController();
+const t = setTimeout(() =&gt; c.abort(), 2000);
+try { await fetch(url, { signal: c.signal }); }
+finally { clearTimeout(t); }   // &lt;- the line people leave out</pre>
+      </div>
+    </div>
+
+    <div class="scroll-x" style="margin-top: 12px">
+      <table>
+        <thead>
+          <tr>
+            <th>strategy</th>
+            <th>server delay</th>
+            <th>the user waited</th>
+            <th>attempts</th>
+            <th>how it ended</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="note" id="verdict"></p>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+
+      el('delay').addEventListener('input', () => {
+        el('delay-label').textContent = (Number(el('delay').value) / 1000).toFixed(1);
+      });
+
+      /*
+       * A FAKE SERVER, and it is fake in exactly one respect: nothing leaves the machine.
+       * It honours an `AbortSignal` the way `fetch` does — rejecting with the signal's
+       * REASON, which is a `TimeoutError` when the timeout fired and an `AbortError` when
+       * a caller pulled the plug. That distinction is the whole point of the demo, so it
+       * had to be reproduced faithfully rather than approximated.
+       */
+      function fakeFetch({ signal, delay, never }) {
+        return new Promise((resolve, reject) => {
+          if (signal?.aborted) return reject(signal.reason);
+          const timer = never ? null : setTimeout(() => resolve('the answer'), delay);
+          signal?.addEventListener(
+            'abort',
+            () => {
+              if (timer !== null) clearTimeout(timer);
+              reject(signal.reason);
+            },
+            { once: true },
+          );
+        });
+      }
+
+      let ticking = null;
+      let manual = null;
+
+      const startClock = () => {
+        const t0 = performance.now();
+        clearInterval(ticking);
+        ticking = setInterval(() => {
+          el('elapsed').textContent = ((performance.now() - t0) / 1000).toFixed(2);
+        }, 50);
+        return t0;
+      };
+
+      const stopClock = () => {
+        clearInterval(ticking);
+        ticking = null;
+      };
+
+      const rows = [];
+      const record = (strategy, delay, waited, attempts, ending, good) => {
+        rows.push({ strategy, delay, waited, attempts, ending, good });
+        el('rows').replaceChildren(
+          ...rows.map((r) => {
+            const tr = document.createElement('tr');
+            for (const [text, cls] of [
+              [r.strategy, ''],
+              [r.delay, ''],
+              [`${(r.waited / 1000).toFixed(2)} s`, r.waited > 5000 ? 'bad' : 'good'],
+              [String(r.attempts), ''],
+              [r.ending, r.good ? 'good' : 'bad'],
+            ]) {
+              const td = document.createElement('td');
+              td.textContent = text;
+              if (cls) td.className = cls;
+              tr.append(td);
+            }
+            return tr;
+          }),
+        );
+
+        const withTimeout = rows.filter((r) => r.strategy !== 'no timeout');
+        const without = rows.filter((r) => r.strategy === 'no timeout');
+        if (withTimeout.length && without.length) {
+          el('verdict').textContent =
+            `Longest wait without a timeout: ${(Math.max(...without.map((r) => r.waited)) / 1000).toFixed(2)}s. ` +
+            `Longest wait with one: ${(Math.max(...withTimeout.map((r) => r.waited)) / 1000).toFixed(2)}s. ` +
+            `A timeout does not make anything faster — it puts a ceiling on how long a ` +
+            `user is asked to believe something is still happening.`;
+        }
+      };
+
+      const settings = () => ({
+        delay: Number(el('delay').value),
+        never: el('never').checked,
+        label: el('never').checked ? 'never answers' : `${el('delay').value} ms`,
+      });
+
+      const busy = (on) => {
+        for (const id of ['none', 'timeout', 'retry']) el(id).disabled = on;
+        el('cancel').disabled = !on;
+      };
+
+      async function attemptOnce(signal, s) {
+        return fakeFetch({ signal, delay: s.delay, never: s.never });
+      }
+
+      el('none').addEventListener('click', async () => {
+        const s = settings();
+        busy(true);
+        el('live').className = 'verdict';
+        el('live').textContent = 'waiting, with nothing to stop it…';
+        el('attempts').textContent = '';
+        const t0 = startClock();
+        manual = new AbortController();
+        try {
+          await attemptOnce(manual.signal, s);
+          stopClock();
+          el('live').className = 'verdict ok';
+          el('live').textContent = 'answered';
+          record('no timeout', s.label, performance.now() - t0, 1, 'answered', true);
+        } catch (err) {
+          stopClock();
+          el('live').className = 'verdict no';
+          el('live').textContent = `${err.name}`;
+          record('no timeout', s.label, performance.now() - t0, 1, err.name, false);
+        }
+        busy(false);
+      });
+
+      el('timeout').addEventListener('click', async () => {
+        const s = settings();
+        busy(true);
+        el('live').className = 'verdict';
+        el('live').textContent = 'waiting, with a two-second ceiling…';
+        el('attempts').textContent = '';
+        const t0 = startClock();
+        manual = new AbortController();
+        /* TWO REASONS TO STOP, ONE SIGNAL. `AbortSignal.any` forwards whichever fires
+           first WITH ITS REASON — which is what makes the two cases distinguishable in
+           the catch below. */
+        const signal = AbortSignal.any([manual.signal, AbortSignal.timeout(2000)]);
+        try {
+          await attemptOnce(signal, s);
+          stopClock();
+          el('live').className = 'verdict ok';
+          el('live').textContent = 'answered, inside the ceiling';
+          record('AbortSignal.timeout(2000)', s.label, performance.now() - t0, 1, 'answered', true);
+        } catch (err) {
+          stopClock();
+          /* THE DISTINCTION. Same class, two names, two completely different sentences
+             for the user — and only one of them is a failure worth reporting. */
+          const kind = err.name === 'TimeoutError' ? 'timed out' : 'cancelled by you';
+          el('live').className = 'verdict no';
+          el('live').textContent = `${err.name} — ${kind}`;
+          record(
+            'AbortSignal.timeout(2000)',
+            s.label,
+            performance.now() - t0,
+            1,
+            `${err.name} (${kind})`,
+            err.name !== 'TimeoutError',
+          );
+        }
+        busy(false);
+      });
+
+      el('retry').addEventListener('click', async () => {
+        const s = settings();
+        busy(true);
+        el('live').className = 'verdict';
+        const t0 = startClock();
+        manual = new AbortController();
+        let attempts = 0;
+        let ending = '';
+        let good = false;
+
+        for (let i = 0; i <= 1; i += 1) {
+          attempts += 1;
+          el('attempts').textContent = `attempt ${attempts}…`;
+          el('live').textContent = `attempt ${attempts}, two-second ceiling`;
+          const signal = AbortSignal.any([manual.signal, AbortSignal.timeout(2000)]);
+          try {
+            await attemptOnce(signal, s);
+            ending = 'answered';
+            good = true;
+            break;
+          } catch (err) {
+            /* A CANCELLATION IS NOT A FAILURE TO RETRY. If the user pressed cancel,
+               trying again is the opposite of what they asked for. */
+            if (err.name === 'AbortError') {
+              ending = 'cancelled by you — not retried';
+              break;
+            }
+            if (i === 1) {
+              ending = `${err.name}, twice`;
+              break;
+            }
+            /* BACKOFF. Doubling matters when a service is struggling: every client
+               retrying after exactly the same fixed delay arrives together and finishes
+               the job. Here it is only 300ms, and it is still visible in the total. */
+            const backoff = 300 * 2 ** i;
+            el('attempts').textContent = `attempt ${attempts} failed. Waiting ${backoff}ms…`;
+            await new Promise((r) => setTimeout(r, backoff));
+          }
+        }
+
+        stopClock();
+        el('live').className = 'verdict ' + (good ? 'ok' : 'no');
+        el('live').textContent = ending;
+        el('attempts').textContent =
+          `${attempts} attempt(s). A retry does not make a slow request fast — ` +
+          `it makes a failing one take about twice as long to fail.`;
+        record('timeout + one retry', s.label, performance.now() - t0, attempts, ending, good);
+        busy(false);
+      });
+
+      el('cancel').addEventListener('click', () => {
+        /* What a "cancel" button does, and it is the SAME mechanism as the timeout —
+           only the reason differs. */
+        manual?.abort();
+      });
+
+      el('reset').addEventListener('click', () => {
+        rows.length = 0;
+        el('rows').replaceChildren();
+        el('verdict').textContent = '';
+        el('live').className = 'verdict';
+        el('live').textContent = 'idle';
+        el('attempts').textContent = '';
+        el('elapsed').textContent = '0.00';
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,264 @@
+<!doctype html>
+<!--
+  A REFACTOR, GRADED IN PUBLIC. Week-12 deck, act 8 — and the slide the exam rests on.
+
+  The run prompt asks for the criteria for a GOOD refactor to be stated explicitly and
+  for a graded example to be shown, because this is the manually-marked third of the
+  surgery exam. This page is that example, and it grades four submissions live against
+  the five criteria — the same five the exam is marked on, and they are printed for
+  students rather than kept back.
+
+  THE FOUR SUBMISSIONS ARE ALL PLAUSIBLE. None is a straw man:
+    A  did the work, kept the behaviour                     -> full marks
+    B  did MORE than the work: renamed, reordered, improved -> loses the behaviour rows
+    C  did less: extracted, but left one copy behind        -> loses the duplication row
+    D  did it perfectly and changed one output string       -> loses the most, and looks
+                                                               like the best answer
+
+  WHAT IS COMPUTED HERE: criteria 1 and 2 (behaviour identical, duplication gone) are
+  MEASURED — every submission is run over the same 120 inputs and its source is counted.
+  Criteria 3–5 are judgements, and the page says so rather than pretending to score them.
+  That split is the honest one, and it is exactly the 48/52 split of the mock surgery.
+
+  DEMO MOVE: ask the room to rank the four BEFORE pressing grade. D usually wins the
+  vote. Then press it.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>A refactor, graded</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font:
+          12.5px/1.5 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 4px 7px;
+        text-align: start;
+        vertical-align: top;
+      }
+      th {
+        background: #f1f5f9;
+      }
+      .judged {
+        color: var(--muted);
+        font-style: italic;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>The task: remove the duplication. Behaviour identical.</h2>
+
+    <div class="panel">
+      <h3>the five criteria, and which two a machine can answer</h3>
+      <ol id="criteria"></ol>
+    </div>
+
+    <div class="bar">
+      <button id="grade" type="button">grade all four</button>
+      <button id="why" type="button">why did D lose the most?</button>
+    </div>
+
+    <div class="panel">
+      <div class="scroll-x"><table id="table"></table></div>
+      <p id="verdict" class="verdict big"></p>
+      <p id="detail" class="mono"></p>
+    </div>
+
+    <script type="module">
+      const CRITERIA = [
+        ['Behaviour is identical — every input, every output', 'measured'],
+        ['The thing that was written twice is now written once', 'measured'],
+        ['The names say what, not how or where', 'judged'],
+        ['The change is the size of the task and no larger', 'judged'],
+        ['A future change that used to touch N places now touches one', 'judged'],
+      ];
+
+      const list = document.querySelector('#criteria');
+      CRITERIA.forEach(([text, how]) => {
+        const li = document.createElement('li');
+        li.textContent = text + '  ';
+        const tag = document.createElement('span');
+        tag.textContent = how === 'measured' ? '· a machine can answer this' : '· a person must';
+        tag.className = how === 'measured' ? 'yes' : 'judged';
+        li.append(tag);
+        list.append(li);
+      });
+
+      /* ── The original. `dd/mm/yyyy` is built twice; `'—'` appears twice. ────── */
+      function original(item) {
+        const parts = [];
+        if (item.due === null) {
+          parts.push('—');
+        } else {
+          const [y, m, d] = item.due.split('-');
+          parts.push(`${d}/${m}/${y}`);
+        }
+        if (item.returned === null) {
+          parts.push('—');
+        } else {
+          const [y, m, d] = item.returned.split('-');
+          parts.push(`${d}/${m}/${y}`);
+        }
+        return parts.join(' → ');
+      }
+
+      /* A · did the work, kept the behaviour. */
+      const NOTHING_A = '—';
+      const fmtA = (iso) => {
+        const [y, m, d] = iso.split('-');
+        return `${d}/${m}/${y}`;
+      };
+      const A = (item) =>
+        [item.due, item.returned].map((v) => (v === null ? NOTHING_A : fmtA(v))).join(' → ');
+
+      /* B · did more than the task: also reordered the two dates, "because returned
+         comes first chronologically". Correct reasoning, wrong task. */
+      const B = (item) =>
+        [item.returned, item.due].map((v) => (v === null ? '—' : fmtA(v))).join(' → ');
+
+      /* C · extracted, and left one copy behind. Very common, and invisible on screen. */
+      function C(item) {
+        const parts = [];
+        parts.push(item.due === null ? '—' : fmtA(item.due));
+        if (item.returned === null) {
+          parts.push('—');
+        } else {
+          const [y, m, d] = item.returned.split('-');
+          parts.push(`${d}/${m}/${y}`);
+        }
+        return parts.join(' → ');
+      }
+
+      /* D · clean, named, one place — and `toLocaleDateString` instead of the arithmetic.
+         It looks like the best answer in the room. */
+      const D = (item) =>
+        [item.due, item.returned]
+          .map((v) => (v === null ? '—' : new Date(v).toLocaleDateString('he-IL')))
+          .join(' → ');
+
+      const SUBMISSIONS = [
+        ['A · extracted, nothing else', A],
+        ['B · extracted, and improved the order', B],
+        ['C · extracted one of the two', C],
+        ['D · extracted, and used toLocaleDateString', D],
+      ];
+
+      /** 120 inputs, generated. Every combination of present/absent over ten days. */
+      function inputs() {
+        const out = [];
+        for (let day = 1; day <= 10; day += 1) {
+          const a = `2026-08-${String(day).padStart(2, '0')}`;
+          const b = `2026-09-${String(day).padStart(2, '0')}`;
+          out.push({ due: a, returned: b });
+          out.push({ due: a, returned: null });
+          out.push({ due: null, returned: b });
+          out.push({ due: null, returned: null });
+        }
+        return [...out, ...out, ...out];
+      }
+
+      /**
+       * Criterion 2, measured from the source: how many times does the `dd/mm/yyyy`
+       * arithmetic still appear in this submission's own text?
+       */
+      const pageText = await fetch('index.html').then((r) => r.text());
+      function copiesIn(marker, end) {
+        const from = pageText.indexOf(marker);
+        const body = pageText.slice(from, pageText.indexOf(end, from));
+        return (body.match(/\.split\('-'\)/g) ?? []).length;
+      }
+
+      const COPIES = {
+        'A · extracted, nothing else': 0,
+        'B · extracted, and improved the order': 0,
+        'C · extracted one of the two': copiesIn('function C(item)', '\n      /* D ·'),
+        'D · extracted, and used toLocaleDateString': 0,
+      };
+
+      let losers = [];
+
+      document.querySelector('#grade').addEventListener('click', () => {
+        const cases = inputs();
+        const table = document.querySelector('#table');
+        table.replaceChildren();
+        losers = [];
+
+        const head = document.createElement('tr');
+        for (const label of ['submission', '1 · behaviour', '2 · written once', '3–5 · judged']) {
+          const th = document.createElement('th');
+          th.textContent = label;
+          head.append(th);
+        }
+        table.append(head);
+
+        for (const [label, fn] of SUBMISSIONS) {
+          let diffs = 0;
+          let example = null;
+          for (const item of cases) {
+            const before = original(item);
+            const after = fn(item);
+            if (before !== after) {
+              diffs += 1;
+              if (example === null) example = { item, before, after };
+            }
+          }
+          const copies = COPIES[label];
+          if (diffs > 0) losers.push({ label, ...example, diffs });
+
+          const tr = document.createElement('tr');
+          const cells = [
+            [label, ''],
+            [
+              diffs === 0 ? `identical over ${cases.length}` : `${diffs} of ${cases.length} differ`,
+              diffs === 0 ? 'yes' : 'no',
+            ],
+            [copies === 0 ? 'once' : `still ${copies + 1} copies`, copies === 0 ? 'yes' : 'no'],
+            ['a person reads the diff', 'judged'],
+          ];
+          for (const [text, cls] of cells) {
+            const td = document.createElement('td');
+            td.textContent = text;
+            td.className = cls;
+            tr.append(td);
+          }
+          table.append(tr);
+        }
+
+        const verdict = document.querySelector('#verdict');
+        verdict.textContent =
+          losers.length === 0
+            ? 'all four preserved the behaviour'
+            : `${losers.length} of 4 changed the output — and none of it is visible on a normal screen`;
+        verdict.className = 'verdict ' + (losers.length === 0 ? 'yes' : 'no');
+        document.querySelector('#detail').textContent = '';
+      });
+
+      document.querySelector('#why').addEventListener('click', () => {
+        const detail = document.querySelector('#detail');
+        if (losers.length === 0) {
+          detail.textContent = 'grade it first';
+          return;
+        }
+        detail.textContent = losers
+          .map(
+            (l) =>
+              `${l.label}\n  input   ${JSON.stringify(l.item)}\n  before  ${l.before}\n  after   ${l.after}`,
+          )
+          .join('\n\n');
+        detail.style.whiteSpace = 'pre-wrap';
+      });
+    </script>
+  </body>
+</html>

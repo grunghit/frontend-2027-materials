@@ -1,0 +1,21 @@
+{
+  "//": "YOUR OFFLINE CATALOGUE. Replace the two example rows with real ones captured from your own endpoint (brief, requirement 21). This is what makes the application usable in the exam room in week 13, on a train, and in a lab whose firewall does not like your API.",
+  "//howToBuild": "Open your endpoint's URL in the browser, copy the response, and keep 20-25 rows. KEEP THE FIELD NAMES EXACTLY AS THE ENDPOINT RETURNS THEM - then the same toItem() in js/api.js normalises this file and a live response through the same code path, which is the only way the offline path can be trusted to behave like the live one. Renaming the fields here to match your Item type defeats the whole point.",
+  "//noImageUrls": "Do NOT keep remote image URLs. They would need the network, and a catalogue that needs the network to draw its pictures is not an offline catalogue. Leave the image field out; toItem() should yield null and render.js falls back to images/placeholder.svg.",
+  "//oneOddRow": "Worth doing on purpose: leave ONE row missing an optional field. It exercises your null-handling with real data instead of only in theory, and it is where most students discover their card renders the word 'undefined'.",
+  "//structure": "The wrapper key below is whatever YOUR endpoint uses - `results`, `data`, `items`, `meals`. Match it, and read the same key in searchOffline().",
+
+  "results": [
+    {
+      "//": "CODE HERE - replace with a real row from your endpoint, field names unchanged",
+      "id": 1,
+      "name": "דוגמה ראשונה",
+      "category": "דוגמה"
+    },
+    {
+      "//": "CODE HERE - and this one is missing a field on purpose",
+      "id": 2,
+      "name": "דוגמה שנייה"
+    }
+  ]
+}

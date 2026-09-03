@@ -1,0 +1,416 @@
+<!doctype html>
+<!--
+  The scale, drawn to size. Week-5 deck, act 3.
+
+  Utilities are not the interesting part of this system. The SCALE is. `p-4` is not
+  valuable because it is short - it is valuable because there is no `p-3.7`, so a page
+  built out of it has a rhythm nobody had to enforce.
+
+  Three rulers, all measured off real elements rather than drawn from a table:
+
+    spacing   every step, with the pixel value the browser resolved it to
+    type      every step, set in the actual face at the actual size
+    colour    the ramp, with the AA contrast ratio of white and black on each swatch
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE OFF-SCALE INTRUDER. A single `p-[13px]` box sits in the spacing ruler between
+     p-3 (12px) and p-4 (16px). It is not wrong, it is not ugly, and that is exactly the
+     problem: one of them is invisible on its own and obvious in a row. Rhythm is a
+     property of the SET, which is why it cannot be judged one box at a time - and why
+     it is the thing a scale buys you.
+  2. Everything is measured. The pixel numbers come from getBoundingClientRect on the
+     rendered boxes, so the ruler cannot disagree with the page.
+  3. The contrast column is computed with the real WCAG formula, so the room can see
+     which brand steps are legal for text and which are decoration only. Week 2 taught
+     4.5:1 and 3:1; here is where those numbers meet a palette.
+  4. `--spacing` is shown as what it is: ONE number in @theme that every spacing utility
+     multiplies. Change it and the whole page re-spaces. That is the token argument from
+     week 2, now with a system attached.
+
+  DEMO MOVE: cover the readout. Point at the spacing ruler and ask "which one of these
+  does not belong?" - most of the room finds it in about four seconds, and nobody can
+  say why for another ten. Let the silence run. The answer is that they are comparing
+  it with its neighbours, which is a thing you can only do when the neighbours exist.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The spacing, type and colour scales</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 16px 0 6px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h2:first-of-type {
+        margin-top: 0;
+      }
+      .ruler {
+        display: grid;
+        gap: 3px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        background: #f8fafc;
+      }
+      .rung {
+        display: grid;
+        grid-template-columns: 92px 74px 1fr;
+        align-items: center;
+        gap: 10px;
+        font:
+          12.5px/1.5 ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      .rung code {
+        color: #1d4ed8;
+        font-weight: 700;
+      }
+      .rung .px {
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+      .bar {
+        height: 15px;
+        border-radius: 3px;
+        background: #1d4ed8;
+      }
+      .rung.odd .bar {
+        background: #60a5fa;
+      }
+      /* The intruder. Marked so the eye can find it AFTER the room has, never before. */
+      .rung.intruder {
+        background: #fffbeb;
+        border-radius: 6px;
+        outline: 2px dashed #b45309;
+      }
+      .rung.intruder code {
+        color: #b45309;
+      }
+      /* The type block scrolls INSIDE ITSELF at narrow widths, and the page does not.
+         The sample sentence is set at the step being demonstrated, so at `text-4xl` its
+         min-content width alone is wider than a 375px phone — a `1fr` track cannot
+         shrink below that, and the row used to push the whole page 19px wide. "No
+         horizontal scroll at 375 / 768 / 1280" is a scored line in week 1, hw-1, hw-2 and
+         the project, so a teaching demo may not break it. Same treatment as `.viewport`
+         in demos/05-responsive: the instrument keeps its own overflow. */
+      #type {
+        overflow-x: auto;
+      }
+      .type-row {
+        display: grid;
+        grid-template-columns: 92px 74px 1fr;
+        align-items: baseline;
+        gap: 10px;
+        padding: 2px 0;
+      }
+      .type-row .label,
+      .type-row .px {
+        font:
+          12.5px/1.5 ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      .type-row .label {
+        color: #1d4ed8;
+        font-weight: 700;
+      }
+      .type-row .px {
+        color: var(--muted);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .swatches {
+        display: grid;
+        gap: 4px;
+      }
+      .swatch {
+        display: grid;
+        grid-template-columns: 110px 1fr 1fr;
+        gap: 2px;
+        align-items: stretch;
+        font:
+          12px/1.5 ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      .swatch .name {
+        display: flex;
+        align-items: center;
+        color: #1d4ed8;
+        font-weight: 700;
+      }
+      .chip {
+        padding: 7px 10px;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .pass {
+        font-weight: 700;
+      }
+      .readout {
+        margin: 14px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          12.5px/1.7 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+    </style>
+
+    <script src="../vendor/tailwind.js"></script>
+    <!--
+      The whole point of this file in one block: these are week 2's tokens
+      (shared/tokens.css), restated so Tailwind can build utilities out of them. Nothing
+      new was invented — --color-brand-500 IS --color-accent, and --spacing is the step
+      every p-*, m-*, gap-* and w-* utility multiplies.
+    -->
+    <style type="text/tailwindcss">
+      @theme {
+        --spacing: 0.25rem;
+
+        --color-brand-100: hsl(234 100% 96%);
+        --color-brand-200: hsl(234 100% 90%);
+        --color-brand-300: hsl(234 100% 78%);
+        --color-brand-400: hsl(234 92% 66%);
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-600: hsl(234 82% 44%);
+        --color-brand-700: hsl(234 78% 38%);
+        --color-brand-800: hsl(234 70% 30%);
+        --color-brand-900: hsl(234 62% 22%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>spacing &mdash; every step is <code>--spacing</code> times a whole number</h2>
+    <div class="ruler" id="spacing"></div>
+
+    <h2>type</h2>
+    <div class="ruler" id="type"></div>
+
+    <h2>colour &mdash; and which steps are legal for text</h2>
+    <div class="swatches" id="colour"></div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      /* ── Measuring, not listing ───────────────────────────────────────────────
+         Every number below is read off a rendered box. The rulers are built by
+         applying the utility and then asking the browser what happened, so a ruler
+         cannot drift out of step with the page it is describing. */
+
+      const SPACING = ['0.5', '1', '1.5', '2', '3', '4', '5', '6', '8', '10', '12', '16', '20', '24'];
+      const TYPE = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl'];
+      const BRAND = ['100', '200', '300', '400', '500', '600', '700', '800', '900'];
+
+      /** A box carrying `cls`, measured after the compiler has had a frame or two. */
+      const stage = document.createElement('div');
+      stage.setAttribute('aria-hidden', 'true');
+      stage.style.cssText = 'position:absolute;left:-9999px;top:0;width:600px;';
+      document.body.append(stage);
+
+      function measure(cls, read) {
+        const el = document.createElement('div');
+        el.className = cls;
+        stage.append(el);
+        return () => read(el, getComputedStyle(el), el.getBoundingClientRect());
+      }
+
+      /* ── WCAG contrast, the same formula week 2 used ─────────────────────── */
+      function channel(v) {
+        const c = v / 255;
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+      }
+      function luminance(rgb) {
+        const [r, g, b] = rgb;
+        return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+      }
+      function ratio(a, b) {
+        const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (hi + 0.05) / (lo + 0.05);
+      }
+      function parseRgb(value) {
+        const m = value.match(/-?[\d.]+/g);
+        return m ? m.slice(0, 3).map(Number) : [0, 0, 0];
+      }
+
+      /* ── Build ───────────────────────────────────────────────────────────── */
+
+      const spacingReads = SPACING.map((step, i) => ({
+        step,
+        odd: i % 2 === 1,
+        read: measure('w-' + step + ' h-4', (el, cs, box) => box.width),
+      }));
+
+      /* The intruder is an ARBITRARY value, dropped between two real steps. It is not
+         a mistake and it does not look like one — which is the entire point. */
+      const intruder = { step: '[13px]', read: measure('w-[13px] h-4', (el, cs, box) => box.width) };
+
+      const typeReads = TYPE.map((step) => ({
+        step,
+        read: measure('text-' + step, (el, cs) => cs.fontSize),
+      }));
+
+      const colourReads = BRAND.map((step) => ({
+        step,
+        read: measure('bg-brand-' + step, (el, cs) => cs.backgroundColor),
+      }));
+
+      const spacingUnit = measure('w-1 h-4', (el, cs, box) => box.width);
+
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          const unit = spacingUnit();
+
+          /* Spacing ruler, with the intruder slotted in where its width puts it. */
+          const rungs = spacingReads.map((r) => ({ ...r, width: r.read() }));
+          rungs.push({ step: intruder.step, width: intruder.read(), intruder: true });
+          rungs.sort((a, b) => a.width - b.width);
+
+          document.getElementById('spacing').innerHTML = rungs
+            .map(
+              (r, i) =>
+                '<div class="rung' +
+                (r.intruder ? ' intruder' : i % 2 ? ' odd' : '') +
+                '"><code>w-' +
+                r.step +
+                '</code><span class="px">' +
+                r.width +
+                'px</span>' +
+                '<span class="bar" style="width:' +
+                r.width +
+                'px"></span></div>',
+            )
+            .join('');
+
+          document.getElementById('type').innerHTML = typeReads
+            .map((r) => {
+              const size = r.read();
+              return (
+                '<div class="type-row"><span class="label">text-' +
+                r.step +
+                '</span><span class="px">' +
+                size +
+                '</span><span style="font-size:' +
+                size +
+                ';line-height:1.15">Renew the certificate</span></div>'
+              );
+            })
+            .join('');
+
+          const swatches = colourReads.map((r) => {
+            const bg = parseRgb(r.read());
+            return {
+              step: r.step,
+              css: 'rgb(' + bg.join(',') + ')',
+              white: ratio(bg, [255, 255, 255]),
+              black: ratio(bg, [0, 0, 0]),
+            };
+          });
+
+          document.getElementById('colour').innerHTML = swatches
+            .map(
+              (s) =>
+                '<div class="swatch"><span class="name">bg-brand-' +
+                s.step +
+                '</span>' +
+                '<span class="chip" style="background:' +
+                s.css +
+                ';color:#fff"><span>white text</span><span class="pass">' +
+                s.white.toFixed(2) +
+                (s.white >= 4.5 ? ' AA' : ' ✕') +
+                '</span></span>' +
+                '<span class="chip" style="background:' +
+                s.css +
+                ';color:#000"><span>black text</span><span class="pass">' +
+                s.black.toFixed(2) +
+                (s.black >= 4.5 ? ' AA' : ' ✕') +
+                '</span></span></div>',
+            )
+            .join('');
+
+          const legalWhite = swatches.filter((s) => s.white >= 4.5).map((s) => s.step);
+          const legalBlack = swatches.filter((s) => s.black >= 4.5).map((s) => s.step);
+          const intruderWidth = rungs.find((r) => r.intruder).width;
+          const below = rungs[rungs.findIndex((r) => r.intruder) - 1];
+          const above = rungs[rungs.findIndex((r) => r.intruder) + 1];
+
+          document.getElementById('out').textContent =
+            '  --spacing is ' +
+            unit +
+            'px, and every spacing utility is that number times a whole one.\n' +
+            '  w-4 is not "sixteen pixels". It is four units, and the unit is ONE line in\n' +
+            '  @theme. Change it to 5px and every margin, padding, gap and width on the page\n' +
+            '  moves together and stays in proportion. That is week 2\'s token argument with\n' +
+            '  a system built on top of it.\n\n' +
+            '  The intruder: w-[13px] rendered at ' +
+            intruderWidth +
+            'px, between w-' +
+            below.step +
+            ' (' +
+            below.width +
+            'px) and w-' +
+            above.step +
+            ' (' +
+            above.width +
+            'px).\n' +
+            '  Nobody would call that box wrong if you showed it alone. In the row it is\n' +
+            '  unmistakable — and a page IS a row. Rhythm is a property of the set.\n\n' +
+            '  Colour, at AA (4.5:1) for normal text:\n' +
+            '    white text is legal on brand-' +
+            legalWhite.join(', brand-') +
+            '\n' +
+            '    black text is legal on brand-' +
+            legalBlack.join(', brand-') +
+            '\n' +
+            '  Everything between those two lists is DECORATION. A ramp does not tell you\n' +
+            '  which steps you may put words on — the contrast ratio does, and it is the\n' +
+            '  same 4.5:1 from week 2.';
+        }),
+      );
+    </script>
+  </body>
+</html>

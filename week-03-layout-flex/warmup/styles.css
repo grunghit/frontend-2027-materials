@@ -1,0 +1,133 @@
+/* ============================================================================
+   Warm-up — week 3. Ten minutes. No git, no submission, no grade.
+
+   The bar above is stacked. Make it a bar.
+
+   There are FIVE declarations to add. Everything else in this file is already
+   done — the gold, the type, the hover state, the focus ring.
+   Add one, save, look. Then the next one.
+
+   You are aiming at target.png, which is next to this file.
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1c1917;
+  background: #fffbeb;
+}
+
+main {
+  max-width: 60ch;
+  margin-block-start: 24px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin-block: 0 0.5rem;
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fef3c7;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   THE BAR
+
+   Two children: `.brand` and `.links`. Put them on one line, centre them
+   against each other, and let a gap do the spacing.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.bar {
+  padding: 10px 16px;
+  border: 3px solid #ca8a04;
+  border-radius: 10px;
+  background: #fef9c3;
+
+  /* given — a flex row does NOT wrap by default, so on a phone six items would
+     run off the side of the screen. You will meet this property properly in the
+     assignment; here it is just so the bar survives a narrow window. */
+  flex-wrap: wrap;
+
+  /* CODE HERE — two declarations: make it a row, and centre the two children
+     against each other vertically. */
+}
+
+.brand {
+  margin: 0;
+  font-weight: 700;
+  color: #713f12;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   THE LINK LIST
+
+   A <ul> arrives with three things that are list styling, not layout: bullets,
+   a large inline-start padding, and stacked items. Remove the first two — the
+   third one you replace.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.links {
+  margin: 0;
+  padding: 0;
+
+  /* given — same reason as above. */
+  flex-wrap: wrap;
+
+  /* CODE HERE — remove the bullets, make this a row too, and put 10px between
+     the items with `gap` rather than with margins. */
+}
+
+.links a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #713f12;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.links a:hover {
+  background: #fde68a;
+}
+
+.links a:focus-visible {
+  outline: 3px solid #a16207;
+  outline-offset: 2px;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   IF YOU FINISH EARLY
+
+   Push the last link — "Flex" — to the far right of the bar, on its own, while
+   the other four stay together on the left.
+
+   TWO declarations, and the order you discover them in matters:
+
+     · an auto margin absorbs FREE SPACE, so put one on `.last` and see what
+       happens. It will not be what you wanted.
+     · then ask where the free space actually is. `.links` is only as wide as
+       its own links; the empty part of the bar belongs to `.bar`, not to it.
+       Give `.links` permission to take that space and try again.
+
+   This is the exact problem you will meet again in tonight's navbar.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.links {
+  /* CODE HERE — optional: let the list take the leftover width of the bar */
+}
+
+.last {
+  /* CODE HERE — optional: push me, and everything after me, to the end */
+}

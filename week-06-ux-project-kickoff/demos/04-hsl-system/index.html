@@ -1,0 +1,411 @@
+<!doctype html>
+<!--
+  A palette from one number, with the contrast of every pair computed from rendered
+  pixels. Week-6 deck, act 3.
+
+  This is week 2's `--hue-brand` decision meeting week 6's constraint. Drag the hue and
+  the whole set moves together, because no colour here is an independent decision: each
+  one is that hue at a chosen saturation and lightness.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE MATRIX IS MEASURED, NOT DECLARED. Every cell is the real WCAG ratio of a real
+     painted foreground against a real painted background, read back out of the browser.
+     Drag the hue and cells flip between pass and fail live — which is the fastest way to
+     learn that LIGHTNESS carries contrast and hue barely touches it.
+  2. IT SEPARATES THE TWO THRESHOLDS. 4.5:1 for text, 3:1 for large text and for the edge
+     of a control. Most "we passed the contrast checker" pages passed the first and never
+     heard of the second, which is why a border token gets its own row here.
+  3. IT SHOWS THE TRAP. Slide saturation to maximum: the colours get louder and the
+     ratios barely move. Saturation is the knob people reach for when a palette feels
+     weak, and it is the one that does nothing for legibility.
+
+  DEMO MOVE: ask the room to find a hue where the palette FAILS. They will hunt for a
+  while, because hue is not the variable. Then drop the "step" slider by two and every
+  text cell fails at once. The lesson lands better as a failed search than as a slide.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A palette from one hue, and its contrast matrix</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+
+        /* THE THREE NUMBERS. Everything below is derived from them. */
+        --hue: 268;
+        --sat: 70;
+        --step: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 16px 0 8px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h2:first-of-type {
+        margin-top: 0;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 12px;
+        font-size: 13px;
+      }
+      .bar label {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      input[type='range'] {
+        width: 150px;
+        accent-color: var(--accent);
+      }
+      input:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      output {
+        font:
+          700 14px/1 ui-monospace,
+          Menlo,
+          monospace;
+        color: var(--accent);
+        min-width: 3.4em;
+        display: inline-block;
+      }
+
+      /*
+        THE PALETTE. Six tokens, one hue, and lightness doing all the work. The `--step`
+        slider shifts every lightness at once, which is what makes the failure reachable.
+      */
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(122px, 1fr));
+        gap: 8px;
+      }
+      .sw {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 12px;
+      }
+      .sw b {
+        display: block;
+        font:
+          700 11px/1.4 ui-monospace,
+          Menlo,
+          monospace;
+        letter-spacing: 0.02em;
+      }
+      .chip {
+        height: 34px;
+        border-radius: 6px;
+        margin-bottom: 7px;
+        border: 1px solid rgb(0 0 0 / 0.08);
+      }
+
+      #paper {
+        background: hsl(var(--hue) calc(var(--sat) * 0.4%) calc(99% + var(--step) * -0.6%));
+      }
+      #surface {
+        background: hsl(var(--hue) calc(var(--sat) * 0.4%) calc(96% + var(--step) * -0.8%));
+      }
+      #ink {
+        background: hsl(var(--hue) calc(var(--sat) * 0.42%) calc(12% + var(--step) * 4%));
+      }
+      #muted-c {
+        background: hsl(var(--hue) calc(var(--sat) * 0.2%) calc(33% + var(--step) * 3.4%));
+      }
+      #brand {
+        background: hsl(var(--hue) calc(var(--sat) * 1%) calc(38% + var(--step) * 3.4%));
+      }
+      #control {
+        background: hsl(var(--hue) calc(var(--sat) * 0.3%) calc(44% + var(--step) * 3%));
+      }
+
+      /* Five columns of measured pairs do not fit a 375px phone, and a table cannot be
+         made narrower than its own min-content. So the TABLE scrolls inside this
+         container and the page stays clean — "no horizontal scroll at 375 / 768 / 1280"
+         is a scored line in week 1, hw-1, hw-2 and the project, and a teaching demo that
+         breaks it teaches the opposite of what students are marked on. */
+      .table-scroll {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        font-size: 12.5px;
+        width: 100%;
+      }
+      caption {
+        text-align: left;
+        font-size: 12px;
+        color: var(--muted);
+        padding-bottom: 5px;
+      }
+      th,
+      td {
+        border: 1px solid #eef2f7;
+        padding: 5px 8px;
+        text-align: left;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        background: #f8fafc;
+      }
+      td b {
+        font-variant-numeric: tabular-nums;
+      }
+      .pass {
+        background: #eefaf5;
+        color: #0f6b52;
+        font-weight: 700;
+      }
+      .fail {
+        background: #fff1f4;
+        color: #b3123b;
+        font-weight: 700;
+      }
+      .verdict {
+        margin-top: 10px;
+        font-size: 13px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border-left: 4px solid var(--line);
+        background: #f8fafc;
+      }
+      .verdict.bad {
+        border-left-color: #b3123b;
+        background: #fff1f4;
+      }
+      .verdict.good {
+        border-left-color: #0f6b52;
+        background: #eefaf5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="bar">
+      <label>
+        hue
+        <input type="range" id="hue" min="0" max="360" step="1" value="268"
+      /></label>
+      <output id="hue-out">268</output>
+      <label>
+        saturation
+        <input type="range" id="sat" min="10" max="100" step="1" value="70"
+      /></label>
+      <output id="sat-out">70%</output>
+      <label>
+        lightness shift
+        <input type="range" id="step" min="-2" max="8" step="1" value="0"
+      /></label>
+      <output id="step-out">0</output>
+    </div>
+
+    <h2>six tokens, one hue</h2>
+    <div class="swatches">
+      <div class="sw">
+        <div class="chip" id="paper"></div>
+        <b>--color-paper</b><span id="v-paper"></span>
+      </div>
+      <div class="sw">
+        <div class="chip" id="surface"></div>
+        <b>--color-surface</b><span id="v-surface"></span>
+      </div>
+      <div class="sw">
+        <div class="chip" id="ink"></div>
+        <b>--color-ink</b><span id="v-ink"></span>
+      </div>
+      <div class="sw">
+        <div class="chip" id="muted-c"></div>
+        <b>--color-ink-muted</b><span id="v-muted"></span>
+      </div>
+      <div class="sw">
+        <div class="chip" id="brand"></div>
+        <b>--color-brand</b><span id="v-brand"></span>
+      </div>
+      <div class="sw">
+        <div class="chip" id="control"></div>
+        <b>--color-control</b><span id="v-control"></span>
+      </div>
+    </div>
+
+    <h2>every pair, measured off the rendered pixels</h2>
+    <div class="table-scroll">
+      <table>
+        <caption>
+          text needs 4.5:1 · large text and the edge of a control need 3:1
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">foreground</th>
+            <th scope="col">on background</th>
+            <th scope="col">ratio</th>
+            <th scope="col">needs</th>
+            <th scope="col">verdict</th>
+          </tr>
+        </thead>
+        <tbody id="matrix"></tbody>
+      </table>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+
+    <script>
+      /*
+        PAIRS THAT MATTER. Not every combination — the ones a page actually paints. A
+        matrix of all 36 combinations is impressive and useless: nobody puts the body
+        colour on the brand colour.
+
+        The last row is the one most palettes forget: the EDGE of a control, which is
+        governed by 1.4.11 Non-text Contrast at 3:1 and is not text at all. A page can
+        pass a contrast checker on every word and still have input fields nobody can find.
+      */
+      const PAIRS = [
+        ['ink', 'paper', 4.5, 'body text'],
+        ['ink', 'surface', 4.5, 'text on a card'],
+        ['ink-muted', 'paper', 4.5, 'secondary text'],
+        ['ink-muted', 'surface', 4.5, 'secondary on a card'],
+        ['brand', 'paper', 4.5, 'a link'],
+        ['brand', 'surface', 4.5, 'a link on a card'],
+        ['paper', 'brand', 4.5, 'text on a button'],
+        ['control', 'paper', 3, 'the edge of a field'],
+        ['control', 'surface', 3, 'a field on a card'],
+      ];
+
+      const CHIPS = {
+        paper: 'paper',
+        surface: 'surface',
+        ink: 'ink',
+        'ink-muted': 'muted-c',
+        brand: 'brand',
+        control: 'control',
+      };
+
+      const luminance = ([r, g, b]) => {
+        const f = (c) => {
+          const s = c / 255;
+          return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const parse = (value) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      const ratioOf = (a, b) => {
+        const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (hi + 0.05) / (lo + 0.05);
+      };
+
+      /*
+        READ THE COLOUR THE BROWSER PAINTED, not the string in the stylesheet. Those
+        `calc()` expressions inside `hsl()` are resolved by the engine; parsing them here
+        would mean reimplementing the engine, and getting a rounding difference that makes
+        the readout disagree with the screen.
+      */
+      const painted = (token) =>
+        parse(getComputedStyle(document.getElementById(CHIPS[token])).backgroundColor);
+
+      function update() {
+        const root = document.documentElement;
+        for (const id of ['hue', 'sat', 'step']) {
+          const el = document.getElementById(id);
+          root.style.setProperty(`--${id}`, el.value);
+          document.getElementById(`${id}-out`).textContent =
+            id === 'sat' ? `${el.value}%` : el.value;
+        }
+
+        /* Show each token's resolved value, so the abstraction stays visible. */
+        for (const [token, chipId] of Object.entries(CHIPS)) {
+          const key = token === 'ink-muted' ? 'muted' : token;
+          const target = document.getElementById(`v-${key}`);
+          if (target)
+            target.textContent = getComputedStyle(document.getElementById(chipId)).backgroundColor;
+        }
+
+        const body = document.getElementById('matrix');
+        body.textContent = '';
+        let failures = 0;
+
+        for (const [fg, bg, min, role] of PAIRS) {
+          const r = ratioOf(painted(fg), painted(bg));
+          const ok = r >= min;
+          if (!ok) failures++;
+
+          const tr = document.createElement('tr');
+          const cells = [
+            `${fg}  (${role})`,
+            bg,
+            `${r.toFixed(2)}:1`,
+            `${min}:1`,
+            ok ? 'pass' : 'FAIL',
+          ];
+          cells.forEach((text, i) => {
+            const td = document.createElement('td');
+            if (i >= 2) {
+              const b = document.createElement('b');
+              b.textContent = text;
+              td.append(b);
+            } else {
+              td.textContent = text;
+            }
+            if (i === 4) td.className = ok ? 'pass' : 'fail';
+            tr.append(td);
+          });
+          body.append(tr);
+        }
+
+        const verdict = document.getElementById('verdict');
+        verdict.className = 'verdict';
+        const shift = Number(document.getElementById('step').value);
+        const sat = Number(document.getElementById('sat').value);
+
+        if (failures === 0 && shift === 0) {
+          verdict.classList.add('good');
+          verdict.textContent =
+            'All nine pairs pass, at every hue on the slider. Try to find a hue that breaks it — you will not, ' +
+            'because hue is not the variable that carries contrast. Now move the lightness shift by one.';
+        } else if (failures === 0) {
+          verdict.classList.add('good');
+          verdict.textContent = `Still all nine, with a lightness shift of ${shift}. There is more headroom in this palette than you would guess.`;
+        } else {
+          verdict.classList.add('bad');
+          verdict.textContent =
+            `${failures} of nine pairs fail. Note WHAT you changed to get here: the lightness shift, not the hue ` +
+            (sat > 85
+              ? 'and not the saturation either — saturation at maximum makes the palette louder and moves the ratios almost not at all.'
+              : 'and not the saturation. Lightness is the whole game.');
+        }
+      }
+
+      for (const id of ['hue', 'sat', 'step']) {
+        document.getElementById(id).addEventListener('input', update);
+      }
+      update();
+    </script>
+  </body>
+</html>

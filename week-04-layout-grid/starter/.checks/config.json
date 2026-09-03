@@ -1,0 +1,5 @@
+{
+  "//": "Week 4 knobs for the public check set. The publisher copies this to starter/.checks/config.json, replacing the template default.",
+  "entry": "index.html",
+  "requiredFiles": ["index.html", "warmup.html", "styles.css"]
+}

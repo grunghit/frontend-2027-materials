@@ -1,0 +1,199 @@
+<!doctype html>
+<!--
+  The round trip, field by field. Week-10 deck, act 2.
+
+  One object goes out through `JSON.stringify` and comes back through `JSON.parse`, and
+  every field is compared with what it was. The verdict per field is COMPUTED, not
+  labelled — `Object.is` on primitives, a recursive structural compare on the rest — so
+  the table is measuring the browser rather than repeating a slide.
+
+  What makes it teach:
+
+  1. THE OBJECT IS EDITABLE. The textarea holds the source, it is evaluated on every
+     change, and the table re-computes. The room can propose a field and see what
+     happens to it in the same second.
+  2. IT SHOWS THE STRING. The middle column is the actual JSON, which is the thing
+     `localStorage` will hold — and the moment somebody sees `"created": "2026-..."`
+     where a `Date` used to be, the Date lesson is over.
+  3. `===` IS ANSWERED HONESTLY. `parse(stringify(x)) === x` is FALSE for every object,
+     and the page says so and explains it in one line: a round trip makes a COPY.
+
+  DEMO MOVE: run it as it ships and read the four red rows. Then delete the four
+  offending fields from the textarea and watch the verdict flip.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>The round trip</title>
+    <style>
+      /*
+        The two panels hold the SAME object twice, and the right one is 20 lines of
+        pretty-printed JSON against a 12-line textarea: 278px of panel beside 440px,
+        with the left one padded out to match. The page is then 970px tall, and this
+        demo is embedded in a slide frame that stops at 615 — so the field-by-field
+        table, which is the whole reason the demo exists, fell entirely below the fold
+        and the export baked the crop into deck.pdf.
+
+        Capping the JSON at the textarea's own height squares the two panels (278/270)
+        and takes the document to 808px. The string still scrolls, and the reader can
+        still see all of it in the demo's own tab; what changes is that the comparison
+        is on screen at all.
+      */
+      .layout .panel > pre {
+        max-height: 190px;
+        overflow: auto;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 190px;
+        font:
+          12.5px/1.6 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>An object out through stringify, back through parse, and compared field by field</h2>
+
+    <div class="layout">
+      <div class="panel">
+        <h3>the object (editable)</h3>
+        <label class="note" for="src">JavaScript, evaluated on every keystroke</label>
+        <textarea id="src" spellcheck="false" aria-label="the object"></textarea>
+        <p class="note" id="err"></p>
+      </div>
+
+      <div class="panel">
+        <h3>the string localStorage would hold</h3>
+        <!-- tabindex="0": this box now SCROLLS (see the .layout .panel > pre cap above),
+           and a region a mouse can scroll but a keyboard cannot reach is an axe
+           scrollable-region-focusable violation. Same fix week 05 demo 09 uses. -->
+        <pre id="json" tabindex="0"></pre>
+        <p class="note" id="size"></p>
+      </div>
+    </div>
+
+    <div class="scroll-x" style="margin-top: 12px">
+      <table>
+        <thead>
+          <tr>
+            <th>field</th>
+            <th>before — value and typeof</th>
+            <th>after — value and typeof</th>
+            <th>survived?</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+
+    <script>
+      const START = `({
+  id: 'a1',
+  title: 'קמח מלא',
+  number: 2,
+  fresh: true,
+  note: null,
+  tags: ['יבשים', 'בסיס'],
+  shelf: { room: 'מטבח', height: 3 },
+  created: new Date('2026-09-01T08:00:00Z'),
+  restock: undefined,
+  price: Infinity,
+  rating: NaN,
+  describe() { return this.title; },
+})`;
+
+      const show = (value) => {
+        if (typeof value === 'function') return 'ƒ ' + (value.name || 'anonymous');
+        if (value === undefined) return 'undefined';
+        if (typeof value === 'symbol') return String(value);
+        if (value instanceof Date) return 'Date(' + value.toISOString() + ')';
+        if (Number.isNaN(value)) return 'NaN';
+        if (value === Infinity) return 'Infinity';
+        if (typeof value === 'object' && value !== null) return JSON.stringify(value);
+        return JSON.stringify(value) ?? String(value);
+      };
+
+      const kind = (value) => (value === null ? 'null' : typeof value);
+
+      /* Structural equality, so an array or a nested object counts as "survived" when
+         its contents came back the same. Anything the round trip could not represent
+         differs somewhere in here and is caught. */
+      function same(a, b) {
+        if (Object.is(a, b)) return true;
+        if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null)
+          return false;
+        if (Array.isArray(a) !== Array.isArray(b)) return false;
+        const ka = Object.keys(a);
+        const kb = Object.keys(b);
+        if (ka.length !== kb.length) return false;
+        return ka.every((k) => same(a[k], b[k]));
+      }
+
+      function run() {
+        const source = document.querySelector('#src').value;
+        let before;
+        try {
+          before = eval(source);
+        } catch (error) {
+          document.querySelector('#err').textContent = String(error);
+          return;
+        }
+        document.querySelector('#err').textContent = '';
+
+        const text = JSON.stringify(before, null, 2);
+        document.querySelector('#json').textContent = text;
+        document.querySelector('#size').textContent =
+          `${new Blob([text]).size} bytes — this string is all localStorage ever holds`;
+
+        const after = JSON.parse(text);
+
+        const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])];
+        let lost = 0;
+
+        document.querySelector('#rows').replaceChildren(
+          ...keys.map((key) => {
+            const ok = key in after && same(before[key], after[key]);
+            if (!ok) lost += 1;
+            const tr = document.createElement('tr');
+            for (const [text, cls] of [
+              [key, 'mono'],
+              [`${show(before[key])}  ·  ${kind(before[key])}`, 'mono'],
+              [key in after ? `${show(after[key])}  ·  ${kind(after[key])}` : '— gone —', 'mono'],
+              [ok ? 'yes' : 'NO', ok ? 'good' : 'bad'],
+            ]) {
+              const td = document.createElement('td');
+              td.className = cls;
+              td.textContent = text;
+              tr.append(td);
+            }
+            return tr;
+          }),
+        );
+
+        const identity = after === before;
+        const verdict = document.querySelector('#verdict');
+        verdict.className = 'verdict ' + (lost === 0 ? 'ok' : 'no');
+        verdict.textContent =
+          `${keys.length - lost} of ${keys.length} fields came back unchanged. ` +
+          `${lost} did not. ` +
+          `And parse(stringify(x)) === x is ${identity} for every object there has ever been — ` +
+          `a round trip returns a COPY, which is exactly why it is safe to keep.`;
+      }
+
+      const src = document.querySelector('#src');
+      src.value = START;
+      src.addEventListener('input', run);
+      run();
+    </script>
+  </body>
+</html>

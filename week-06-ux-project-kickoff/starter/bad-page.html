@@ -1,0 +1,358 @@
+<!doctype html>
+<!--
+  ============================================================================
+  INTENTIONALLY INACCESSIBLE — this file is the assignment, and it must stay broken.
+
+  The marker above inverts three of the §8 gates for this file (contrast, keyboard,
+  axe): it is REQUIRED to fail them, and tools/gates.mjs reports it if the page ever
+  quietly becomes accessible. A "bad" page that drifted good has stopped teaching.
+
+  ── WHAT THIS PAGE IS
+
+  A community-centre course page — entirely fictional — that is genuinely unusable, and
+  that PASSES every automated check the course has taught up to week 5:
+
+    · html-validate: clean. Valid HTML5, headings in order, every image has an alt,
+      every field has a real <label for>, the table has scoped headers.
+    · console: silent. No 404, no error, no warning.
+    · it renders. Nothing is missing, nothing is on top of anything else.
+
+  That combination is the point of act 1. Every tool the room owns says this page is
+  fine. It is not, and the gap between those two sentences is the entire lecture.
+
+  ── FOR THE STUDENT
+
+  DO NOT FIX THIS FILE. You audit it — you write your findings in `audit-he.md` — and
+  then you rebuild ONE section of it in `redesign.html`. The grader asserts this file is
+  unchanged, because an audit of a page you already repaired is not an audit.
+
+  There are sixteen deliberate faults here. The checklist you were given finds them all;
+  none of them is a trick, and none of them is invisible. Several are things you have
+  almost certainly shipped yourself, which is why they are here rather than something
+  more exotic.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>מרכז קהילתי אלמוגים - חוגים</title>
+
+    <style>
+      /*
+        A hand-written stylesheet, as the page's author left it. It is not badly
+        written — it is short, tidy, and consistent. Everything wrong with this page is
+        a DECISION, not a mistake, which is why no linter finds any of it.
+      */
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 12px;
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.35;
+        /* Light grey body text on white. Measured: 2.32:1. */
+        color: #a8a8a8;
+        background: #ffffff;
+      }
+
+      /*
+        Every heading level is the same size, the same weight and the same colour as the
+        text around it. The document OUTLINE is correct — h1, then h2, then h3, no level
+        skipped — and the page has no visible hierarchy whatsoever.
+      */
+      h1,
+      h2,
+      h3 {
+        font-size: 16px;
+        font-weight: normal;
+        color: #a8a8a8;
+        margin: 12px 0;
+      }
+
+      /*
+        One spacing value for everything. Nothing is grouped with anything, because
+        proximity carries no information when every gap is identical.
+      */
+      p,
+      ul,
+      div,
+      section,
+      form,
+      table {
+        margin: 12px 0;
+      }
+
+      /* Links look exactly like text. No colour difference, no underline. */
+      a {
+        color: #a8a8a8;
+        text-decoration: none;
+      }
+
+      /* The focus indicator, removed everywhere, with nothing in its place. */
+      a:focus,
+      button:focus,
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+      }
+
+      /* Small, tightly packed controls. Measured height: 18px. */
+      button {
+        font-family: inherit;
+        font-size: 12px;
+        padding: 2px 6px;
+        border: 1px solid #d8d8d8;
+        background: #f4f4f4;
+        color: #a8a8a8;
+      }
+
+      input,
+      select {
+        font-family: inherit;
+        font-size: 12px;
+        padding: 2px 4px;
+        border: 1px solid #e4e4e4;
+        color: #a8a8a8;
+      }
+
+      /* The label, after its field, at 9px. It is a real <label for>. */
+      .field-label {
+        font-size: 9px;
+        color: #c4c4c4;
+      }
+
+      /* Availability, carried by colour alone. */
+      .dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .dot-open {
+        background: #46c46a;
+      }
+      .dot-full {
+        background: #e05252;
+      }
+
+      /* A fixed-width table. 560px does not negotiate with a 375px phone. */
+      table {
+        width: 560px;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        border: 1px solid #ededed;
+        padding: 3px 6px;
+        text-align: right;
+        font-weight: normal;
+        color: #a8a8a8;
+      }
+
+      /* Long prose, centred, at the full width of the window. */
+      .intro {
+        text-align: center;
+      }
+
+      /* The newsletter box. The two choices are not presented as two choices. */
+      .promo-yes {
+        font-size: 17px;
+        padding: 10px 26px;
+        background: #46c46a;
+        border: 0;
+        color: #ffffff;
+      }
+      .promo-no {
+        font-size: 10px;
+        color: #cccccc;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!--
+      No skip link, and the nav is a bare list of links with no landmark. Both are
+      omissions rather than errors, so nothing flags them.
+    -->
+    <div>
+      <a href="#" tabindex="3">בית</a>
+      <a href="#" tabindex="1">חוגים</a>
+      <a href="#" tabindex="2">צור קשר</a>
+      <a href="#">כאן</a>
+    </div>
+
+    <h1>מרכז קהילתי אלמוגים</h1>
+
+    <p class="intro">
+      המרכז הקהילתי אלמוגים פועל בשכונה מזה שנים רבות ומציע מגוון רחב של חוגים לכל הגילים, מגן
+      הילדים ועד לגמלאים, בתחומי הספורט, האמנות, המוזיקה, המחשבים והעשרה כללית, כאשר כל החוגים
+      מונחים על ידי מדריכים מוסמכים ובעלי ניסיון רב שנים בתחומם, והרשמה לחוגים נפתחת בתחילת כל סמסטר
+      ונמשכת עד למילוי המקומות, כך שמומלץ להירשם מוקדם כדי להבטיח מקום בחוג המבוקש, ובמידה שחוג
+      מסוים מתמלא ניתן להצטרף לרשימת המתנה ולקבל עדכון כאשר מתפנה מקום.
+    </p>
+
+    <p>לפרטים נוספים על תנאי ההרשמה, הביטולים וההחזרים לחצו <a href="#">כאן</a>.</p>
+
+    <h2>החוגים</h2>
+
+    <!--
+      Availability is a coloured dot and nothing else. There is no text, no icon shape,
+      and no title — so the column is empty for anyone who cannot distinguish the two
+      colours, and empty for a screen reader too.
+    -->
+    <table>
+      <caption>
+        רשימת החוגים
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">החוג</th>
+          <th scope="col">יום</th>
+          <th scope="col">שעה</th>
+          <th scope="col">מדריך</th>
+          <th scope="col">מקומות</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>יוגה למתחילים</td>
+          <td>ראשון</td>
+          <td>18:00</td>
+          <td>נועה ברק</td>
+          <td><span class="dot dot-open"></span></td>
+        </tr>
+        <tr>
+          <td>גיטרה קלאסית</td>
+          <td>שני</td>
+          <td>17:30</td>
+          <td>אורי שגב</td>
+          <td><span class="dot dot-full"></span></td>
+        </tr>
+        <tr>
+          <td>ציור ורישום</td>
+          <td>שלישי</td>
+          <td>19:00</td>
+          <td>תמר לוי</td>
+          <td><span class="dot dot-open"></span></td>
+        </tr>
+        <tr>
+          <td>מחשבים לגמלאים</td>
+          <td>רביעי</td>
+          <td>10:00</td>
+          <td>דני אמסלם</td>
+          <td><span class="dot dot-full"></span></td>
+        </tr>
+        <tr>
+          <td>כדורסל נוער</td>
+          <td>חמישי</td>
+          <td>17:00</td>
+          <td>רון כספי</td>
+          <td><span class="dot dot-open"></span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>גלריה</h3>
+
+    <!--
+      Every image has an `alt` attribute, so html-validate is satisfied. Not one of them
+      says anything: two describe the file, one says "image", one repeats the caption
+      beside it.
+    -->
+    <div>
+      <img src="images/room-1.svg" alt="image" width="150" height="100" />
+      <img src="images/room-2.svg" alt="pic2.svg" width="150" height="100" />
+      <img src="images/room-3.svg" alt="תמונה" width="150" height="100" />
+    </div>
+
+    <h2>ההרשמות שלי</h2>
+
+    <!--
+      An empty region. When the visitor has no registrations there is nothing here at
+      all — no sentence, no explanation, no next step. Just a gap the eye reads as a
+      loading page that never finished.
+    -->
+    <div id="my-courses"></div>
+
+    <h2>הרשמה</h2>
+
+    <!--
+      A form with real labels — so the validator passes — placed AFTER each field, at
+      9px, in a lighter grey than the body text. Nothing is marked as required, there is
+      nowhere for an error message to appear, and the search field at the bottom has no
+      label at all: it has a `title`, which is technically an accessible name and
+      practically invisible.
+    -->
+    <form>
+      <div>
+        <input type="text" id="reg-name" />
+        <label class="field-label" for="reg-name">שם מלא</label>
+      </div>
+      <div>
+        <input type="text" id="reg-phone" />
+        <label class="field-label" for="reg-phone">טלפון</label>
+      </div>
+      <div>
+        <input type="text" id="reg-email" />
+        <label class="field-label" for="reg-email">דואר אלקטרוני</label>
+      </div>
+      <div>
+        <select id="reg-course">
+          <option>יוגה למתחילים</option>
+          <option>גיטרה קלאסית</option>
+          <option>ציור ורישום</option>
+          <option>מחשבים לגמלאים</option>
+          <option>כדורסל נוער</option>
+        </select>
+        <label class="field-label" for="reg-course">החוג</label>
+      </div>
+
+      <!--
+        A checkbox that is checked by default, for something the visitor did not ask
+        for. The label is honest; the default is not.
+      -->
+      <div>
+        <input type="checkbox" id="reg-marketing" checked />
+        <label class="field-label" for="reg-marketing">אני מסכים לקבל דיוור פרסומי</label>
+      </div>
+
+      <div>
+        <input type="text" id="reg-search" title="חיפוש חוג" />
+      </div>
+
+      <!--
+        Two buttons, identical in every way. One of them cancels a registration and
+        cannot be undone; the other goes back a page. Nothing distinguishes them but
+        their text, and nothing asks for confirmation.
+      -->
+      <div>
+        <button type="submit">שלח</button>
+        <button type="button">חזור</button>
+        <button type="button">בטל הרשמה</button>
+      </div>
+    </form>
+
+    <!--
+      The newsletter box. Both options are present, which is what makes it a dark
+      pattern rather than a missing control: one is a large green button and the other
+      is 10px grey text that reads as a caption.
+    -->
+    <div>
+      <h3>הישארו מעודכנים</h3>
+      <p>הירשמו לרשימת התפוצה שלנו ותקבלו עדכונים על חוגים חדשים.</p>
+      <button type="button" class="promo-yes">הירשם עכשיו</button>
+      <a href="#" class="promo-no">לא, תודה</a>
+    </div>
+
+    <div>
+      <p>מרכז קהילתי אלמוגים - רחוב הדוגמה 12 - טלפון 00-0000000</p>
+    </div>
+  </body>
+</html>

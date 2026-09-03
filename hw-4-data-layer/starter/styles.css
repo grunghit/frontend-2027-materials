@@ -1,0 +1,228 @@
+/*
+ * styles.css — GIVEN AND COMPLETE. No point in this assignment is awarded for design.
+ *
+ * It is here for one reason beyond legibility: the five row states are visually
+ * distinct, so you can see the whole board's condition at a glance while you work. The
+ * selectors are all `[data-state="…"]`, which is also the contract the grader reads —
+ * so if a row is not styled, it is because its attribute is wrong.
+ */
+
+:root {
+  color-scheme: light;
+  --ink: #14181f;
+  --muted: #5c6675;
+  --line: #cbd5e1;
+  --page: #ffffff;
+  --panel: #f8fafc;
+  --brand: #4338ca;
+  --good: #0f766e;
+  --warn: #b45309;
+  --bad: #b91c1c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  max-width: 64rem;
+  font:
+    16px/1.6 system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: var(--ink);
+  background: var(--page);
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: -9999px;
+}
+
+.skip-link:focus {
+  position: static;
+  display: inline-block;
+  margin-bottom: 8px;
+  background: var(--brand);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 4px;
+}
+
+.lead {
+  margin: 0 0 20px;
+  color: var(--muted);
+  max-width: 46rem;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+button {
+  font: inherit;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: inherit;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--warn);
+  outline-offset: 2px;
+}
+
+.summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.storage-note {
+  margin: 0 0 14px;
+  border: 2px solid var(--bad);
+  background: var(--panel);
+  color: var(--bad);
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 13px;
+}
+
+.cities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.city {
+  border: 1px solid var(--line);
+  /* The state's colour lands here, on the inline start edge — visible at a glance
+     across the whole board without shouting. */
+  border-inline-start: 5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  /* A grid item's automatic minimum size is its content. Week 3's `min-width: auto`,
+     and without this a long weather description widens the whole column. */
+  min-width: 0;
+}
+
+.city-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.city-name {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.city-temp {
+  margin: 8px 0 0;
+  font:
+    700 2.2rem/1 system-ui,
+    sans-serif;
+}
+
+.city-sky,
+.city-wind {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.city-age {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.city-empty {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+.city-error {
+  margin: 10px 0 0;
+  color: var(--bad);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* ── The five states ──────────────────────────────────────────────────────── */
+
+.city[data-state='fresh'] {
+  border-inline-start-color: var(--good);
+}
+
+.city[data-state='stale'] {
+  border-inline-start-color: var(--warn);
+  background: #fffbeb;
+}
+
+.city[data-state='stale'] .city-age {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.city[data-state='error'] {
+  border-inline-start-color: var(--bad);
+  background: #fef2f2;
+}
+
+.city[data-state='error'] .city-age {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.city[data-state='loading'] {
+  border-inline-start-color: var(--brand);
+}
+
+.city[data-state='idle'] {
+  background: var(--panel);
+}
+
+/* The loading pulse, and it is behind prefers-reduced-motion because §8 says so. */
+@media (prefers-reduced-motion: no-preference) {
+  .city[data-state='loading'] {
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    50% {
+      background: var(--panel);
+    }
+  }
+}

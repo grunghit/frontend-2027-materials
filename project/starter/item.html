@@ -1,0 +1,164 @@
+<!doctype html>
+<!--
+  ============================================================================
+  THE DETAIL PAGE. Reads `?id=` and renders one item.
+
+  It loads the SAME js/app.js as the other two pages. There is no per-page entry
+  point: render.js skips any region whose mount is absent, so on this page the list
+  and the summary simply do not happen.
+
+  ── THE ONE THING THIS PAGE DOES THAT THE OTHERS DO NOT
+
+  It can be asked for something that does not exist — an old link, an item removed in
+  another tab, a hand-edited URL. That is an EMPTY state, not an error: nothing failed,
+  the thing just is not there. Requirement 9, and the grader visits
+  `item.html?id=does-not-exist` to check it. A spinner forever, a blank page, or the
+  word "Error" are each a different way of blaming the user for a link that went stale.
+
+  ── EVERYTHING THE USER OPERATES IS STATIC MARKUP, IN #item-editor
+
+  render.js rule 1. Put an editing control inside a rendered region and the first
+  change destroys the element that has focus: a keyboard user can use it exactly once
+  and is then dropped to the top of the document. render.js only ever SYNCS what is
+  below — sets values, finishes the remove button's label, and toggles `hidden` on the
+  whole block when there is no item.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>פריט</title>
+
+    <script src="js/theme.js"></script>
+    <script src="vendor/tailwind.js"></script>
+  </head>
+
+  <body class="min-h-dvh bg-paper text-ink antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded-pill focus:bg-brand focus:px-4 focus:py-2 focus:font-semibold focus:text-brand-ink"
+      >דלג לתוכן הראשי</a
+    >
+
+    <header class="border-b border-line bg-surface">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-4">
+        <p class="text-lg font-bold text-brand">הפרויקט שלי</p>
+        <nav aria-label="ניווט ראשי">
+          <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
+            <li>
+              <a
+                href="index.html"
+                class="rounded-pill text-ink hover:text-brand hover:underline motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                >הרשימה</a
+              >
+            </li>
+            <li>
+              <a
+                href="summary.html"
+                class="rounded-pill text-ink hover:text-brand hover:underline motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                >סיכום</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1" class="mx-auto max-w-6xl px-4 py-8">
+      <!--
+        The heading is STATIC and render.js sets its TEXT. Rendering the <h1> itself
+        would mean that for the instant before the first render the page has no h1 at
+        all — and a screen reader landing in that instant finds a document with no title.
+      -->
+      <h1 id="detail-title" class="text-2xl font-bold text-ink sm:text-3xl">טוען…</h1>
+
+      <div id="notice" role="status" aria-live="polite" class="mt-6 empty:mt-0"></div>
+
+      <!-- MOUNT. The item's fields, or the not-found empty state. -->
+      <div id="detail" class="mt-8"></div>
+
+      <!--
+        STATIC. `hidden` and not a `.hidden` class: the attribute takes the block out of
+        the accessibility tree AND the tab order, it says why, and it cannot be defeated
+        by a later `display` declaration winning the cascade.
+      -->
+      <section id="item-editor" aria-labelledby="editor-heading" class="mt-10 max-w-measure" hidden>
+        <h2 id="editor-heading" class="text-xl font-bold text-ink">עריכה</h2>
+
+        <!--
+          CODE HERE — the control for the field you can edit (requirement 12).
+
+          If it is a set of mutually exclusive options, use a `fieldset` with a `legend`
+          and real radios. NOT buttons with `role="radiogroup"`. The browser already
+          gives radios one tab stop for the group, arrow keys within it, Space to
+          select, the legend as the group's name, and "3 of 5" as position. The ARIA
+          rebuild is about forty lines of keydown handling to arrive back where the
+          platform started, minus whatever those lines get wrong.
+
+          Visually hide the input with `sr-only`, never `display:none` — a
+          display-hidden input is not focusable, and the keyboard behaviour is the whole
+          reason for using radios. Style the sibling <span> with `peer-checked:` and
+          `peer-focus-visible:` so the ring lands on the thing you can see.
+        -->
+
+        <div class="mt-6 flex flex-col gap-2">
+          <label for="item-note" class="text-sm font-semibold text-ink">הערה</label>
+          <!--
+            Saves on an explicit button, not on blur. Saving on blur means the user
+            cannot leave the field to check something without committing, and gives no
+            confirmation that anything happened.
+          -->
+          <textarea
+            id="item-note"
+            rows="4"
+            class="rounded-card border border-control bg-paper px-4 py-2 text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          ></textarea>
+          <button
+            type="button"
+            data-action="save-note"
+            class="w-fit rounded-pill bg-brand px-5 py-2 font-semibold text-brand-ink hover:bg-brand-strong motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          >
+            שמור
+          </button>
+        </div>
+
+        <!--
+          No confirmation dialog, and that is a decision rather than an omission: the
+          notice strip offers undo instead. Confirm only what cannot be undone.
+
+          render.js finishes this button's label with the item's name — "remove" with no
+          object is exactly the control you do not want to activate by accident, and
+          forty identical ones are indistinguishable to anyone reading them out of context.
+        -->
+        <div class="mt-8 flex flex-wrap gap-2 border-t border-line pt-6">
+          <a
+            href="index.html"
+            class="inline-flex items-center justify-center rounded-pill border border-control px-4 py-2 text-sm font-semibold text-ink hover:bg-surface motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >חזרה לרשימה</a
+          >
+          <button
+            type="button"
+            id="item-remove"
+            data-action="remove"
+            class="inline-flex items-center justify-center rounded-pill border border-danger px-4 py-2 text-sm font-semibold text-danger hover:bg-danger-soft motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          >
+            הסר
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mt-16 border-t border-line bg-surface">
+      <p class="mx-auto max-w-6xl px-4 py-6 text-sm text-ink-muted"><!-- CODE HERE --></p>
+    </footer>
+
+    <noscript>
+      <p class="mx-auto max-w-6xl px-4 py-6 text-danger">
+        העמוד הזה בונה את התוכן שלו ב-JavaScript, ולכן הוא לא יעבוד כשהוא כבוי.
+      </p>
+    </noscript>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

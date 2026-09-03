@@ -1,0 +1,131 @@
+# ============================================================================
+# .github/workflows/check.yml — injected into every published starter by
+# tools/publish.mjs (CLAUDE_CODE_BRIEF.md §7.1).
+#
+# Runs in the STUDENT'S OWN repo, on their own free personal account. No org, no
+# Education verification, no paid tier, nothing GitHub-Classroom-shaped.
+#
+# Placeholders substituted by the publisher:
+#   week-10   e.g. week-03            — path scope, so a push in week 10 does not
+#                                             re-run weeks 1–9 in the semester-long repo
+#   שבוע 10  e.g. שבוע 3             — used in the Hebrew summary heading
+#
+# Design constraints, all load-bearing:
+#   · REDUCED PUBLIC CHECK SET ONLY. The full spec never ships to a student repo.
+#     Stretch-tier checks, point values and everything manually graded stay private in
+#     grading/specs/. Students learn "does it work", not "which string does the grader
+#     look for" — that is what stops reverse-engineering of the grading criteria.
+#   · Under ~3 minutes. One job, npm+browser caches, chromium only.
+#   · Infrastructure failure and a failed check are reported DIFFERENTLY. A network
+#     hiccup must never show a student a red X for work that is fine.
+#   · Output is a Hebrew job summary. No stack traces as feedback.
+#
+# Pedagogical framing (stated in the week-1 brief): green CI is the FLOOR, not the grade.
+# It proves the thing runs. The points come from the parts a machine cannot judge.
+# ============================================================================
+
+name: בדיקות אוטומטיות
+
+on:
+  push:
+    paths:
+      - 'week-10/**'
+      - '.github/workflows/check.yml'
+  pull_request:
+    paths:
+      - 'week-10/**'
+  workflow_dispatch:
+
+# A new push supersedes the previous run — keeps free-tier minutes for work that matters.
+concurrency:
+  group: check-week-10-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: 'שבוע 10'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      # ── Infrastructure phase ────────────────────────────────────────────
+      # Everything here is OUR problem, not the student's. Each step is allowed to
+      # fail without failing the build; the guard below turns that into a clearly
+      # labelled "infrastructure" outcome instead of a red X on their assignment.
+      - name: Checkout
+        id: checkout
+        continue-on-error: true
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        id: node
+        continue-on-error: true
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache browser
+        id: cache-browser
+        continue-on-error: true
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-chromium-v1-${{ runner.os }}
+
+      - name: Install check tools
+        id: install
+        continue-on-error: true
+        working-directory: 'week-10/.checks'
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+
+      # --with-deps is NOT optional: `playwright install chromium` downloads the browser
+      # but not the shared libraries it links against (libnspr4, libnss3, …), and the
+      # runner image does not ship them. Without this the browser dies at launch with
+      # "error while loading shared libraries", which reads to a student like their code
+      # broke. Verified by running this workflow under act.
+      - name: Install Chromium
+        id: browser
+        continue-on-error: true
+        working-directory: 'week-10/.checks'
+        run: npx playwright install --with-deps chromium
+
+      # If any infrastructure step failed, say so in Hebrew and STOP — with a green
+      # run, because nothing about the student's code was actually tested.
+      - name: Infrastructure guard
+        id: infra
+        if: always()
+        run: |
+          FAILED=""
+          [ "${{ steps.checkout.outcome }}" = "failure" ] && FAILED="$FAILED checkout"
+          [ "${{ steps.node.outcome }}"     = "failure" ] && FAILED="$FAILED node"
+          [ "${{ steps.install.outcome }}"  = "failure" ] && FAILED="$FAILED install"
+          [ "${{ steps.browser.outcome }}"  = "failure" ] && FAILED="$FAILED browser"
+
+          if [ -n "$FAILED" ]; then
+            {
+              echo "## ⚙️ תקלת תשתית — לא נכשלת בבדיקה"
+              echo ""
+              echo "ההרצה נעצרה לפני שהקוד שלך נבדק בכלל. זו תקלה אצלנו או בשרתי GitHub,"
+              echo "**לא בעיה בקוד שלך, וזה לא משפיע על הציון.**"
+              echo ""
+              echo "שלבים שנכשלו: \`$FAILED\`"
+              echo ""
+              echo "מה לעשות: המתן כמה דקות ודחוף שוב, או לחץ **Re-run jobs**."
+              echo "אם זה חוזר פעמיים — כתוב לי."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── Check phase ─────────────────────────────────────────────────────
+      # From here on, a non-zero exit IS the student's result and must be red.
+      - name: Run checks
+        if: steps.infra.outputs.skip == 'false'
+        working-directory: 'week-10'
+        env:
+          WEEK_LABEL: 'שבוע 10'
+        run: node .checks/run-checks.mjs

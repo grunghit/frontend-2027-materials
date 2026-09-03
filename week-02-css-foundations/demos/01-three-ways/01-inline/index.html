@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+  Three ways to include CSS — stage 1 of 3: INLINE.
+
+  This page is not broken. It renders exactly like ../02-internal/ and ../03-external/.
+  That is the whole point: the browser cannot tell the difference, and the difference is
+  entirely about the human who has to change it next week.
+
+  DEMO MOVE: ask the room to change the brand colour from teal to red. Count the edits
+  out loud — there are eight, and one of them is easy to miss. Then open 03-external and
+  do the same thing in one line.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruppin Coffee Club — styled inline</title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      padding: 20px;
+      font: 16px/1.6 system-ui, sans-serif;
+      color: #1b2027;
+      background: #fff;
+    "
+  >
+    <header style="padding-bottom: 14px; border-bottom: 2px solid #0f766e">
+      <h1 style="margin: 0; font-size: 30px; color: #0f766e">Ruppin Coffee Club</h1>
+      <p style="margin: 4px 0 0; color: #5c6675">
+        Third floor, next to the printer that never works.
+      </p>
+    </header>
+
+    <main style="padding: 18px 0">
+      <h2 style="margin: 0 0 8px; font-size: 22px; color: #0f766e">This week's beans</h2>
+      <p style="margin: 0 0 14px; max-width: 60ch">
+        Ethiopia, Guji. Tastes of stone fruit, and of someone else paying.
+      </p>
+
+      <p style="margin: 0">
+        <a href="#hours" style="color: #0f766e; font-weight: 700">Opening hours</a>
+      </p>
+    </main>
+
+    <footer
+      style="padding-top: 14px; border-top: 1px solid #d3dae4; color: #5c6675; font-size: 14px"
+    >
+      Run by second-years who should have been revising.
+    </footer>
+  </body>
+</html>

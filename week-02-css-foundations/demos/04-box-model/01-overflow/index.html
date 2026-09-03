@@ -1,0 +1,174 @@
+<!doctype html>
+<!--
+  The box model, before anyone tells you about box-sizing. Stage 1 of 2 — the pain.
+
+  NOT invalid markup, and nothing 404s. Every number in this file is exactly what the
+  student asked for; the boxes are still the wrong size, because `width` under the
+  browser's default `content-box` means the width of the CONTENT, and padding and border
+  are added on top of it.
+
+    240 asked for  +  20 left padding  +  20 right padding  +  2 + 2 border  =  284 actual
+
+  DEMO MOVE: ask "how wide is that card?" before showing the readout. The room says 240.
+  Then press the button. Then open ../02-border-box/, which is this file plus three lines.
+
+  Deliberately sized so the boxes break out of their CONTAINERS without giving the PAGE a
+  horizontal scrollbar — the lesson is a box escaping its parent, not a broken viewport,
+  and a page that scrolls sideways at 375px would fail the §8 responsive gate for a reason
+  that has nothing to do with what is being taught.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Why is my box the wrong size?</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #14181f;
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 2px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #5c6675;
+      }
+      p.hint {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: #5c6675;
+      }
+
+      /* The container. It is 260px and it is not moving. */
+      .rail {
+        width: 260px;
+        margin-bottom: 22px;
+        padding: 8px;
+        border: 2px dashed #94a3b8;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      /* Symptom 1 — the card the student sized to fit the rail. */
+      .card {
+        width: 240px;
+        padding: 20px;
+        border: 2px solid #b91c1c;
+        border-radius: 8px;
+        background: #fef2f2;
+      }
+      .card h3 {
+        margin: 0 0 4px;
+        font-size: 16px;
+      }
+      .card p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      /* Symptom 2 — the input that is "exactly as wide as its box". */
+      .field {
+        width: 240px;
+        padding: 8px;
+        border: 2px dashed #94a3b8;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+      .field label {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+      .field input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #64748b;
+        border-radius: 6px;
+        font: inherit;
+      }
+      .field input:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+      }
+
+      .readout {
+        margin-top: 6px;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #f1f5f9;
+        font: 13px/1.7 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        white-space: pre-wrap;
+      }
+      button {
+        font: 15px/1.3 system-ui, sans-serif;
+        padding: 8px 14px;
+        border: 1px solid #14181f;
+        border-radius: 999px;
+        background: #fff;
+        color: #14181f;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Two boxes that were asked to be 240px wide</h2>
+    <p class="hint">The dashed containers are 260px. Both children were given width: 240px.</p>
+
+    <div class="rail">
+      <div class="card" id="card">
+        <h3>Ethiopia, Guji</h3>
+        <p>Stone fruit. Someone else paying.</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="you@ruppin.ac.il" />
+    </div>
+
+    <p><button type="button" id="measure">measure them</button></p>
+    <p class="readout" id="out" aria-live="polite">Guess first. Then press the button.</p>
+
+    <script>
+      document.getElementById('measure').addEventListener('click', () => {
+        const report = (label, el) => {
+          const style = getComputedStyle(el);
+          return (
+            label +
+            '\n  width declared : ' +
+            style.width +
+            '\n  padding        : ' +
+            style.paddingLeft +
+            ' + ' +
+            style.paddingRight +
+            '\n  border         : ' +
+            style.borderLeftWidth +
+            ' + ' +
+            style.borderRightWidth +
+            '\n  ACTUAL on page : ' +
+            el.offsetWidth +
+            'px' +
+            '\n  box-sizing     : ' +
+            style.boxSizing
+          );
+        };
+        document.getElementById('out').textContent =
+          report('.card', document.getElementById('card')) +
+          '\n\n' +
+          report('input', document.getElementById('email')) +
+          '\n\nBoth containers are 260px. Both children were told 240px. Neither is 240px.';
+      });
+    </script>
+  </body>
+</html>

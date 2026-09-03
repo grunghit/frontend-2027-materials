@@ -1,0 +1,319 @@
+<!doctype html>
+<!--
+  The page shell, attempted in Flexbox. Week-4 deck, act 0 — the problem slide.
+
+  This is the debt week 3 left on purpose. Week 3 said, out loud, that there was one
+  thing Flexbox could not do for them and that week 4 existed to fix it. This page is
+  that thing, made concrete and measurable.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. It is not a straw man. The Flexbox here is CORRECT Flexbox, written the way a
+     good student would write it after week 3 — `flex-wrap`, percentage bases, nested
+     rows. Nothing is sabotaged. It still cannot do the job, and that is the point.
+  2. The failure is a NUMBER, not an impression. The readout measures the two gutters
+     with getBoundingClientRect and prints the difference in pixels. "It looks a bit
+     off" is an opinion; "the right gutter is 24px and the left is 0px" is not.
+  3. The wrapper count is displayed. Flexbox is one-dimensional, so a two-dimensional
+     layout has to be built as rows of columns of rows — and every one of those nestings
+     is a <div> that exists for no reason except the layout engine.
+  4. The percentage trap is switchable. `width: 33.333%` plus a `gap` is wider than the
+     container, every time, and no amount of care with the percentages fixes it because
+     the gap is not part of the percentage. Act 2's `fr` is the answer, and the room
+     should feel the problem before they are given it.
+
+  DEMO MOVE: start with everything off. It looks fine — say so, and mean it. Then tick
+  "add a gap between the regions". The row bursts. Ask the room for the fix; someone
+  will say "make it 32% instead of 33.333%". Do it — the checkbox is there — and show
+  that the gutters are still unequal and the arithmetic now depends on the viewport.
+  Only then tick "align the sidebar with the footer", which is the thing that has no
+  Flexbox answer at all.
+
+  Do NOT fix this file. It is supposed to lose. 02-grid/ is where it is won.
+
+  The overflow is contained inside .stage, which is a scroll container, so a bursting
+  row is visible inside the demo instead of giving the whole page a horizontal
+  scrollbar — the page has to stay clean at 375px or it fails the responsive gate for
+  a reason that has nothing to do with the lesson.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The page shell, attempted in Flexbox</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font:
+          600 13px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+        cursor: pointer;
+      }
+      .controls input[type='checkbox'] {
+        accent-color: #1d4ed8;
+        margin-right: 4px;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      .stage {
+        padding: 10px;
+        border: 3px solid #b91c1c;
+        border-radius: 10px;
+        background: #fff5f5;
+        overflow-x: auto;
+      }
+
+      /* ── The Flexbox attempt. This is honest week-3 code. ───────────────────── */
+      .shell {
+        display: flex;
+        flex-direction: column;
+      }
+      .band {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .region {
+        padding: 12px 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 13px;
+        color: #1e3a8a;
+        background: #dbeafe;
+        border: 2px solid #1d4ed8;
+      }
+      .masthead,
+      .footer {
+        width: 100%;
+      }
+      .sidebar {
+        width: 25%;
+        background: #dcfce7;
+        border-color: #15803d;
+        color: #14532d;
+      }
+      .main {
+        width: 50%;
+      }
+      .aside {
+        width: 25%;
+        background: #fef3c7;
+        border-color: #b45309;
+        color: #7c2d12;
+      }
+      .main .filler {
+        display: none;
+        margin: 8px 0 0;
+        font-weight: 400;
+        color: #1e40af;
+      }
+
+      /* Toggle 1 — a gap, which is what any designer asks for. */
+      .shell.gapped,
+      .shell.gapped .band {
+        gap: 12px;
+      }
+      /* Toggle 2 — "just make the percentages smaller", the fix everyone proposes. */
+      .shell.trimmed .sidebar,
+      .shell.trimmed .aside {
+        width: 24%;
+      }
+      .shell.trimmed .main {
+        width: 48%;
+      }
+      /* Toggle 3 — the thing with no Flexbox answer: the sidebar has to run down
+         past the main region and stop level with the footer. */
+      .shell.tall .main .filler {
+        display: block;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          13px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+      .verdict {
+        margin: 10px 0 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 2px solid #15803d;
+        background: #dcfce7;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .verdict.bad {
+        border-color: #b91c1c;
+        background: #fef2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <label><input type="checkbox" id="gapped" />add a gap between the regions</label>
+      <label><input type="checkbox" id="trimmed" />shrink the percentages to compensate</label>
+      <label><input type="checkbox" id="tall" />give the main region more content</label>
+    </div>
+
+    <h2>Five regions, one page shell, Flexbox only</h2>
+    <div class="stage">
+      <div class="shell" id="shell">
+        <div class="region masthead">masthead</div>
+        <div class="band">
+          <div class="region sidebar" id="sidebar">sidebar<br />25%</div>
+          <div class="region main" id="main">
+            main &mdash; 50%
+            <p class="filler">
+              Real pages have unequal amounts of content in each region, and this is where a row of
+              flex items stops being able to help you.
+            </p>
+          </div>
+          <div class="region aside">aside<br />25%</div>
+        </div>
+        <div class="region footer" id="footer">footer</div>
+      </div>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const shell = document.getElementById('shell');
+      const stage = shell.parentElement;
+      const sidebar = document.getElementById('sidebar');
+      const main = document.getElementById('main');
+      const footer = document.getElementById('footer');
+      const out = document.getElementById('out');
+      const verdict = document.getElementById('verdict');
+      const toggles = {
+        gapped: document.getElementById('gapped'),
+        trimmed: document.getElementById('trimmed'),
+        tall: document.getElementById('tall'),
+      };
+
+      /* Every wrapper that exists only to make Flexbox work. In this markup that is
+         .shell and .band — a two-dimensional layout expressed as nested one-dimensional
+         ones. Counted from the DOM rather than asserted in prose. */
+      const wrappers = () => shell.querySelectorAll('.band').length + 1;
+
+      function render() {
+        for (const [name, box] of Object.entries(toggles)) {
+          shell.classList.toggle(name, box.checked);
+        }
+
+        requestAnimationFrame(() => {
+          const band = shell.querySelector('.band');
+          const inner = Math.round(stage.clientWidth) - 20;
+          const wanted = Math.round(band.scrollWidth);
+          const burst = wanted > inner + 1;
+
+          const s = sidebar.getBoundingClientRect();
+          const m = main.getBoundingClientRect();
+          const f = footer.getBoundingClientRect();
+          const leftGutter = Math.round(m.left - s.right);
+          const drift = Math.round(f.bottom - s.bottom);
+
+          verdict.className = burst || drift > 1 ? 'verdict bad' : 'verdict';
+          verdict.textContent = burst
+            ? 'The row wants ' + (wanted - inner) + 'px more than it has.'
+            : drift > 1
+              ? 'The sidebar stops ' + drift + 'px above the footer.'
+              : 'This one is fine. Nothing here needs Grid yet.';
+
+          out.textContent =
+            '  container inner width   ' +
+            inner +
+            'px\n' +
+            '  the band wants          ' +
+            wanted +
+            'px\n' +
+            '  gutter, sidebar to main ' +
+            leftGutter +
+            'px\n' +
+            '  sidebar bottom to footer ' +
+            drift +
+            'px\n' +
+            '  wrapper elements needed ' +
+            wrappers() +
+            '\n\n' +
+            (!toggles.gapped.checked && !toggles.tall.checked
+              ? '  Nothing is wrong yet, and you should say so. Three percentages that add\n' +
+                '  up to 100 do lay out three columns, and week 3 got you here honestly.\n\n' +
+                '  Now ask for the two things every real design asks for: space between\n' +
+                '  the regions, and regions that do not all hold the same amount.'
+              : burst
+                ? '  25 + 50 + 25 is 100, and the gap is added AFTERWARDS. A percentage is a\n' +
+                  '  percentage of the container; the gap is not part of that, so the row is\n' +
+                  '  now wider than the thing containing it.\n\n' +
+                  (toggles.trimmed.checked
+                    ? '  Trimming to 24/48/24 buys 4% of the width back, and 4% of the container\n' +
+                      '  is a different number at every viewport while the gap stays 12px. So the\n' +
+                      '  arithmetic is right at exactly one width and wrong everywhere else.\n\n' +
+                      '  There is no set of percentages that fixes this. The unit is wrong.'
+                    : '  Someone will say "use smaller percentages". Tick the second box and let\n' +
+                      '  them watch what that actually buys.')
+                : drift > 1
+                  ? '  The sidebar is as tall as its own content. The footer is a separate flex\n' +
+                    '  line below the band. Nothing connects them, because a flex container only\n' +
+                    '  reasons about ONE axis at a time — it can align these three items along\n' +
+                    '  the row, and it has no concept at all of the column they share with the\n' +
+                    '  footer.\n\n' +
+                    '  This is not a gap in your knowledge. It is a gap in the tool.'
+                  : '  Fine again — but only because the content happens to balance. Tick the\n' +
+                    '  third box and it stops balancing, the way real content does.');
+        });
+      }
+
+      for (const box of Object.values(toggles)) {
+        box.addEventListener('change', render);
+      }
+      addEventListener('resize', render);
+      render();
+    </script>
+  </body>
+</html>
