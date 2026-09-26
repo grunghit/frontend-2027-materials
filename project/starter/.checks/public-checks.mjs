@@ -9,7 +9,7 @@
  *
  * ── THE CONSTRAINT THAT SHAPES EVERY LINE BELOW, AND IT IS NOT A PREFERENCE
  *
- * THE PROJECT BRIEF FIXES NO DOM CONTRACT. Weeks 9 to 11 could grade thirty different
+ * THE PROJECT BRIEF FIXES NO DOM CONTRACT. Weeks 10 and 11 could grade thirty different
  * applications because each week's brief nailed down one thing — `#list`, `[data-id]`,
  * `#api-panel[data-state]` — and graded around it. The project brief nails down NONE of
  * that: it fixes the layer file names, the architecture, and the behaviours, and it
@@ -120,7 +120,7 @@ export const publicChecks = [
      */
     title: 'שכבת ה-state מייצאת את החוזה — `getState` · `setState` · `subscribe`',
     expected:
-      'שלושת השמות האלה קבועים מאז שבוע 9, והם היחידים שהבודק מניח עליהם משהו. כל id, כל class וכל שם שדה — שלך.',
+      'שלושת השמות האלה קבועים מאז שבוע 10, והם היחידים שהבודק מניח עליהם משהו. כל id, כל class וכל שם שדה — שלך.',
     run: async (page, ctx) => {
       if (!(await notStillTheScaffold(page, ctx))) return false;
       await fresh(page, ctx);
@@ -150,7 +150,7 @@ export const publicChecks = [
      * is undone. If the screen is a pile of markup that handlers poke at, nothing comes
      * back.
      *
-     * That is law 2 from week 9 — ONE PAINTER — expressed as something a machine can
+     * That is law 2 from week 10 — ONE PAINTER — expressed as something a machine can
      * see, and it works for a table, a grid of cards, a list, or anything a student
      * invents. Measured: 1 element restored on a complete build, 0 on the scaffold.
      */
@@ -189,7 +189,7 @@ export const publicChecks = [
   {
     title: '`render.js` לא מאזין, ו-`events.js` לא מצייר',
     expected:
-      'שתי האיסורים שמגדירים את שתי השכבות, משבוע 9. הבדיקה קוראת את המקור בלי תגובות: `addEventListener` ב-`render.js`, ו-`innerHTML` או `createElement` ב-`events.js`.',
+      'שתי האיסורים שמגדירים את שתי השכבות, משבוע 10. הבדיקה קוראת את המקור בלי תגובות: `addEventListener` ב-`render.js`, ו-`innerHTML` או `createElement` ב-`events.js`.',
     run: async (page, ctx) => {
       if (!(await notStillTheScaffold(page, ctx))) return false;
       const render = await fileAt(page, ctx, 'js/render.js');

@@ -1,0 +1,100 @@
+/* ============================================================================
+   Cycle 3 — a card row that needs no query.
+
+   Type, colour and the cards themselves are done. The two rows are stacks
+   until the blocks at the end give them tracks, and not one of those blocks
+   is a media query.
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font: 17px/1.55 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2a24;
+  background: #f3f6f2;
+  overflow-wrap: break-word;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.site,
+.site-foot,
+main {
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.site p,
+.site-foot p {
+  margin: 0 0 16px;
+  color: #1f5f4a;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
+
+section {
+  margin-block-end: 32px;
+}
+
+/* -- one event card ------------------------------------------------------------ */
+
+.event,
+.person {
+  padding: 16px 18px;
+  border: 2px solid #c5d3c8;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.event p,
+.person p {
+  margin: 0 0 12px;
+}
+
+.when {
+  color: #4b5b50;
+  font-size: 0.9rem;
+}
+
+.event a,
+.person a {
+  color: #1f5f4a;
+  font-weight: 600;
+}
+
+/* -- one cover ----------------------------------------------------------------- */
+
+.cover {
+  margin: 0;
+}
+
+.cover figcaption {
+  padding-block-start: 6px;
+  font-size: 0.9rem;
+  color: #4b5b50;
+}

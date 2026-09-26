@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+  Week 5 warm-up. DO NOT TOUCH THIS FILE. Everything you need is in styles.css.
+
+  Seven boxes and no layout. Each box says what its column is supposed to do, so the
+  specification is on the screen rather than in a paragraph somewhere else.
+
+  This is the grid-sizing exercise from the old course, rebuilt. Three things were
+  wrong with the original and are repaired here: the answer box appended a NEW
+  stylesheet on every click, so a wrong attempt was never undone and the third try was
+  quietly judged against the first; the text area had no label; and the target could be
+  matched with fixed pixel widths, which is the one answer the exercise exists to argue
+  against. This target cannot.
+
+  Ten minutes. No git, no submission, no grade.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Week 5 warm-up — build the track list</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Build the track list</h1>
+    <p class="lede">
+      Seven boxes, no layout. Every box says what its column has to do. Turn them into a grid whose
+      columns behave the way the labels claim &mdash; then drag the window narrower and check that
+      they still do. <code>target.png</code> shows what it looks like when it is right.
+    </p>
+
+    </header>
+
+    <main>
+      <div class="strip">
+      <div class="tracks">
+        <div class="a">fills what is left</div>
+        <div class="b">always 140px</div>
+        <div class="c">never below 120px</div>
+        <div class="a">fills what is left</div>
+        <div class="b">always 140px</div>
+        <div class="c">never below 120px</div>
+        <div class="last">and this one goes all the way across</div>
+      </div>
+    </div>
+    </main>
+  </body>
+</html>

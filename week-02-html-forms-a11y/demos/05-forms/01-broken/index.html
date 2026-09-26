@@ -1,0 +1,109 @@
+<!doctype html>
+<!-- Do not "fix" this file — the broken version is the teaching material.
+
+     A form built the way most people build their first form: placeholders instead of
+     labels, and no `name` on the fields. It looks finished and it is not.
+
+     Three things to do live:
+       1. Click the grey text above a field. Nothing happens — because it is not a label.
+       2. Press "send" and read what would actually be submitted: nothing.
+       3. RUN THE VALIDATOR ON IT. It passes. Zero errors.
+
+     Step 3 is the real lesson, and it is why this file deliberately carries no
+     deliberately-invalid marker for tools/gates.mjs: html-validate checks markup validity,
+     not usability. A valid page can still be unusable.
+
+     And step 4, measured (axe-core 4.13 via @axe-core/playwright, and Lighthouse 12.8):
+     axe reports NONE of these fields as unlabelled. A placeholder gives a field an
+     accessible name, so the `label` rule passes and Lighthouse's Accessibility score is
+     100. What does disagree: clicking the grey words (nothing happens), typing (the hint
+     vanishes), and the grader's form-accessible check (label[for] matching the id).
+     Green is a floor, not the standard. Cycle 4 (ai-lab/04-review-my-form) is built on
+     exactly this gap. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact us</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #14181f;
+        background: #fff;
+      }
+      .fake-label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 13px;
+        color: #5c6675;
+      }
+      input,
+      textarea {
+        font: inherit;
+        width: 100%;
+        max-width: 340px;
+        padding: 7px 9px;
+        border: 1px solid #d3dae4;
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+      input:focus-visible,
+      textarea:focus-visible,
+      button:focus-visible {
+        outline: 3px solid #0b5f8f;
+        outline-offset: 2px;
+      }
+      button {
+        font: inherit;
+        padding: 7px 16px;
+        border: 1px solid #0b5f8f;
+        border-radius: 999px;
+        background: #0b5f8f;
+        color: #fff;
+        cursor: pointer;
+      }
+      #out {
+        margin-top: 14px;
+        padding: 10px 12px;
+        border: 1px solid #d3dae4;
+        border-radius: 8px;
+        font: 13px/1.7 ui-monospace, Menlo, Consolas, monospace;
+        color: #a52822;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Contact us</h1>
+
+    <form id="contact">
+      <span class="fake-label">Full name</span>
+      <input type="text" placeholder="Full name" />
+
+      <span class="fake-label">Email</span>
+      <input type="text" placeholder="Email" />
+
+      <span class="fake-label">Message</span>
+      <textarea rows="3" placeholder="Message"></textarea>
+
+      <button type="submit">send</button>
+    </form>
+
+    <div id="out" aria-live="polite">Press "send" to see what the server would receive.</div>
+
+    <script>
+      document.getElementById('contact').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const pairs = [...data.entries()].map(([key, value]) => `${key}=${value}`);
+        document.getElementById('out').textContent = pairs.length
+          ? `sent: ${pairs.join('&')}`
+          : 'sent: (nothing) — no field has a name attribute, so nothing is submitted.';
+      });
+    </script>
+  </body>
+</html>

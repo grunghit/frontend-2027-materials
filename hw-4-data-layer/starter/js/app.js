@@ -7,7 +7,7 @@
  * this file has to ASK the two layers something, and each of them is marked.
  *
  * READ THE WHOLE FILE BEFORE YOU WRITE ANYTHING. It is the shape of every application
- * you have built since week 9, and the four gaps are small precisely because the two
+ * you have built since week 10, and the four gaps are small precisely because the two
  * files beside it are doing the work.
  *
  * ── WHY THIS ONE IS NOT SPLIT INTO THREE FILES
@@ -263,7 +263,7 @@ async function refreshAll() {
 
 function wire() {
   /* ONE listener for every refresh button that will ever exist, on the <ul> — which
-     render() empties but never replaces. Week 8's delegation, still earning its keep. */
+     render() empties but never replaces. Week 9's delegation, still earning its keep. */
   document.querySelector('#cities').addEventListener('click', (event) => {
     if (!event.target.closest('button.refresh')) return;
     const row = event.target.closest('li[data-city]');

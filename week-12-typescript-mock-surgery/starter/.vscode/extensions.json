@@ -7,7 +7,7 @@
   "recommendations": [
     // Run the page over http. THE rule from week 1: never double-click index.html.
     // file:// breaks fetch, ES modules and origin-scoped localStorage — a habit formed
-    // in week 1 detonates in weeks 10 and 11.
+    // in week 1 detonates in weeks 8 and 11.
     "ritwickdey.liveserver",
 
     // Format on save, so nobody loses points to indentation and diffs stay reviewable.
@@ -16,7 +16,7 @@
     // Catches the real JS mistakes (unused vars, == vs ===) before the browser does.
     "dbaeumer.vscode-eslint",
 
-    // Week 5 onwards: autocomplete and hover-preview for Tailwind utility classes.
+    // Week 6 onwards: autocomplete and hover-preview for Tailwind utility classes.
     "bradlc.vscode-tailwindcss",
 
     // Shows the error inline on the line itself instead of hidden in the Problems panel.

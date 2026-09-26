@@ -1,0 +1,202 @@
+<!doctype html>
+<!--
+  ============================================================================
+  Week 3 — YOU PROBABLY DO NOT NEED THIS FILE.
+
+  The page you are styling this week is the one YOU wrote in weeks 1 and 2. Copy
+  your own week-02/index.html, about.html and images/ into week-03/ and style
+  THOSE (pre-class/README-he.md says how, and pre-class/verify.mjs checks it).
+
+  This page is here for one reason: so that nobody is stuck. If your week-2 page
+  is unfinished, or you could not get it back off GitHub, use this one instead
+  and say so in your submission. You lose nothing for it — the marks this week
+  are for the stylesheet, not for the markup.
+
+  Whichever page you style, THE MARKUP BARELY CHANGES THIS WEEK. Two additions,
+  both already made below:
+    · the <link rel="stylesheet"> in the head
+    · class="lede" on the opening paragraph of the About section
+
+  That second one is the only class on the page, and it is worth understanding why
+  it is the only one. Everything else here can be reached by what it IS: `header p`,
+  `main section`, `aside`, `table caption`, `form fieldset`, `nav a[aria-current]`,
+  `footer`. A page written with the right elements barely needs class names — which
+  is the payoff for the last two weeks' work, arriving a week later than the work did.
+
+  You may add a class where you genuinely need one. Reach for a real selector first.
+  And if you find yourself adding <div> after <div> to make the CSS work, stop: that
+  is next week's tool, and this week's assignment is built so you do not need it.
+  ============================================================================
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maya Cohen — third-year student, Ruppin</title>
+
+    <!-- The one line that connects the page to its stylesheet. Relative path,
+         counted from this file — styles.css sits right next to index.html. -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <a href="#main">Skip to content</a>
+
+    <header>
+      <h1>Maya Cohen</h1>
+      <p>
+        Third-year student at Ruppin. I already write C# and Python; this semester I am finding out
+        what the browser does with the text I send it.
+      </p>
+      <picture>
+        <source media="(min-width: 700px)" srcset="images/banner-wide.svg" width="640" height="120" />
+        <img src="images/banner-narrow.svg" alt="A banner with my name next to a small laptop" width="320" height="120" />
+      </picture>
+    </header>
+
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="#about">About me</a></li>
+        <li><a href="#learning">What I am learning</a></li>
+        <li><a href="#contact">Contact me</a></li>
+        <li><a href="about.html">Longer version</a></li>
+      </ul>
+    </nav>
+
+    <main id="main" tabindex="-1">
+      <section id="about">
+        <h2>About me</h2>
+
+        <img
+          src="images/portrait.svg"
+          alt="Illustrated portrait of Maya wearing round glasses"
+          width="240"
+          height="240"
+        />
+
+        <p class="lede">
+          I came to programming through a statistics course I did not enjoy and a data set I did. I
+          like problems where the answer is checkable, which is why I have never much liked design —
+          and why <em>this</em> semester is going to be uncomfortable.
+        </p>
+
+        <p>
+          I am writing this page in the first lab of the course, from an empty file, and it is
+          <strong>the first commit of the thing I will be examined on</strong>.
+        </p>
+
+        <aside>
+          <h3>One thing that surprised me today</h3>
+          <p>
+            HTML never reports an error. It repairs what you wrote and renders something else. That
+            is why we run a validator.
+          </p>
+        </aside>
+      </section>
+
+      <section id="learning">
+        <h2>What I am learning</h2>
+
+        <table>
+          <caption>My courses this semester</caption>
+          <thead>
+            <tr>
+              <th scope="col">Course</th>
+              <th scope="col">Day</th>
+              <th scope="col">Room</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Front-End Web Development</th>
+              <td>Tuesday</td>
+              <td>Lab 3</td>
+            </tr>
+            <tr>
+              <th scope="row">Databases</th>
+              <td>Wednesday</td>
+              <td>301</td>
+            </tr>
+            <tr>
+              <th scope="row">Statistics for Information Systems</th>
+              <td>Thursday</td>
+              <td>210</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <article>
+          <h3>Reading notes: what the browser actually does</h3>
+          <p>Written on <time datetime="2027-11-02">2 November 2027</time>, after the second lab.</p>
+          <p>
+            The browser asks for one text file, turns the name into an address first, encrypts the
+            connection, gets text back, parses it into a tree, and paints. Six words: request, DNS,
+            TLS, response, parse, paint.
+          </p>
+          <p>
+            Three things I got wrong in the first hour: I opened the page by double-clicking it and
+            wondered why the path to my image broke; I used <code>h4</code> for a subheading because
+            <code>h2</code> looked too big; I wrote three <code>br</code> tags to push a paragraph
+            down the page.
+          </p>
+        </article>
+
+        <details>
+          <summary>What I read this week</summary>
+          <ul>
+            <li>MDN, the <code>label</code> element: why <code>for</code> points at an <code>id</code>.</li>
+            <li>MDN, the <code>table</code> element: <code>caption</code>, <code>thead</code>, <code>scope</code>.</li>
+            <li>WebAIM on skip links, and why the first Tab on a page matters.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section id="contact">
+        <h2>Contact me</h2>
+        <p>
+          The quickest way is the form. Otherwise
+          <a href="mailto:maya@example.com">email me</a>, or read the documentation I keep open:
+          <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" rel="noopener noreferrer">the HTML reference on MDN</a>.
+        </p>
+
+        <form method="get">
+          <fieldset>
+            <legend>Who you are</legend>
+            <p><label for="visitor-name">Your name</label> <input type="text" id="visitor-name" name="visitor-name" required /></p>
+            <p>
+              <label for="visitor-email">Your email</label>
+              <input type="email" id="visitor-email" name="visitor-email" placeholder="you@example.com" required aria-describedby="visitor-email-hint" />
+            </p>
+            <p id="visitor-email-hint">I reply from my student address, usually within two days.</p>
+            <p><label for="visitor-phone">Phone (optional)</label> <input type="tel" id="visitor-phone" name="visitor-phone" /></p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Reply by</legend>
+            <p><input type="radio" id="reply-email" name="reply-by" value="email" checked /> <label for="reply-email">Email</label></p>
+            <p><input type="radio" id="reply-phone" name="reply-by" value="phone" /> <label for="reply-phone">Phone</label></p>
+          </fieldset>
+
+          <p>
+            <label for="topic">What is it about?</label>
+            <select id="topic" name="topic">
+              <option value="course">This course</option>
+              <option value="project">A project idea</option>
+              <option value="other">Something else</option>
+            </select>
+          </p>
+          <p><label for="visitor-message">Your message</label> <textarea id="visitor-message" name="visitor-message" rows="4"></textarea></p>
+          <button type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Built from an empty file in week 1 of Frontend Development, Ruppin Academic Center, and grown
+        in week 2. Source on <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>.
+      </p>
+    </footer>
+  </body>
+</html>

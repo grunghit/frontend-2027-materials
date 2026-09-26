@@ -1,0 +1,159 @@
+/* Library desk view — styles.
+
+   Mobile-first: the base is the phone. One width query, at 60em, placed
+   where this page's content needs it rather than at a device's width. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2a24;
+  background: #eef2ee;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 8px;
+}
+
+.masthead,
+.menu,
+.desk,
+.notices,
+.colophon {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.masthead {
+  background: #1f5f4a;
+  color: #ffffff;
+}
+
+.logo {
+  font-weight: 700;
+}
+
+.who {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu a {
+  display: block;
+  padding: 4px 0;
+  color: #1f5f4a;
+}
+
+.menu a[aria-current='page'] {
+  font-weight: 700;
+}
+
+.lede {
+  color: #4b5b50;
+}
+
+.figure {
+  padding: 12px 14px;
+  border: 2px solid #c5d3c8;
+  border-radius: 10px;
+}
+
+.figure-value {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.figure-note {
+  margin: 0;
+  color: #4b5b50;
+  font-size: 0.85rem;
+}
+
+.queue {
+  margin-block-start: 16px;
+}
+
+.colophon p {
+  margin: 0;
+  color: #4b5b50;
+}
+
+/* -- layout: the phone is the base -------------------------------------------- */
+
+/* overflow-x: a wide table scrolls inside the dashboard, not the whole page. */
+.branch {
+  overflow-x: auto;
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'masthead'
+    'desk'
+    'menu'
+    'notices'
+    'colophon';
+}
+
+.masthead {
+  grid-area: masthead;
+}
+
+.menu {
+  grid-area: menu;
+}
+
+.desk {
+  grid-area: desk;
+}
+
+.notices {
+  grid-area: notices;
+}
+
+.colophon {
+  grid-area: colophon;
+}
+
+/* As many figures as fit, never narrower than 10rem: no query needed. */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 12px;
+}
+
+/* The one query: where the desk column, beside two sidebars, still holds
+   two figures side by side. */
+@media (min-width: 60em) {
+  .branch {
+    grid-template-columns: 15rem minmax(0, 1fr) 17rem;
+    grid-template-areas:
+      'masthead masthead masthead'
+      'menu     desk     notices'
+      'colophon colophon colophon';
+  }
+}

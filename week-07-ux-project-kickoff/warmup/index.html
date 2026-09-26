@@ -1,0 +1,367 @@
+<!doctype html>
+<!--
+  ============================================================================
+  Week-7 warm-up — cycle 1's AI-free you-do. Eight minutes, ungraded, no git.
+
+  INTENTIONALLY INACCESSIBLE.
+
+  Six defects are planted in the card below. Every one of them is valid HTML, every one
+  of them keeps the console silent, and AT THE AA TAGS THE GATE RUNS, AXE REPORTS EXACTLY
+  ONE — `color-contrast`. Turning on axe's best-practice rules adds `tabindex` and nothing
+  else; `alt="image"` is reported by no rule at any level, because the attribute is there.
+  That gap is the whole point of the week and it is why this file carries the marker: `tools/gates.mjs`
+  INVERTS the keyboard, contrast and responsive gates for a page that has it, so this
+  page is REQUIRED to fail them. If it ever stops failing, the gate says so — a warm-up
+  that has quietly become correct has stopped teaching.
+
+  The referee at the bottom names the six and tells you which are still there. It is the
+  same instrument as week 6's, pointed at accessibility instead of at computed style.
+
+  Instructor: the answers are in `instructor-notes-he.md` §3 and in `solution/`, neither
+  of which is published. The six are, in order: colour-only status · body text at 2.20:1 ·
+  `outline-none` on both links with nothing in its place · `alt="image"` · `tabindex="3"` ·
+  a link called "here".
+
+  The ring is removed from BOTH links deliberately, and not only because it is realistic:
+  `tools/gates.mjs` tabs to the first real control and asserts that a marked page has NO
+  ring there. With the ring gone from one link only, the first stop — which the positive
+  `tabindex` makes the OTHER one — still had the browser default, and the inversion
+  correctly reported this page as no longer broken.
+  ============================================================================
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Warm-up &mdash; six things wrong with this card</title>
+
+    <link rel="stylesheet" href="styles.css" />
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      /*
+        GIVEN, and it contains a trap on purpose.
+
+        `--color-faint` is a real token in a real design system: somebody added it for
+        "de-emphasised text", and on the card below it measures 2.20:1. It is not a typo
+        and nothing warns you about it. Two of the tokens here are safe for body text and
+        one is not, and telling them apart is a measurement, not a preference.
+      */
+      @theme static {
+        --color-paper: hsl(210 30% 99%);
+        --color-surface: hsl(210 28% 96%);
+        --color-line: hsl(210 16% 78%);
+
+        --color-ink: hsl(210 30% 12%);
+        --color-ink-muted: hsl(210 16% 30%);
+        --color-faint: hsl(210 12% 66%);
+
+        --color-brand: hsl(210 72% 32%);
+        --color-open: hsl(162 72% 24%);
+        --color-open-soft: hsl(162 56% 94%);
+        --color-full: hsl(352 72% 38%);
+        --color-full-soft: hsl(352 90% 97%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <h1>Six things wrong with this card</h1>
+      <p class="intro">
+        The card on the left is valid HTML, logs nothing, and is not usable. Find the six and fix
+        them in the markup. The referee names each one and tells you what it is still measuring
+        &mdash; you are done when it says <code>0 of 6</code>, not when the card looks fine.
+      </p>
+
+      <div class="split">
+        <section>
+          <h2>the card</h2>
+
+          <article
+            id="card"
+            class="flex flex-col gap-3 rounded-xl border border-line bg-surface p-5"
+          >
+            <h3 class="text-lg font-semibold text-ink">Beginners&rsquo; yoga</h3>
+
+            <!--
+              DEFECT — read the next line in greyscale, and then imagine it read aloud.
+              The span carries a colour and nothing else, and the colour is the only thing
+              that says whether you can sign up. A screen reader was never able to see it;
+              nor can a reader with a red-green deficiency; nor can a printed page.
+            -->
+            <ul class="flex list-none flex-col gap-2 p-0 text-sm text-ink">
+              <li class="flex items-center justify-between gap-3">
+                <span>Tuesday 18:00</span>
+                <span class="h-3 w-8 rounded-full bg-open"></span>
+              </li>
+              <li class="flex items-center justify-between gap-3">
+                <span>Wednesday 10:00</span>
+                <span class="h-3 w-8 rounded-full bg-full"></span>
+              </li>
+              <li class="flex items-center justify-between gap-3">
+                <span>Thursday 17:00</span>
+                <span class="h-3 w-8 rounded-full bg-open"></span>
+              </li>
+            </ul>
+
+            <!--
+              DEFECT — `text-faint` measures 2.20:1 against this card. It is a real token
+              with a real name, and it was chosen because the sentence is secondary.
+              Secondary is a reason to make text SMALLER or to move it DOWN; it is never a
+              reason to make it unreadable. Two tokens in the theme are safe here.
+            -->
+            <p class="text-sm text-faint">Bring a mat. Doors close five minutes past.</p>
+
+            <!--
+              DEFECT — the attribute is present, so html-validate is satisfied and axe is
+              satisfied. Ask the only question that matters: if this image did not load,
+              what would you want the sentence in its place to say?
+            -->
+            <img
+              src="data:image/svg+xml;utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20160'%3E%3Crect%20width='300'%20height='160'%20fill='%23dbe4ec'/%3E%3Crect%20x='24'%20y='104'%20width='252'%20height='10'%20rx='5'%20fill='%23a9bccd'/%3E%3Ccircle%20cx='84'%20cy='72'%20r='26'%20fill='%23a9bccd'/%3E%3Crect%20x='140'%20y='46'%20width='120'%20height='52'%20rx='8'%20fill='%23a9bccd'/%3E%3C/svg%3E"
+              alt="image"
+              width="300"
+              height="160"
+              class="w-full rounded-lg border border-line"
+            />
+
+            <p class="text-sm text-ink">
+              <!--
+                DEFECT — a positive `tabindex`. Everything on the page is still reachable,
+                so nothing reports a problem; the order is simply no longer the order you
+                can see. Press Tab and watch where it goes first.
+              -->
+              <a
+                href="#register"
+                tabindex="3"
+                class="font-semibold text-brand underline underline-offset-4 outline-none"
+                >Register</a
+              >
+              &middot; full terms and cancellations are
+              <!--
+                TWO DEFECTS ON ONE ELEMENT.
+                · `outline-none` removes the focus ring and puts nothing in its place —
+                  on BOTH links, because that is how this is really written: somebody did
+                  not like how the default looked and turned it off everywhere. It is a
+                  reason to REPLACE the ring, never to delete it.
+                · A screen-reader user lists the links on a page to navigate it. Read this
+                  one out of context and say where it goes.
+              -->
+              <a
+                href="#terms"
+                class="font-semibold text-brand underline underline-offset-4 outline-none"
+                >here</a
+              >.
+            </p>
+          </article>
+        </section>
+
+        <section>
+          <h2>the referee</h2>
+          <p class="referee" id="referee" aria-live="polite">measuring&hellip;</p>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      /*
+        THE REFEREE.
+        ------------------------------------------------------------------------------
+        Six rows, one per planted defect, each measured on the RENDERED page. It never
+        tells you the fix; it tells you what it is still seeing, which is what an audit
+        finding looks like when it is written properly.
+
+        Of the six, ONE is reported by axe at the AA level (`color-contrast`) and one more
+        only if you turn on its best-practice rules (`tabindex`). The other four are
+        reported by nothing you have met. That is the week in one number.
+      */
+
+      /* WCAG contrast, against the colour actually painted behind the text. */
+      const luminance = ([r, g, b]) => {
+        const channel = (c) => {
+          const s = c / 255;
+          return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+      };
+      const rgb = (value) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      const ground = (el) => {
+        let node = el;
+        while (node) {
+          const bg = getComputedStyle(node).backgroundColor;
+          if (Number((bg.match(/[\d.]+/g) ?? [])[3] ?? 1) > 0) return rgb(bg);
+          node = node.parentElement;
+        }
+        return [255, 255, 255];
+      };
+      const ratio = (a, b) => {
+        const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (hi + 0.05) / (lo + 0.05);
+      };
+
+      /*
+        THE FOCUS RING IS MEASURED WHEN YOU PRESS TAB, NOT ON A TIMER.
+
+        Every other row re-measures twice a second. This one cannot: reading a
+        `:focus-visible` style means moving focus, and a referee that grabs focus twice a
+        second makes the page impossible to use — which would be a seventh defect, added
+        by the thing that is supposed to find them.
+
+        So it listens instead. Tab onto a link and the row updates for that link. That is
+        not a workaround: pressing Tab is how you find this defect in the assignment too,
+        and it takes ninety seconds on a whole page.
+      */
+      const ringSeen = new Map();
+      document.addEventListener('focusin', (event) => {
+        const el = event.target;
+        if (!el.matches || !el.matches('#card a[href], #card button')) return;
+        const s = getComputedStyle(el);
+        const drawn = s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0;
+        ringSeen.set(el, drawn || s.boxShadow !== 'none');
+        report();
+      });
+
+      const PLACEHOLDER_ALT = /^(image|images?|img|pic\d*|picture|photo|graphic)$/i;
+      const VAGUE_LINK = /^(here|click here|read more|more|link|details|learn more)[.!\s]*$/i;
+
+      const CHECKS = [
+        {
+          id: 'status reads',
+          hint: 'availability is text, not only a colour',
+          run() {
+            const pills = [...document.querySelectorAll('#card li')];
+            const silent = pills.filter((li) => {
+              const swatch = li.querySelector('span:last-child');
+              return !swatch || swatch.textContent.trim() === '';
+            });
+            return silent.length === 0
+              ? { ok: true, saw: pills.length + ' rows, all of them readable' }
+              : {
+                  ok: false,
+                  saw: silent.length + ' of ' + pills.length + ' rows say it in colour alone',
+                };
+          },
+        },
+        {
+          id: 'contrast AA',
+          hint: 'every piece of text reaches 4.5:1',
+          run() {
+            let worst = { ratio: 21, text: '' };
+            for (const el of document.querySelectorAll('#card *')) {
+              const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+              if (!own) continue;
+              const r = ratio(rgb(getComputedStyle(el).color), ground(el));
+              if (r < worst.ratio) worst = { ratio: r, text: el.textContent.trim().slice(0, 28) };
+            }
+            return worst.ratio >= 4.5
+              ? { ok: true, saw: 'worst is ' + worst.ratio.toFixed(2) + ':1' }
+              : { ok: false, saw: worst.ratio.toFixed(2) + ':1 on "' + worst.text + '"' };
+          },
+        },
+        {
+          id: 'focus ring',
+          hint: 'PRESS TAB — every link shows where focus is',
+          run() {
+            const links = [...document.querySelectorAll('#card a[href]')];
+            const untested = links.filter((a) => !ringSeen.has(a));
+            const ringless = links.filter((a) => ringSeen.get(a) === false);
+            if (ringless.length) {
+              return { ok: false, saw: ringless.length + ' link(s) showed no ring when focused' };
+            }
+            if (untested.length) {
+              return {
+                ok: false,
+                saw: 'press Tab — ' + untested.length + ' of ' + links.length + ' not tested yet',
+              };
+            }
+            return { ok: true, saw: 'all ' + links.length + ' links show a ring' };
+          },
+        },
+        {
+          id: 'alt says something',
+          hint: 'or alt="" for an image that adds nothing',
+          run() {
+            const bad = [...document.querySelectorAll('#card img')].filter((img) => {
+              const alt = img.getAttribute('alt');
+              if (alt === null) return true;
+              if (alt.trim() === '') return false;
+              return (
+                PLACEHOLDER_ALT.test(alt.trim()) || /\.(svg|png|jpe?g|webp|gif)$/i.test(alt.trim())
+              );
+            });
+            return bad.length === 0
+              ? { ok: true, saw: 'nothing generic left' }
+              : { ok: false, saw: 'alt="' + bad[0].getAttribute('alt') + '" says nothing' };
+          },
+        },
+        {
+          id: 'tab order',
+          hint: 'focus follows the order you can see',
+          run() {
+            const positive = [...document.querySelectorAll('#card [tabindex]')].filter(
+              (el) => Number(el.getAttribute('tabindex')) > 0,
+            );
+            return positive.length === 0
+              ? { ok: true, saw: 'document order, no positive tabindex' }
+              : {
+                  ok: false,
+                  saw:
+                    positive.length +
+                    ' element(s) with tabindex="' +
+                    positive[0].getAttribute('tabindex') +
+                    '"',
+                };
+          },
+        },
+        {
+          id: 'link names',
+          hint: 'a link read on its own says where it goes',
+          run() {
+            const vague = [...document.querySelectorAll('#card a[href]')].filter((a) =>
+              VAGUE_LINK.test((a.textContent || '').trim()),
+            );
+            return vague.length === 0
+              ? { ok: true, saw: 'every link names its destination' }
+              : { ok: false, saw: '"' + vague[0].textContent.trim() + '" — where does it go?' };
+          },
+        },
+      ];
+
+      function report() {
+        const results = CHECKS.map((check) => ({ ...check, ...check.run() }));
+        const left = results.filter((r) => !r.ok).length;
+
+        const body = results
+          .map(
+            (r) =>
+              '  ' +
+              (r.ok ? '[ok]   ' : '[    ] ') +
+              r.id.padEnd(20) +
+              r.saw +
+              (r.ok ? '' : '\n           ' + r.hint),
+          )
+          .join('\n');
+
+        const head =
+          left === 0
+            ? '  0 of 6. Done.\n\n' +
+              '  The two minutes that are worth more than the ten:\n' +
+              '  which of the six would html-validate have caught? Which would axe?\n' +
+              '  And which one did you only find because you put the mouse down?\n\n'
+            : '  ' + left + ' of 6 still there.\n\n';
+
+        document.getElementById('referee').textContent = head + body;
+      }
+
+      /* Re-measure whenever the compiler emits, and on a slow tick for everything else. */
+      new MutationObserver(() => requestAnimationFrame(report)).observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      });
+      setInterval(report, 500);
+      report();
+    </script>
+  </body>
+</html>

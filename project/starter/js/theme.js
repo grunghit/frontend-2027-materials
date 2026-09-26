@@ -37,7 +37,7 @@
  * guard at the bottom of this file says so instead.
  *
  * ── THE PALETTE IS DERIVED FROM ONE NUMBER
- * `--hue-brand` is the same convention weeks 2 and 3 used in their stylesheets.
+ * `--hue-brand` is the same convention weeks 3 and 4 used in their stylesheets.
  * Change 268 to 190 and the whole application re-colours coherently, because no
  * colour here is an independent decision — every one is that hue at a chosen
  * saturation and lightness. Lightness carries the contrast, which is why the dark
@@ -45,7 +45,7 @@
  *
  * ── HOW DARK MODE WORKS HERE, AND WHY THERE IS NOT ONE `dark:` IN THE MARKUP
  *
- * Week 5's decision was that an `@theme` entry IS a real CSS custom property. That
+ * Week 6's decision was that an `@theme` entry IS a real CSS custom property. That
  * is not a slogan, and this is where it pays: the compiler emits
  *
  *     .text-ink { color: var(--color-ink); }
@@ -63,8 +63,8 @@
  *   · `var()` inside a token value DOES work, which is what makes one `--hue-brand`
  *     possible at all.
  *
- * `dark:bg-…` in the markup is equally correct and is what week 5 taught; this
- * route is the one week 5's token argument unlocks, and the project accepts either.
+ * `dark:bg-…` in the markup is equally correct and is what week 6 taught; this
+ * route is the one week 6's token argument unlocks, and the project accepts either.
  *
  * Every foreground/background pair below passes WCAG AA in BOTH ramps, measured off
  * rendered pixels by the project's grading spec — not eyeballed. Do not hand-edit a
@@ -79,7 +79,7 @@
    * Note what is NOT customised: the spacing multiplier and the type scale.
    * Tailwind's defaults are already a scale, and inventing a second one is how a
    * page ends up with two rhythms. `--spacing` stays at its default 0.25rem, so
-   * `p-4` is 16px here exactly as it was in week 5.
+   * `p-4` is 16px here exactly as it was in week 6.
    */
   style.textContent = `
     @theme static {
@@ -136,7 +136,7 @@
       --radius-card: 16px;
       --radius-pill: 999px;
 
-      /* Measure. 62ch is the top of the 40-75 character band week 6 argues for, and
+      /* Measure. 62ch is the top of the 40-75 character band week 7 argues for, and
          prose is the only thing that should get it. */
       --container-measure: 62ch;
     }
@@ -183,7 +183,7 @@
 
        \`scroll-behavior\` sits inside a motion query so the skip link does not
        animate for a reader who asked for stillness. Same reasoning as the
-       \`motion-safe:\` prefix on every transition in the markup (week 5), applied to
+       \`motion-safe:\` prefix on every transition in the markup (week 6), applied to
        the one piece of motion that has no utility to hang it on.
     */
     :root {

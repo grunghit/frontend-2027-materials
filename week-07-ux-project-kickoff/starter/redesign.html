@@ -1,0 +1,223 @@
+<!doctype html>
+<!--
+  ============================================================================
+  PART B — rebuild this one section.
+
+  The class list from `bad-page.html`, lifted out with its STRUCTURE intact and its
+  stylesheet removed. So it is not ugly here — it is unstyled, which is a different
+  problem and a better starting point: you are not fighting somebody else's CSS.
+
+  ── WHAT CAME ACROSS WITH IT, AND STILL HAS TO BE FIXED
+
+  Removing the stylesheet fixed the contrast and the focus rings by accident. It did not
+  fix any of these, because they are in the MARKUP:
+
+    · availability is a coloured dot with no text in it — and now no colour either, so
+      the column is simply empty. Whatever you do, it has to READ.
+    · the images have an `alt` on each one and not one of them says anything
+    · a fixed-width table does not become responsive by changing a `width`. Decide what
+      the right STRUCTURE is before you start styling one.
+    · "read more" tells nobody where they are going
+
+  ── THE RULES
+
+  Tailwind is loaded from `vendor/tailwind.js`, and the `@theme` block below is GIVEN and
+  complete. You are not choosing colours — you are using the ones that are there. Do not
+  edit the theme.
+
+  No JavaScript. No bracketed values (`p-[13px]`) — everything comes off the scale. No
+  `!important`. No `outline: none` without a visible replacement.
+
+  Every `class="CODE-HERE"` is a place you write. DELETE THE MARKER when you are done
+  with that element — the grader checks that none are left.
+
+  Serve it with Live Server. On `file://` the Tailwind script still works but you will
+  form a habit that breaks in week 11.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>מרכז קהילתי אלמוגים - החוגים</title>
+
+    <!--
+      GIVEN, AND COMPLETE. Six colour tokens, two of them borders — one decorative and one
+      for the edge of a control, because 1.4.11 asks 3:1 of the second and nothing of the
+      first. Every pair here passes AA; that is why you may not edit it.
+    -->
+    <style type="text/tailwindcss">
+      @theme static {
+        --hue-brand: 208;
+
+        --color-paper: hsl(var(--hue-brand) 30% 99%);
+        --color-surface: hsl(var(--hue-brand) 28% 96%);
+        --color-surface-2: hsl(var(--hue-brand) 24% 91%);
+
+        --color-line: hsl(var(--hue-brand) 16% 78%);
+        --color-control: hsl(var(--hue-brand) 20% 42%);
+
+        --color-ink: hsl(var(--hue-brand) 30% 12%);
+        --color-ink-muted: hsl(var(--hue-brand) 14% 32%);
+
+        --color-brand: hsl(var(--hue-brand) 72% 32%);
+        --color-brand-strong: hsl(var(--hue-brand) 76% 24%);
+        --color-brand-ink: hsl(0 0% 100%);
+
+        --color-open: hsl(162 72% 24%);
+        --color-open-soft: hsl(162 56% 94%);
+        --color-full: hsl(352 72% 38%);
+        --color-full-soft: hsl(352 90% 97%);
+
+        --radius-card: 14px;
+        --radius-pill: 999px;
+        --container-measure: 62ch;
+      }
+    </style>
+    <script src="vendor/tailwind.js"></script>
+  </head>
+
+  <body class="CODE-HERE">
+    <main class="CODE-HERE">
+      <!--
+        One h1 for the page, and it describes the page (checklist row א6).
+        Hierarchy is row א2: this has to LOOK like the most important thing here.
+      -->
+      <h1 class="CODE-HERE">החוגים</h1>
+
+      <!--
+        Prose. Row ב4 wants 45-80 characters per line, and there is a token for it:
+        `max-w-measure`.
+      -->
+      <p class="CODE-HERE">
+        עשרים ושניים חוגים בחמישה ערבים בשבוע, מיוגה למתחילים ועד גיטרה קלאסית. ההרשמה נפתחת בתחילת
+        כל סמסטר והמקומות מוקצים לפי סדר ההגעה.
+      </p>
+
+      <!--
+        ── THE LIST ITSELF ────────────────────────────────────────────────────
+
+        It arrived as a `<table>` with `width: 560px`, which is what breaks the page at
+        375. A table is not automatically the wrong answer — five courses with five
+        comparable fields IS tabular data — but a fixed width is, and so is a table that
+        cannot reflow.
+
+        Decide: a table that works at 375, or cards that work at every width? Both can
+        earn full marks. Neither happens by editing a `width`.
+
+        Whatever you choose: the AVAILABILITY has to be readable. It arrived as an empty
+        span whose only content was a background colour (row ג4), and that is the single
+        biggest finding in this section.
+      -->
+      <section class="CODE-HERE" aria-labelledby="list-heading">
+        <h2 id="list-heading" class="CODE-HERE">לוח החוגים</h2>
+
+        <table class="CODE-HERE">
+          <caption class="CODE-HERE">
+            חמישה חוגים, לפי יום
+          </caption>
+          <thead class="CODE-HERE">
+            <tr class="CODE-HERE">
+              <th scope="col" class="CODE-HERE">החוג</th>
+              <th scope="col" class="CODE-HERE">יום</th>
+              <th scope="col" class="CODE-HERE">שעה</th>
+              <th scope="col" class="CODE-HERE">מדריך</th>
+              <th scope="col" class="CODE-HERE">מקומות</th>
+            </tr>
+          </thead>
+          <tbody class="CODE-HERE">
+            <tr class="CODE-HERE">
+              <td class="CODE-HERE">יוגה למתחילים</td>
+              <td class="CODE-HERE">ראשון</td>
+              <td class="CODE-HERE">18:00</td>
+              <td class="CODE-HERE">נועה ברק</td>
+              <!--
+                CODE HERE — this cell has to say something. A colour on its own is not a
+                cue (checklist row ג4): imagine the page in greyscale, and remember that
+                a screen reader was never able to see the colour at all.
+              -->
+              <td class="CODE-HERE"><span class="CODE-HERE"></span></td>
+            </tr>
+            <tr class="CODE-HERE">
+              <td class="CODE-HERE">גיטרה קלאסית</td>
+              <td class="CODE-HERE">שני</td>
+              <td class="CODE-HERE">17:30</td>
+              <td class="CODE-HERE">אורי שגב</td>
+              <td class="CODE-HERE"><span class="CODE-HERE"></span></td>
+            </tr>
+            <tr class="CODE-HERE">
+              <td class="CODE-HERE">ציור ורישום</td>
+              <td class="CODE-HERE">שלישי</td>
+              <td class="CODE-HERE">19:00</td>
+              <td class="CODE-HERE">תמר לוי</td>
+              <td class="CODE-HERE"><span class="CODE-HERE"></span></td>
+            </tr>
+            <tr class="CODE-HERE">
+              <td class="CODE-HERE">מחשבים לגמלאים</td>
+              <td class="CODE-HERE">רביעי</td>
+              <td class="CODE-HERE">10:00</td>
+              <td class="CODE-HERE">דני אמסלם</td>
+              <td class="CODE-HERE"><span class="CODE-HERE"></span></td>
+            </tr>
+            <tr class="CODE-HERE">
+              <td class="CODE-HERE">כדורסל נוער</td>
+              <td class="CODE-HERE">חמישי</td>
+              <td class="CODE-HERE">17:00</td>
+              <td class="CODE-HERE">רון כספי</td>
+              <td class="CODE-HERE"><span class="CODE-HERE"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!--
+        ── THE GALLERY ───────────────────────────────────────────────────────
+
+        Three images. Every one has an `alt` attribute, so the validator is satisfied, and
+        not one of them says anything (checklist row ו3). Two of them describe the file.
+
+        Decide for each one what it CONTRIBUTES. If the answer is "nothing the text does
+        not already say", the correct alt is `alt=""` — empty, present, deliberate. That
+        is not a cop-out; it is row ו4.
+      -->
+      <section class="CODE-HERE" aria-labelledby="gallery-heading">
+        <h2 id="gallery-heading" class="CODE-HERE">המקום</h2>
+
+        <ul class="CODE-HERE">
+          <li class="CODE-HERE">
+            <img src="images/room-1.svg" alt="image" width="300" height="200" class="CODE-HERE" />
+          </li>
+          <li class="CODE-HERE">
+            <img
+              src="images/room-2.svg"
+              alt="pic2.svg"
+              width="300"
+              height="200"
+              class="CODE-HERE"
+            />
+          </li>
+          <li class="CODE-HERE">
+            <img src="images/room-3.svg" alt="תמונה" width="300" height="200" class="CODE-HERE" />
+          </li>
+        </ul>
+      </section>
+
+      <!--
+        The only thing you can focus in this section, so it is where row ה2 is measured:
+        a visible focus ring, on the element you can actually see. `focus-visible:` is the
+        variant you want — it fires for the keyboard and not for a mouse click.
+
+        And row ו5: "כאן" tells nobody where they are going.
+      -->
+      <p class="CODE-HERE">
+        לפרטים על תנאי ההרשמה והביטולים לחצו
+        <a href="#terms" class="CODE-HERE">כאן</a>.
+      </p>
+    </main>
+    <!-- Given: the page's second landmark. Style it or leave it; it is not graded on its own. -->
+    <footer>
+      <p>מרכז קהילתי אלמוגים · רחוב הדוגמה 12</p>
+    </footer>
+  </body>
+</html>

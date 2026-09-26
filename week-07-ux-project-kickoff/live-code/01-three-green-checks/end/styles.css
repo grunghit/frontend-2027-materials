@@ -1,0 +1,75 @@
+/* The library's stylesheet, as its author left it. Short, tidy, consistent — and every
+   fault on the page is a decision written here, which is why no linter reports one. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #a3a3a3;
+  background: #ffffff;
+}
+
+nav a {
+  margin-inline-end: 16px;
+  color: #3f6fb0;
+  text-decoration: none;
+}
+
+a:focus {
+  outline: none;
+}
+
+h1,
+h2 {
+  color: #9a9a9a;
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+.intro {
+  text-align: center;
+}
+
+.schedule {
+  width: 560px;
+  border-collapse: collapse;
+}
+
+.schedule th,
+.schedule td {
+  padding: 8px;
+  border-bottom: 1px solid #eeeeee;
+  text-align: start;
+}
+
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dot--open {
+  background: #2e9e5b;
+}
+
+.dot--full {
+  background: #d23c3c;
+}
+
+section {
+  margin-top: 16px;
+}

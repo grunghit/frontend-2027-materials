@@ -1,0 +1,197 @@
+/* Library desk view — styles.
+
+   Breakpoints (from the 2019 style guide): phone 480px, tablet 768px,
+   laptop 1024px. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2a24;
+  background: #eef2ee;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 8px;
+}
+
+.masthead,
+.menu,
+.desk,
+.notices,
+.colophon {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.masthead {
+  background: #1f5f4a;
+  color: #ffffff;
+}
+
+.logo {
+  font-weight: 700;
+}
+
+.who {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu a {
+  display: block;
+  padding: 4px 0;
+  color: #1f5f4a;
+}
+
+.menu a[aria-current='page'] {
+  font-weight: 700;
+}
+
+.lede {
+  color: #4b5b50;
+}
+
+.figure {
+  padding: 12px 14px;
+  border: 2px solid #c5d3c8;
+  border-radius: 10px;
+}
+
+.figure-value {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.figure-note {
+  margin: 0;
+  color: #4b5b50;
+  font-size: 0.85rem;
+}
+
+.queue {
+  margin-block-start: 16px;
+}
+
+.colophon p {
+  margin: 0;
+  color: #4b5b50;
+}
+
+/* -- layout ------------------------------------------------------------------ */
+
+/* overflow-x: a wide table scrolls inside the dashboard, not the whole page. */
+.branch {
+  overflow-x: auto;
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  grid-template-columns: 15rem minmax(0, 1fr) 17rem;
+  grid-template-areas:
+    'masthead masthead masthead'
+    'menu     desk     notices'
+    'colophon colophon colophon';
+}
+
+.masthead {
+  grid-area: masthead;
+}
+
+.menu {
+  grid-area: menu;
+}
+
+.desk {
+  grid-area: desk;
+}
+
+.notices {
+  grid-area: notices;
+}
+
+.colophon {
+  grid-area: colophon;
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* -- responsive --------------------------------------------------------------- */
+
+/* Laptop and small desktop */
+@media (max-width: 1024px) {
+  .branch {
+    grid-template-columns: 13rem minmax(0, 1fr);
+    grid-template-areas:
+      'masthead masthead'
+      'menu     desk'
+      'notices  notices'
+      'colophon colophon';
+  }
+
+  .figures {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .branch {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'masthead'
+      'menu'
+      'desk'
+      'notices'
+      'colophon';
+  }
+
+  .menu ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+  }
+}
+
+/* Phone */
+@media (max-width: 480px) {
+  .branch {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .figures {
+    grid-template-columns: 1fr;
+  }
+
+  .figure-value {
+    font-size: 1.8rem;
+  }
+}

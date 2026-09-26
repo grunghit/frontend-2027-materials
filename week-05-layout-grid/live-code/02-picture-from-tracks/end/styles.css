@@ -1,0 +1,134 @@
+/* ============================================================================
+   Cycle 2 — a picture made of tracks.
+
+   Type and colour are done. The poster and the floor are plain boxes until
+   the last two blocks give them tracks. The numbers on the sketch are the
+   whole specification.
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font: 17px/1.55 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2a24;
+  background: #f3f6f2;
+}
+
+.wall-top,
+.wall-foot {
+  max-width: 60rem;
+  margin: 0 auto 16px;
+  color: #1f5f4a;
+  font-weight: 700;
+}
+
+.wall-top p,
+.wall-foot p {
+  margin: 0;
+}
+
+main {
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+h2 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.note {
+  margin: 0 0 12px;
+  max-width: 60ch;
+  color: #4b5b50;
+}
+
+section {
+  margin-block-end: 32px;
+}
+
+/* -- the poster ------------------------------------------------------------- */
+
+/* The sketch's pixels, as fractions: the same proportions at every size. */
+.poster {
+  display: grid;
+  grid-template-columns: 360fr 180fr 60fr;
+  grid-template-rows: 120fr 300fr 180fr;
+  gap: 8px;
+  width: min(100%, 30rem);
+  aspect-ratio: 1;
+  border: 8px solid #1b1b1b;
+  background: #1b1b1b;
+}
+
+.poster > * {
+  background: #f4f2ea;
+}
+
+/* Placed by LINE. The order is row-start / column-start / row-end / column-end. */
+.p-sun {
+  grid-area: 1 / 1 / 3 / 2;
+  background: #f2c230;
+}
+
+/* No row and no start line — only a count. span 2 is TWO TRACKS, not line 2:
+   auto-placement puts it at the first place where two cells side by side are
+   free. Here that is row 1, columns 2-3, exactly where 2 / -1 would put it. */
+.p-sky {
+  grid-column: span 2;
+}
+
+.p-sea {
+  grid-area: 2 / 2 / 4 / 3;
+  background: #1d4f91;
+}
+
+.p-dot {
+  grid-area: 2 / 3 / 3 / 4;
+  background: #d7372b;
+}
+
+.p-field {
+  grid-area: 3 / 1 / 4 / 2;
+}
+
+.p-corner {
+  grid-area: 3 / 3 / 4 / 4;
+  background: #1b1b1b;
+}
+
+/* -- the floor -------------------------------------------------------------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: min(100%, 16rem);
+  border: 4px solid #1b1b1b;
+}
+
+/* Square at every width, and not one height anywhere. */
+.tiles > * {
+  aspect-ratio: 1;
+  background: #efe4cc;
+}
+
+/* Four across, so the pattern comes back every TWO rows: eight tiles.
+   Row one: dark on 1 and 3. Row two: dark on 6 and 8. */
+.tiles > :nth-child(8n + 1),
+.tiles > :nth-child(8n + 3),
+.tiles > :nth-child(8n + 6),
+.tiles > :nth-child(8n + 8) {
+  background: #7a5a3a;
+}

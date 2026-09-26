@@ -1,0 +1,106 @@
+/* ============================================================================
+   Cycle 5 — the menu that closes on a phone.
+
+   Cycle 1's bar, with the links inside a <details>. At every width the
+   browser shows "Menu" and hides the links until it is clicked — right on a
+   phone, wrong on a laptop. The one media query in this file fixes the laptop.
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 17px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
+}
+
+main {
+  max-width: 60ch;
+  margin-inline: auto;
+  padding: 24px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+/* -- the bar (cycle 1) ------------------------------------------------------ */
+
+.top {
+  background: #ccfbf1;
+  border-block-end: 3px solid #0f766e;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: 12px 24px;
+}
+
+.brand {
+  flex: none;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #134e4a;
+  text-decoration: none;
+}
+
+/* -- the disclosure --------------------------------------------------------- */
+
+.menu {
+  margin-inline-start: auto;
+}
+
+.menu-toggle {
+  padding: 8px 18px;
+  border: 2px solid #0f766e;
+  border-radius: 999px;
+  color: #134e4a;
+  font-weight: 700;
+  cursor: pointer;
+  /* the marker triangle is the browser's; this control reads as a button */
+  list-style: none;
+}
+
+.menu-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 8px;
+  list-style: none;
+  border: 2px solid #99f6e4;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.menu-list a {
+  display: block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: #134e4a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.menu-list a:hover {
+  background: #99f6e4;
+}
+
+.menu-list .cta {
+  border: 2px solid #0f766e;
+}

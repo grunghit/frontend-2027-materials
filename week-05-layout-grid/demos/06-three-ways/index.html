@@ -1,0 +1,371 @@
+<!doctype html>
+<!--
+  One card row, built three ways. Week 5, cycle 3 — the decision rule.
+
+  The same six cards, the same markup, three different container declarations:
+    Flexbox with wrap        the week-4 answer
+    Grid with fixed tracks   the obvious week-5 answer
+    Grid with auto-fit       the one that is actually right for this
+
+  What makes it teach rather than merely demonstrate:
+
+  1. All three are live at once and the SAME width slider drives all three, so the
+     comparison is simultaneous. A student who has only ever seen these one at a time
+     believes whichever they saw last.
+  2. The last row is the whole argument. Drag to a width where six cards do not divide
+     evenly and watch what each does with the orphans: Flexbox leaves a ragged last row
+     of natural-width cards, fixed Grid leaves a hole, auto-fit stretches. None of
+     those is a bug — they are three different answers to "what should leftover space
+     do", and choosing between them is what a front-end developer is paid for.
+  3. The measured last-row card width is printed for each, because "ragged" is a word
+     and "the last card is 210px while the others are 320px" is a fact.
+  4. The card INTERNALS are Flexbox in all three, and the readout says so. This is the
+     legacy course's best line on the subject, and it is the thing students most often
+     get backwards — they think choosing Grid means abandoning Flex.
+
+  DEMO MOVE: set the slider so six cards make two clean rows of three. All three look
+  identical; say so. Then drag until the last row has two cards. Now they disagree, and
+  the disagreement is the lesson. Ask which is correct before you give the rule.
+
+  The sentence to leave in the room is the legacy one, and it is worth quoting as a
+  quote: "You don't have to choose one over the other — Flexbox can be used inside a
+  grid cell."
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>One card row, three ways</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h2 code {
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font:
+          600 13px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+      }
+      input[type='range'] {
+        accent-color: #1d4ed8;
+        vertical-align: middle;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      .frame {
+        max-width: 100%;
+      }
+      .stage {
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 3px solid #7a8699;
+        background: #f8fafc;
+      }
+      .stage.a {
+        border-color: #b45309;
+        background: #fffbeb;
+      }
+      .stage.b {
+        border-color: #6d28d9;
+        background: #f5f3ff;
+      }
+      .stage.c {
+        border-color: #15803d;
+        background: #f0fdf4;
+      }
+
+      /* Three containers, three declarations, identical children. */
+      .a .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .a .card {
+        flex: 1 1 200px;
+      }
+      .b .row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .c .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+      }
+
+      /* The card itself is a flex column in ALL THREE. That is the point. */
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #fff;
+        border: 2px solid var(--line);
+        min-width: 0;
+      }
+      .card h3 {
+        margin: 0;
+        font-size: 14px;
+      }
+      .card p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--muted);
+        flex: 1;
+      }
+      .card span {
+        font:
+          700 11px/1.4 ui-monospace,
+          Menlo,
+          monospace;
+        color: #1d4ed8;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          13px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <label for="width">container width</label>
+      <input type="range" id="width" min="240" max="1000" step="10" value="760" />
+      <output id="width-out" for="width">760px</output>
+      <label for="count">cards</label>
+      <input type="range" id="count" min="2" max="8" step="1" value="6" />
+      <output id="count-out" for="count">6</output>
+    </div>
+
+    <div class="frame" id="frame">
+      <div class="stage a" id="stage-a">
+        <h2>Flexbox &mdash; <code>flex: 1 1 200px; flex-wrap: wrap</code></h2>
+        <div class="row" id="row-a"></div>
+      </div>
+      <div class="stage b" id="stage-b">
+        <h2>Grid &mdash; <code>repeat(3, 1fr)</code></h2>
+        <div class="row" id="row-b"></div>
+      </div>
+      <div class="stage c" id="stage-c">
+        <h2>Grid &mdash; <code>repeat(auto-fit, minmax(200px, 1fr))</code></h2>
+        <div class="row" id="row-c"></div>
+      </div>
+    </div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const frame = document.getElementById('frame');
+      const rows = {
+        a: document.getElementById('row-a'),
+        b: document.getElementById('row-b'),
+        c: document.getElementById('row-c'),
+      };
+      const width = document.getElementById('width');
+      const widthOut = document.getElementById('width-out');
+      const count = document.getElementById('count');
+      const countOut = document.getElementById('count-out');
+      const out = document.getElementById('out');
+
+      const TITLES = [
+        'Latency',
+        'Errors',
+        'Traffic',
+        'Saturation',
+        'Uptime',
+        'Cost',
+        'Queue',
+        'Cache',
+      ];
+
+      function build(row, n) {
+        row.replaceChildren();
+        for (let i = 0; i < n; i += 1) {
+          const card = document.createElement('article');
+          card.className = 'card';
+          const h = document.createElement('h3');
+          h.textContent = TITLES[i % TITLES.length];
+          const p = document.createElement('p');
+          p.textContent = i % 3 === 1 ? 'A shorter note.' : 'A slightly longer line of body copy.';
+          const s = document.createElement('span');
+          s.textContent = 'view';
+          card.append(h, p, s);
+          row.append(card);
+        }
+      }
+
+      /* Group the cards into visual rows by vertical overlap — never by comparing top
+         edges, because items of different heights in the same row have different tops.
+         Same rule the grading library uses. */
+      function lastRowOf(row) {
+        const boxes = [...row.children].map((c) => c.getBoundingClientRect());
+        if (!boxes.length) return [];
+        const groups = [];
+        for (const b of boxes) {
+          const g = groups.find((gr) =>
+            gr.some((o) => b.top < o.bottom - 1 && b.bottom > o.top + 1),
+          );
+          if (g) g.push(b);
+          else groups.push([b]);
+        }
+        return groups[groups.length - 1];
+      }
+
+      function render() {
+        const n = Number(count.value);
+        frame.style.width = width.value + 'px';
+        widthOut.textContent = width.value + 'px';
+        countOut.textContent = n;
+
+        for (const row of Object.values(rows)) build(row, n);
+
+        requestAnimationFrame(() => {
+          const report = {};
+          for (const [key, row] of Object.entries(rows)) {
+            const last = lastRowOf(row);
+            const first = row.firstElementChild.getBoundingClientRect();
+            report[key] = {
+              firstWidth: Math.round(first.width),
+              lastWidth: Math.round(last[0] ? last[0].width : 0),
+              lastCount: last.length,
+              rows: groupsCount(row),
+            };
+          }
+
+          const ragged = report.a.lastWidth !== report.a.firstWidth;
+          const holed = report.b.lastCount < 3 && n % 3 !== 0;
+
+          out.textContent =
+            '  container ' +
+            width.value +
+            'px, ' +
+            n +
+            ' cards\n\n' +
+            '  flex          ' +
+            report.a.rows +
+            ' rows, last row ' +
+            report.a.lastCount +
+            ' card' +
+            (report.a.lastCount === 1 ? '' : 's') +
+            ' at ' +
+            report.a.lastWidth +
+            'px  (others ' +
+            report.a.firstWidth +
+            'px)\n' +
+            '  grid 3        ' +
+            report.b.rows +
+            ' rows, last row ' +
+            report.b.lastCount +
+            ' card' +
+            (report.b.lastCount === 1 ? '' : 's') +
+            ' at ' +
+            report.b.lastWidth +
+            'px  (others ' +
+            report.b.firstWidth +
+            'px)\n' +
+            '  grid auto-fit ' +
+            report.c.rows +
+            ' rows, last row ' +
+            report.c.lastCount +
+            ' card' +
+            (report.c.lastCount === 1 ? '' : 's') +
+            ' at ' +
+            report.c.lastWidth +
+            'px  (others ' +
+            report.c.firstWidth +
+            'px)\n\n' +
+            (!ragged && !holed
+              ? '  Right now all three agree, because the cards happen to divide evenly.\n' +
+                '  This is the state most tutorials show, and it teaches nothing.\n\n' +
+                '  Drag the width, or set the card count to 5.'
+              : '  Now they disagree, and none of them is wrong.\n\n' +
+                '    flex      the last row stretches its few cards to fill the line, so\n' +
+                '              the row is ragged — cards in different rows have different\n' +
+                '              widths. `flex-basis` is a starting size, not a track.\n' +
+                '    grid 3    three tracks always, so the orphans leave a visible hole.\n' +
+                '              Deliberate and often right: the column rhythm is preserved.\n' +
+                '    auto-fit  as many tracks as fit, empties collapsed, survivors grow.\n' +
+                '              No hole, no raggedness, and no media query anywhere.\n\n' +
+                '  THE RULE\n' +
+                '    Grid for the page structure — the thing with rows AND columns that\n' +
+                '    have to line up. Flex for arranging one axis inside a component.\n\n' +
+                '  And note the cards themselves: every one of them is `display: flex`\n' +
+                '  with a column direction, in all three versions, which is what pushes\n' +
+                '  the "view" link to the bottom of a card whatever its text length.\n' +
+                '  You did not stop using Flexbox. You stopped using it for the page.');
+        });
+      }
+
+      function groupsCount(row) {
+        const boxes = [...row.children].map((c) => c.getBoundingClientRect());
+        const groups = [];
+        for (const b of boxes) {
+          const g = groups.find((gr) =>
+            gr.some((o) => b.top < o.bottom - 1 && b.bottom > o.top + 1),
+          );
+          if (g) g.push(b);
+          else groups.push([b]);
+        }
+        return groups.length;
+      }
+
+      for (const control of [width, count]) {
+        control.addEventListener('input', render);
+      }
+      addEventListener('resize', render);
+      render();
+    </script>
+  </body>
+</html>

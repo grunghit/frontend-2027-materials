@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+  What came back for P1 (the naive ask), applied to start/index.html exactly as the
+  answer described it: aria-label on every field, name / type / required added, the
+  words above the fields left as plain spans. Measured: axe-core 4.13 (wcag2a, wcag2aa)
+  0 violations; Lighthouse 12.8 Accessibility 100; click the words "Full name" — nothing
+  focuses; the grader's form-accessible check fails (0 of 4 fields has a label[for]).
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruppin Debate Society — join</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Ruppin Debate Society</h1>
+      <p>Two motions a week, one of them unreasonable on purpose.</p>
+    </header>
+
+    <main>
+      <section id="join">
+        <h2>Join the society</h2>
+        <p>Fill in the form and we will put you on next Monday's speaker list.</p>
+
+        <form method="get">
+          <p><span>Full name</span> <input type="text" name="full-name" aria-label="Full name" placeholder="Full name" required /></p>
+          <p><span>Email</span> <input type="email" name="email" aria-label="Email" placeholder="Email" required /></p>
+          <p><span>Year of study</span> <input type="number" name="year" aria-label="Year of study" placeholder="1, 2 or 3" min="1" max="3" /></p>
+          <p><span>Why do you want to join?</span> <textarea name="reason" aria-label="Why do you want to join?" rows="3"></textarea></p>
+          <button type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>Ruppin Debate Society. Meetings on Mondays, room 118.</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  AI cycle 4 · ANSWER B — chat 2, P1.
+
+  The answer as it came back (transcript.md, "## Claude — chat 2"), with the two cards it
+  elided written out in the same classes, and ONE line changed: it loaded Tailwind v4 from
+  https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4, and here it loads the copy beside the
+  page, vendor/tailwind.js — the same build, offline. Its brand colour is a token in @theme,
+  so it survives the swap. Measured in checkpoint-he.md.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Film club — highlights</title>
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+      }
+    </style>
+  </head>
+  <body class="bg-white text-slate-900">
+    <header class="mx-auto max-w-6xl px-4 pt-6">
+      <p class="text-lg font-bold">Film club</p>
+    </header>
+    <main class="mx-auto max-w-6xl px-4 py-12">
+      <h1 class="text-3xl font-bold text-brand-500">This term at the film club</h1>
+
+      <section aria-labelledby="highlights" class="mt-8">
+        <h2 id="highlights" class="sr-only">Highlights</h2>
+        <div class="flex flex-col gap-6 md:flex-row">
+          <article class="rounded-xl border border-slate-300 p-6 md:flex-1">
+            <h3 class="text-lg font-semibold">Twelve films</h3>
+            <p class="mt-2 text-slate-600">One a week, Thursdays at eight, in Hall B.</p>
+            <a
+              href="#programme"
+              class="mt-4 inline-block rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >See the programme</a
+            >
+          </article>
+          <article class="rounded-xl border border-slate-300 p-6 md:flex-1">
+            <h3 class="text-lg font-semibold">Introduced by students</h3>
+            <p class="mt-2 text-slate-600">Three of the films come with a ten-minute introduction.</p>
+            <a
+              href="#introductions"
+              class="mt-4 inline-block rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >Who is speaking</a
+            >
+          </article>
+          <article class="rounded-xl border border-slate-300 p-6 md:flex-1">
+            <h3 class="text-lg font-semibold">84 seats</h3>
+            <p class="mt-2 text-slate-600">Members book first; the rest open on Tuesday.</p>
+            <a
+              href="#seats"
+              class="mt-4 inline-block rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >Book a seat</a
+            >
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

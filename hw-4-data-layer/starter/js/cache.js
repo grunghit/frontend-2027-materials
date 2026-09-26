@@ -18,7 +18,7 @@
  * Reading the age is what turns "I have data" into "I have data from four minutes ago",
  * and that difference is the whole assignment.
  *
- * ── THE RULES, AND FIVE OF THE SIX ARE WEEK 10's
+ * ── THE RULES, AND FIVE OF THE SIX ARE WEEK 11's
  *
  *   1. ONE KEY, NAMESPACED AND VERSIONED. `ruppin.weather.v1`.
  *   2. EVERY ACCESS TO `localStorage` IS INSIDE A `try` — the ACCESS, not just the
@@ -33,7 +33,7 @@
  *
  * ── WHY THE TIMESTAMP IS A NUMBER AND NOT A `Date`
  *
- * Week 10's field, one assignment later. `JSON.stringify(new Date())` produces an ISO
+ * Week 11's field, one assignment later. `JSON.stringify(new Date())` produces an ISO
  * string and `JSON.parse` has no idea it was ever anything else — so an application
  * that keeps `Date` objects works perfectly until the first reload, and then
  * `entry.fetchedAt.getTime is not a function` is thrown from inside `render`.
@@ -43,7 +43,7 @@
  * ============================================================================
  */
 
-/** The key. Namespace, name, version — see rule 1 and week 10. */
+/** The key. Namespace, name, version — see rule 1 and week 11. */
 const KEY = 'ruppin.weather.v1';
 
 /** The shape version written into every payload. */
@@ -59,7 +59,7 @@ const VERSION = 1;
  */
 export const TTL_MS = 10 * 60 * 1000;
 
-/** Is storage usable at all? The only honest test is a WRITE. See week 10. */
+/** Is storage usable at all? The only honest test is a WRITE. See week 11. */
 const available = (() => {
   try {
     localStorage.setItem('__probe__', '1');
@@ -85,13 +85,13 @@ const isEntry = (value) =>
 /**
  * Turn whatever was on disk into the map this version expects, or an empty one.
  *
- * Three answers, exactly as week 10's `migrate` had:
+ * Three answers, exactly as week 11's `migrate` had:
  *   the current envelope   take the entries, dropping any that fail `isEntry`
  *   a bare object          what version 0 wrote, before there was a version. Adopt it.
  *   anything else          `{}` — a version from the future, or nonsense. Start over.
  */
 function migrate(parsed) {
-  // CODE HERE — three answers, exactly as week 10's migrate had.
+  // CODE HERE — three answers, exactly as week 11's migrate had.
   return {};
 }
 

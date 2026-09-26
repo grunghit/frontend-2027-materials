@@ -1,0 +1,14 @@
+{
+  "$schema": "https://html-validate.org/schemas/config.json",
+  "root": true,
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "void-style": "off",
+    "doctype-style": "off",
+    "attribute-boolean-style": "off",
+    "no-inline-style": "off",
+    "long-title": "off",
+    "unique-landmark": "off",
+    "require-sri": "off"
+  }
+}

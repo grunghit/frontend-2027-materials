@@ -1,0 +1,185 @@
+<!doctype html>
+<!--
+  ============================================================================
+  Week 4 — the landing page. THE MARKUP IS FINISHED. You write styles.css.
+
+  This is a new page for the same site you have been building since week 1, and
+  it is the first page in this course that needs a LAYOUT rather than a stack.
+  Everything it needs is already here:
+
+    · a navbar        — a brand, and four links inside a <details> disclosure
+    · a hero          — text on one side, an illustration on the other
+    · a card row      — three cards that have to sit in a row and then stop
+    · a pricing row   — three plans (the stretch tier)
+
+  WHY THE MARKUP IS GIVEN. Weeks 1–2 were markup and week 3 was type and colour.
+  This week is layout, and ninety minutes is not enough to retype a page AND
+  lay it out. Everything you are graded on this week is in styles.css.
+
+  You MAY add a class if you genuinely need one. Reach for a real selector
+  first — `.card-row > li`, `.site-nav a`, `header nav` — and notice how far
+  that gets you. If you find yourself wrapping things in <div> to make the CSS
+  work, stop and re-read the hint file: with Flexbox you almost never need to.
+
+  DO NOT change the structure. The auto-grader measures where these boxes end
+  up on the page at three widths, so it does not care what your colours are —
+  but it does need the elements to still be the elements.
+
+  Run it with Live Server. Never by double-clicking.
+  ============================================================================
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maya Cohen — front-end work, Ruppin</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main">
+        <a class="brand" href="#main">Maya Cohen</a>
+
+        <!--
+          The mobile pattern, with no JavaScript in it.
+
+          <details> and <summary> are a disclosure widget the browser gives you
+          for free: it opens and closes on click AND on Enter, it is announced
+          correctly by a screen reader, and it keeps working if your CSS never
+          loads. A hand-built hamburger has to be given all of that by hand, and
+          usually is not.
+
+          You met these in week 2. JavaScript is week 8 — and you will not need
+          it here.
+        -->
+        <details class="nav-disclosure">
+          <summary class="nav-toggle">Menu</summary>
+          <ul class="nav-links">
+            <li><a href="#work">Work</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#plans">Plans</a></li>
+            <li><a class="nav-cta" href="#contact">Contact</a></li>
+          </ul>
+        </details>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="hero-text">
+          <p class="eyebrow">Third year · Ruppin Academic Center</p>
+          <h1>I build small, fast pages that do one thing well.</h1>
+          <p class="lede">
+            No frameworks, no build step, no megabyte of JavaScript to render a
+            paragraph. Just the platform, used properly.
+          </p>
+          <p class="hero-actions">
+            <a class="button button--primary" href="#work">See the work</a>
+            <a class="button" href="#contact">Get in touch</a>
+          </p>
+        </div>
+
+        <img
+          class="hero-art"
+          src="images/hero.svg"
+          alt="A browser window beside a phone, both showing the same page laid out in three columns"
+          width="420"
+          height="320"
+        />
+      </section>
+
+      <section class="section" id="work">
+        <h2>Selected work</h2>
+        <p class="section-lede">Three things I built this year, and what each one taught me.</p>
+
+        <ul class="card-row">
+          <li class="card">
+            <span class="card-badge">New</span>
+            <h3>Timetable</h3>
+            <p>
+              A week view for the course schedule that loads in under a second on
+              the campus wifi. Taught me that layout is mostly about deciding what
+              is allowed to grow.
+            </p>
+            <a href="#work">Read the write-up</a>
+          </li>
+          <li class="card">
+            <h3>Reading list</h3>
+            <p>
+              Everything I read for the degree, filterable by course. Taught me
+              that a list of links is not a navigation bar.
+            </p>
+            <a href="#work">Read the write-up</a>
+          </li>
+          <li class="card">
+            <h3>Lab notebook</h3>
+            <p>
+              A page per experiment, written in plain HTML and styled once.
+              Taught me how much a stylesheet can do when the markup is honest.
+            </p>
+            <a href="#work">Read the write-up</a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" id="services">
+        <h2>What I can do for you</h2>
+        <p class="section-lede">
+          Small scope, finished properly. If it needs a team, I will tell you.
+        </p>
+      </section>
+
+      <section class="section" id="plans">
+        <h2>What I charge</h2>
+        <p class="section-lede">Fixed price, agreed before I start.</p>
+
+        <ul class="plan-row">
+          <li class="plan">
+            <h3 class="plan-name">Basic</h3>
+            <p class="plan-price">₪900</p>
+            <ul class="plan-features">
+              <li>One page</li>
+              <li>Responsive down to 320px</li>
+              <li>Two rounds of changes</li>
+            </ul>
+            <button class="button" type="button">Choose Basic</button>
+          </li>
+          <li class="plan plan--featured">
+            <h3 class="plan-name">Standard</h3>
+            <p class="plan-price">₪2,400</p>
+            <ul class="plan-features">
+              <li>Up to five pages</li>
+              <li>Responsive down to 320px</li>
+              <li>Accessibility pass</li>
+              <li>Four rounds of changes</li>
+            </ul>
+            <button class="button button--primary" type="button">Choose Standard</button>
+          </li>
+          <li class="plan">
+            <h3 class="plan-name">Full</h3>
+            <p class="plan-price">₪5,000</p>
+            <ul class="plan-features">
+              <li>As many pages as it needs</li>
+              <li>Accessibility pass</li>
+              <li>Content loaded from a data file</li>
+              <li>A month of support</li>
+            </ul>
+            <button class="button" type="button">Choose Full</button>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="site-footer" id="contact">
+      <p>maya@example.ac.il</p>
+      <ul class="footer-links">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#plans">Plans</a></li>
+        <li><a href="#main">Back to top</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

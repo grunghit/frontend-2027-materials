@@ -1,0 +1,68 @@
+/* What came back for P2 — the same request with the constraints written in:
+   Flexbox, no floats, no percentages that must add up, one column at 375
+   without a media query, equal heights. Open this folder's index.html at
+   1280 and at 375. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font: 17px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
+}
+
+.page {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin: 0 0 4px;
+}
+
+.lede {
+  margin: 0 0 24px;
+  color: #475569;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  flex: 1 1 17rem;
+  min-width: 0;
+  padding: 20px;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.card h2 {
+  font-size: 1.2rem;
+  margin: 0 0 8px;
+}
+
+.card p {
+  margin: 0 0 12px;
+}
+
+.side {
+  float: right;
+  width: 30%;
+  min-width: 12rem;
+  padding: 16px;
+  border-left: 3px solid #cbd5e1;
+}

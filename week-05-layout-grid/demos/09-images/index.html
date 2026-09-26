@@ -1,0 +1,342 @@
+<!doctype html>
+<!--
+  Images that behave: aspect-ratio, object-fit, and what srcset/sizes are for.
+  Week 5, cycle 3.
+
+  Images are where a good grid layout goes wrong, because an <img> brings its own
+  intrinsic size to the argument and wins unless told otherwise. Three separate ideas,
+  in the order they bite.
+
+  The images here are inline SVG data URIs with deliberately different intrinsic aspect
+  ratios. That is not a shortcut — it means this demo has no network dependency at all
+  and cannot break in a lab with no internet, which is the same reason the course
+  vendors its fonts and its copy of reveal.js.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. The card row is a real grid, so the failure is the real failure: one tall image
+     drags its row taller and the row is now ragged, which no amount of styling the
+     CARD will fix. The cause is the image's intrinsic ratio and the fix is on the img.
+  2. `aspect-ratio` and `object-fit` are separate toggles, because they solve different
+     halves and students routinely reach for one expecting the other. aspect-ratio
+     reserves the BOX; object-fit decides what happens to the PICTURE inside it. With
+     the first alone the image distorts; the readout says so.
+  3. The layout-shift argument is made with a number. Without a reserved box the row
+     height changes when the image arrives; the page measures its own row height before
+     and after and prints the shift in pixels. That is Cumulative Layout Shift, met
+     honestly rather than as an acronym.
+  4. srcset/sizes cannot be demonstrated offline — the browser picks one candidate and
+     the others never load — so this page does NOT pretend to. It prints the markup,
+     names what the browser would do with it, and points at the Network tab. Faking a
+     download would teach a lie.
+
+  DEMO MOVE: start with everything off and press "load the images". The row jumps —
+  read the number out loud. Then aspect-ratio: the jump goes to 0 but the picture is
+  squashed. Then object-fit: cover. Three toggles, three separate lessons, in that
+  order and not another.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Responsive images</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font:
+          600 13px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+        cursor: pointer;
+      }
+      input[type='checkbox'] {
+        accent-color: #1d4ed8;
+        margin-right: 4px;
+      }
+      button {
+        font:
+          600 13px/1.4 system-ui,
+          sans-serif;
+        padding: 6px 12px;
+        border: 2px solid #1d4ed8;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1e3a8a;
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      .stage {
+        padding: 10px;
+        border: 2px dashed #7a8699;
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        align-items: start;
+      }
+      .card {
+        background: #fff;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .card figcaption {
+        padding: 8px 10px;
+        font:
+          600 12px/1.4 ui-monospace,
+          Menlo,
+          monospace;
+        color: var(--muted);
+      }
+      .card img {
+        display: block;
+        width: 100%;
+        background: #e2e8f0;
+      }
+      /* The default state: no reserved box, no fit rule. */
+      .row.ratio img {
+        aspect-ratio: 3 / 2;
+      }
+      .row.cover img {
+        object-fit: cover;
+      }
+
+      pre {
+        margin: 12px 0 0;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: #14181f;
+        color: #e6edf6;
+        font:
+          12px/1.6 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        overflow-x: auto;
+      }
+      .readout {
+        margin: 10px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          13px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <button type="button" id="load">load the images</button>
+      <label><input type="checkbox" id="ratio" /><code>aspect-ratio: 3 / 2</code></label>
+      <label><input type="checkbox" id="cover" /><code>object-fit: cover</code></label>
+    </div>
+
+    <h2>A card row, and three pictures that are not the same shape</h2>
+    <div class="stage">
+      <div class="row" id="row">
+        <figure class="card" id="card-1">
+          <figcaption>3 : 2</figcaption>
+        </figure>
+        <figure class="card" id="card-2">
+          <figcaption>2 : 3</figcaption>
+        </figure>
+        <figure class="card" id="card-3">
+          <figcaption>1 : 1</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <pre id="markup"></pre>
+
+    <script>
+      /* Data URIs, so this page works with the network switched off. Each has a
+         genuinely different intrinsic aspect ratio, which is the whole subject. */
+      const svg = (w, h, fill) =>
+        'data:image/svg+xml;charset=utf-8,' +
+        encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="' +
+            w +
+            '" height="' +
+            h +
+            '" viewBox="0 0 ' +
+            w +
+            ' ' +
+            h +
+            '"><rect width="' +
+            w +
+            '" height="' +
+            h +
+            '" fill="' +
+            fill +
+            '"/><circle cx="' +
+            w / 2 +
+            '" cy="' +
+            h / 2 +
+            '" r="' +
+            Math.min(w, h) / 3 +
+            '" fill="#ffffff" opacity="0.55"/></svg>',
+        );
+
+      const SOURCES = [
+        svg(300, 200, '#1d4ed8'),
+        svg(200, 300, '#b45309'),
+        svg(250, 250, '#15803d'),
+      ];
+
+      const ALTS = [
+        'A wide banner, three units across for every two down',
+        'A tall portrait, two units across for every three down',
+        'A square',
+      ];
+
+      const row = document.getElementById('row');
+      const out = document.getElementById('out');
+      const markup = document.getElementById('markup');
+      const cards = [1, 2, 3].map((n) => document.getElementById('card-' + n));
+      const ratio = document.getElementById('ratio');
+      const cover = document.getElementById('cover');
+      const loadButton = document.getElementById('load');
+      let imgs = [];
+      let before = 0;
+
+      markup.textContent =
+        '<!-- srcset and sizes: what the browser does BEFORE it downloads anything -->\n' +
+        '<img\n' +
+        '  src="hero-800.jpg"\n' +
+        '  srcset="hero-400.jpg 400w,\n' +
+        '          hero-800.jpg 800w,\n' +
+        '          hero-1600.jpg 1600w"\n' +
+        '  sizes="(min-width: 60em) 33vw, 100vw"\n' +
+        '  width="800" height="533"\n' +
+        '  alt="A real description of the picture"\n' +
+        '/>\n\n' +
+        '/* srcset  the candidates, each labelled with its REAL width in pixels\n' +
+        '   sizes   how wide the slot will be, so the browser can choose before\n' +
+        '           layout has happened — this is why it is a media condition and\n' +
+        '           not a selector\n' +
+        '   width+height  the intrinsic ratio, so the box is reserved even without\n' +
+        '           aspect-ratio in the CSS */';
+
+      /* The images do not exist until the button is pressed, which is the honest way
+         to measure layout shift: the row really has not reserved anything for them. */
+      loadButton.addEventListener('click', () => {
+        if (imgs.length) return;
+        before = Math.round(row.getBoundingClientRect().height);
+        imgs = cards.map((card, i) => {
+          const img = document.createElement('img');
+          img.src = SOURCES[i];
+          img.alt = ALTS[i];
+          card.prepend(img);
+          return img;
+        });
+        loadButton.disabled = true;
+        requestAnimationFrame(() => requestAnimationFrame(render));
+      });
+
+      function render() {
+        row.classList.toggle('ratio', ratio.checked);
+        row.classList.toggle('cover', cover.checked);
+
+        requestAnimationFrame(() => {
+          const now = Math.round(row.getBoundingClientRect().height);
+          const shift = before ? now - before : 0;
+          const loaded = imgs.length > 0;
+          const heights = imgs.map((i) => Math.round(i.getBoundingClientRect().height));
+
+          out.textContent =
+            '  row height now      ' +
+            now +
+            'px\n' +
+            (before ? '  row height before   ' + before + 'px   (shift ' + shift + 'px)\n' : '') +
+            (heights.length ? '  image heights       ' + heights.join('px  ') + 'px\n' : '') +
+            '\n' +
+            (!loaded
+              ? '  Nothing is loaded yet. Note the row height — then press the button and\n' +
+                '  watch it change. That change is Cumulative Layout Shift, and it is the\n' +
+                "  thing that moves a button out from under somebody's finger."
+              : !ratio.checked
+                ? '  The three images have different intrinsic ratios, so at equal WIDTHS\n' +
+                  '  they have different HEIGHTS, and the tallest one sets the row.\n\n' +
+                  '  Nothing you do to .card fixes this. The card is obeying its content.\n' +
+                  '  The fix is to stop the image being the one who decides: reserve the box\n' +
+                  '  with aspect-ratio (or with the width and height attributes, which do\n' +
+                  '  the same job for free and work before the CSS arrives).'
+                : !cover.checked
+                  ? '  The boxes are equal now, and the shift is gone — the space was reserved\n' +
+                    '  before the picture arrived.\n\n' +
+                    '  But look at the pictures: the tall one and the square one are SQUASHED\n' +
+                    '  into a 3:2 box. aspect-ratio decided how big the box is. It said\n' +
+                    '  nothing about what to do with a picture of the wrong shape inside it.\n\n' +
+                    "  That is object-fit's job."
+                  : '  aspect-ratio reserves the box. object-fit: cover fills it and crops the\n' +
+                    '  overflow instead of distorting it. Together: equal boxes, no shift, no\n' +
+                    '  squashing.\n\n' +
+                    '  Use `contain` instead when cropping would lose meaning — a logo, a\n' +
+                    '  diagram, a product shot on white. `cover` is right for photographs and\n' +
+                    '  wrong for anything with an edge that matters.\n\n' +
+                    '  The markup below is the third idea, and it is the one this page cannot\n' +
+                    '  show you: srcset and sizes let the browser pick a file BEFORE layout.\n' +
+                    '  Open the Network tab on a real site and watch which candidate arrives\n' +
+                    '  at a narrow window and at a wide one. Faking it here would teach you\n' +
+                    '  something untrue.');
+        });
+      }
+
+      for (const box of [ratio, cover]) {
+        box.addEventListener('change', render);
+      }
+      addEventListener('resize', render);
+      render();
+    </script>
+  </body>
+</html>

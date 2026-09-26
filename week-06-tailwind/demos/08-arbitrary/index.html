@@ -1,0 +1,422 @@
+<!doctype html>
+<!--
+  Arbitrary values: three legitimate uses and one smell. Week-6 deck, act 5.
+
+  `p-[13px]` is not forbidden and this demo does not pretend it is. Square brackets are a
+  deliberate feature, and a course that teaches "never use them" produces students who
+  fight the system the first time they meet a requirement it does not cover.
+
+  What it teaches instead is a TEST, and the test is mechanical:
+
+      Would you want a SECOND element to have this exact value?
+        yes  ->  it is a decision. It belongs in @theme, and then it has a name.
+        no   ->  it is a one-off. Brackets are correct.
+      Is it already on the scale, or within a step of it?
+        yes  ->  you are overriding a system that was working. This is the smell.
+
+  Four panels, each with the real markup and a live audit:
+
+    1. LEGITIMATE   a third-party embed that is exactly 728x90 because the ad network
+                    says so. Nobody chose it, nobody will reuse it.
+    2. LEGITIMATE   a one-off arbitrary PROPERTY for something with no utility at all.
+    3. BELONGS IN @theme   a brand colour typed as a hex literal in nine places. The
+                    audit finds all nine and points out that they have already drifted.
+    4. THE SMELL    spacing that is 1px off the scale, three times, for no reason.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE DRIFT IS FOUND, NOT CLAIMED. Panel 3's audit reads the computed colour of every
+     swatch and reports how many DISTINCT values there are. There are meant to be nine
+     identical ones; there are not, because two of them were typed with a digit wrong.
+     That is what a literal costs, and it costs it silently.
+  2. Panel 4 measures each box against the scale and reports the distance to the nearest
+     step. "1px off, and 1px off in the other direction, and 2px off" is a more honest
+     argument than "don't do that".
+  3. Panels 1 and 2 are unapologetic. They are correct code and they are labelled as
+     correct code, so the rule the room leaves with is a test rather than a taboo.
+
+  DEMO MOVE: do panel 3 first and do not explain it — just ask "how many colours are on
+  this row?" Everyone says one. Read the audit. Then ask what would have caught it. The
+  answer is a name, and a name is what @theme is for.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arbitrary values: when they are right</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      .panel {
+        border: 3px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #f8fafc;
+      }
+      .panel.good {
+        border-color: #15803d;
+        background: #f0fdf4;
+      }
+      .panel.theme {
+        border-color: #b45309;
+        background: #fffbeb;
+      }
+      .panel.smell {
+        border-color: #b91c1c;
+        background: #fff5f5;
+      }
+      .panel h2 {
+        margin: 0 0 4px;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .verdict {
+        font:
+          700 11px/1.6 ui-monospace,
+          Menlo,
+          monospace;
+        padding: 1px 8px;
+        border-radius: 999px;
+        letter-spacing: 0.04em;
+      }
+      .good .verdict {
+        background: #15803d;
+        color: #fff;
+      }
+      .theme .verdict {
+        background: #b45309;
+        color: #fff;
+      }
+      .smell .verdict {
+        background: #b91c1c;
+        color: #fff;
+      }
+      .panel > p.why {
+        margin: 0 0 10px;
+        font-size: 13.5px;
+        color: #334155;
+      }
+      .stage {
+        padding: 10px;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px dashed var(--line);
+        overflow-x: auto;
+      }
+      pre.code {
+        margin: 8px 0 0;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: #0f172a;
+        color: #e2e8f0;
+        font:
+          11.5px/1.6 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        overflow-x: auto;
+      }
+      .audit {
+        margin: 8px 0 0;
+        padding: 9px 11px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        border: 1px solid var(--line);
+        font:
+          12.5px/1.7 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+      .rule {
+        margin: 0 0 14px;
+        padding: 12px 14px;
+        border-left: 5px solid #1d4ed8;
+        background: #eff6ff;
+        border-radius: 0 10px 10px 0;
+      }
+      .rule p {
+        margin: 0 0 4px;
+      }
+      .rule p:last-child {
+        margin-bottom: 0;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+    </style>
+
+    <script src="../vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --spacing: 0.25rem;
+        --color-brand-500: hsl(234 89% 52%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="rule">
+      <p><strong>The test, and it is mechanical:</strong></p>
+      <p>Would you want a <em>second</em> element to have this exact value?</p>
+      <p>&nbsp;&nbsp;yes &rarr; it is a decision. Give it a name in <code>@theme</code>.</p>
+      <p>&nbsp;&nbsp;no &rarr; it is a one-off. Brackets are the right answer.</p>
+      <p>
+        And then: is it already on the scale, or within one step of it? If so you are
+        overriding a system that was working, and that is the smell.
+      </p>
+    </div>
+
+    <section class="panel good">
+      <h2><span class="verdict">correct</span> a size somebody else decided</h2>
+      <p class="why">
+        A leaderboard slot is 728&times;90 because the ad network says so. Nobody on this
+        team chose it, nobody will reuse it, and rounding it to the scale would break the
+        thing. Brackets, no apology.
+      </p>
+      <div class="stage">
+        <div
+          id="ad"
+          class="flex h-[90px] w-[728px] items-center justify-center rounded border border-slate-300 bg-slate-100 text-sm text-slate-600"
+        >
+          728 &times; 90
+        </div>
+      </div>
+      <pre class="code">class="w-[728px] h-[90px] …"</pre>
+      <p class="audit" id="a-ad"></p>
+    </section>
+
+    <section class="panel good">
+      <h2><span class="verdict">correct</span> a property with no utility at all</h2>
+      <p class="why">
+        There is no utility for <code>mask-image</code>, and there should not be &mdash; it
+        is used once in a career. The arbitrary-property form takes any declaration at all,
+        and using it here is not a defeat.
+      </p>
+      <div class="stage">
+        <div
+          id="fade"
+          class="h-12 rounded bg-brand-500 [mask-image:linear-gradient(to_right,black,transparent)]"
+        ></div>
+      </div>
+      <pre class="code">class="[mask-image:linear-gradient(to_right,black,transparent)]"</pre>
+      <p class="audit" id="a-fade"></p>
+    </section>
+
+    <section class="panel theme">
+      <h2><span class="verdict">belongs in @theme</span> the same colour, nine times</h2>
+      <p class="why">
+        Nine swatches that are all meant to be the brand colour, each typed as a literal.
+        How many colours can you see? Count them, then read the audit.
+      </p>
+      <div class="stage">
+        <div class="flex flex-wrap gap-1" id="swatches">
+          <span class="h-10 w-10 rounded bg-[#182df2]"></span>
+          <span class="h-10 w-10 rounded bg-[#182df2]"></span>
+          <span class="h-10 w-10 rounded bg-[#183df2]"></span>
+          <span class="h-10 w-10 rounded bg-[#182df2]"></span>
+          <span class="h-10 w-10 rounded bg-[#182df2]"></span>
+          <span class="h-10 w-10 rounded bg-[#182ef2]"></span>
+          <span class="h-10 w-10 rounded bg-[#182df2]"></span>
+          <span class="h-10 w-10 rounded bg-[#182df2]"></span>
+          <span class="h-10 w-10 rounded bg-[#182df2]"></span>
+        </div>
+      </div>
+      <pre class="code">class="bg-[#182df2]"   …nine times, by hand
+&#10;the fix:
+  @theme { --color-brand-500: hsl(234 89% 52%); }
+  class="bg-brand-500"</pre>
+      <p class="audit" id="a-swatches"></p>
+    </section>
+
+    <section class="panel smell">
+      <h2><span class="verdict">the smell</span> one pixel off the scale, three times</h2>
+      <p class="why">
+        Three boxes whose padding was nudged until each one looked right on its own. Every
+        value is within two pixels of a real step. This is the case the test exists for.
+      </p>
+      <div class="stage">
+        <div class="flex flex-wrap gap-2" id="nudged">
+          <div class="rounded border border-slate-300 bg-white p-[13px] text-sm">p-[13px]</div>
+          <div class="rounded border border-slate-300 bg-white p-[15px] text-sm">p-[15px]</div>
+          <div class="rounded border border-slate-300 bg-white p-[22px] text-sm">p-[22px]</div>
+          <div class="rounded border border-slate-300 bg-white p-4 text-sm">p-4</div>
+        </div>
+      </div>
+      <pre class="code">class="p-[13px]"    class="p-[15px]"    class="p-[22px]"</pre>
+      <p class="audit" id="a-nudged"></p>
+    </section>
+
+    <script>
+      /* ── The instruments. Everything below reads the RENDERED page. ────────── */
+
+      const px = (v) => parseFloat(v) || 0;
+
+      /**
+       * The spacing scale, MEASURED rather than listed or read out of the token.
+       *
+       * Reading `--spacing` off :root was the first attempt and it was wrong in a way
+       * worth recording: the value is `0.25rem`, and parseFloat gives 0.25 — a number in
+       * the wrong unit, which then made every step 1/16th of its real size and reported
+       * `p-24` as the nearest step to 13px. Rendering a `w-1` box and asking the browser
+       * how wide it is cannot go wrong that way, because the browser does the conversion.
+       */
+      let SPACING_UNIT = 4;
+      function measureSpacingUnit() {
+        const holder = document.createElement('div');
+        holder.setAttribute('aria-hidden', 'true');
+        holder.style.cssText = 'position:absolute;left:-9999px;top:0';
+        const box = document.createElement('div');
+        box.className = 'w-1 h-1';
+        holder.append(box);
+        document.body.append(holder);
+        const width = box.getBoundingClientRect().width;
+        holder.remove();
+        return width > 0 ? width : 4;
+      }
+
+      function scaleSteps() {
+        return Array.from({ length: 25 }, (_, i) => ({ step: i, px: i * SPACING_UNIT }));
+      }
+
+      function nearestStep(value) {
+        let best = null;
+        for (const s of scaleSteps()) {
+          const d = Math.abs(s.px - value);
+          if (!best || d < best.distance) best = { ...s, distance: d };
+        }
+        return best;
+      }
+
+      function render() {
+        /* 1 — the ad slot. Nothing to complain about; the audit says so and says why. */
+        const ad = document.getElementById('ad').getBoundingClientRect();
+        document.getElementById('a-ad').textContent =
+          '  measured ' +
+          Math.round(ad.width) +
+          ' x ' +
+          Math.round(ad.height) +
+          ' — exactly the number the ad network specified.\n' +
+          '  Nobody would want a SECOND element at 728x90, so there is nothing to name.\n' +
+          '  The test says brackets, and the test is right.';
+
+        /* 2 — the arbitrary property. */
+        const fade = getComputedStyle(document.getElementById('fade'));
+        document.getElementById('a-fade').textContent =
+          '  mask-image resolved to: ' +
+          (fade.maskImage && fade.maskImage !== 'none' ? fade.maskImage : '(none)') +
+          '\n' +
+          '  A real declaration, generated from a class, for a property the framework has\n' +
+          '  no opinion about. The escape hatch exists so the system never becomes a\n' +
+          '  ceiling — and a system with no escape hatch is one you eventually abandon.';
+
+        /* 3 — the drift. THIS is the one that lands. */
+        const swatches = [...document.querySelectorAll('#swatches span')];
+        const colours = swatches.map((s) => getComputedStyle(s).backgroundColor);
+        const distinct = [...new Set(colours)];
+        const counts = distinct.map((c) => ({ c, n: colours.filter((x) => x === c).length }));
+        counts.sort((a, b) => b.n - a.n);
+
+        document.getElementById('a-swatches').textContent =
+          '  ' +
+          swatches.length +
+          ' swatches, all meant to be the same colour.\n' +
+          '  the browser reports ' +
+          distinct.length +
+          ' DISTINCT colours:\n' +
+          counts.map((x) => '    ' + x.c.padEnd(22) + ' x' + x.n).join('\n') +
+          '\n\n' +
+          (distinct.length > 1
+            ? '  Two of them are wrong by one hex digit. You did not see it, I did not see\n' +
+              '  it, and code review would not have seen it — a literal carries no meaning\n' +
+              '  to check it against.\n\n' +
+              '  `bg-brand-500` cannot drift, because there is one place the value lives\n' +
+              '  and a typo in the NAME produces no rule at all, loudly. That is the whole\n' +
+              '  argument for tokens, and it is week 3\'s argument, unchanged.'
+            : '  (all identical — edit one of them and reload to see the point)');
+
+        /* 4 — the smell, measured against the scale. */
+        const boxes = [...document.querySelectorAll('#nudged > div')];
+        const rows = boxes.map((box) => {
+          const value = px(getComputedStyle(box).paddingTop);
+          const near = nearestStep(value);
+          return { label: box.textContent.trim(), value, near };
+        });
+
+        /* p-4 is in the row on purpose, as the control: it must come back "on the
+           scale", and if it ever does not, the instrument is broken rather than the
+           markup. */
+        const offScale = rows.filter((r) => r.near.distance > 0.5);
+
+        document.getElementById('a-nudged').textContent =
+          rows
+            .map(
+              (r) =>
+                '  ' +
+                r.label.padEnd(12) +
+                String(r.value).padStart(5) +
+                'px   nearest step: p-' +
+                r.near.step +
+                ' (' +
+                r.near.px +
+                'px)' +
+                (r.near.distance > 0.5 ? '   off by ' + r.near.distance.toFixed(0) + 'px' : '   on the scale'),
+            )
+            .join('\n') +
+          '\n\n' +
+          '  ' +
+          offScale.length +
+          ' of ' +
+          rows.length +
+          ' are off the scale, and each is within two pixels of a step that\n' +
+          '  already existed. (p-4 is the control — it must come back on the scale, and if\n' +
+          '  it ever does not then this instrument is broken, not the markup.)\n' +
+          '  Each of the three was defensible alone. Together they are three different\n' +
+          '  paddings where the design has one.\n\n' +
+          '  Apply the test: would you want a second element at 13px? No — you would want\n' +
+          '  it to match the first one. Which means it was never a one-off. Which means\n' +
+          '  brackets were the wrong answer, and p-3 was the right one all along.';
+      }
+
+      /* Wait for the compiler before measuring anything. */
+      const ready = async () => {
+        for (let frame = 0; frame < 120; frame++) {
+          if (document.getElementById('ad').getBoundingClientRect().width > 700) break;
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        SPACING_UNIT = measureSpacingUnit();
+        render();
+      };
+      ready();
+    </script>
+  </body>
+</html>

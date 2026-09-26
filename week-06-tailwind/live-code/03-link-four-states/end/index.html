@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Film club — reserve a seat</title>
+    <!-- Tailwind, from the copy beside this page — not a CDN: week 13 has no network. -->
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-page: hsl(0 0% 100%);
+        --color-surface: hsl(222 44% 98%);
+        --color-edge: hsl(222 22% 82%);
+        --color-ink: hsl(222 47% 11%);
+        --color-ink-muted: hsl(222 20% 34%);
+        --color-brand-100: hsl(234 100% 96%);
+        --color-brand-300: hsl(234 100% 78%);
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+
+        /* The dark ramp: a second set of decisions, not an inversion. */
+        --color-page-dark: hsl(222 30% 9%);
+        --color-surface-dark: hsl(222 26% 13%);
+        --color-edge-dark: hsl(222 18% 30%);
+        --color-ink-dark: hsl(210 30% 96%);
+        --color-ink-muted-dark: hsl(214 18% 76%);
+      }
+    </style>
+  </head>
+  <body class="bg-page p-8 text-ink dark:bg-page-dark dark:text-ink-dark">
+    <header class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <p class="m-0 text-lg font-bold">Film club</p>
+      <nav aria-label="Main">
+        <ul class="m-0 flex list-none flex-wrap gap-1 p-0">
+          <li><a class="rounded-lg px-3 py-2 text-brand-500 no-underline motion-safe:transition-colors hover:bg-brand-100 hover:text-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-brand-300 dark:hover:bg-surface-dark dark:hover:text-brand-100 dark:focus-visible:outline-brand-300" href="#programme">Programme</a></li>
+          <li><a class="rounded-lg px-3 py-2 text-brand-500 no-underline motion-safe:transition-colors hover:bg-brand-100 hover:text-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-brand-300 dark:hover:bg-surface-dark dark:hover:text-brand-100 dark:focus-visible:outline-brand-300" href="#reserve">Reserve</a></li>
+          <li><a class="rounded-lg px-3 py-2 text-brand-500 no-underline motion-safe:transition-colors hover:bg-brand-100 hover:text-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-brand-300 dark:hover:bg-surface-dark dark:hover:text-brand-100 dark:focus-visible:outline-brand-300" href="#about">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="panel flex max-w-xl flex-col gap-4 rounded-xl border border-edge bg-surface p-6 dark:border-edge-dark dark:bg-surface-dark" id="reserve">
+      <h1 class="m-0 text-2xl font-bold">Paris, Texas — Thursday 20:00</h1>
+      <p class="m-0 text-ink-muted dark:text-ink-muted-dark">Hall B has 84 seats. The waitlist for Hall A closed on Monday.</p>
+      <div class="flex flex-wrap gap-3">
+        <button class="rounded-lg bg-brand-500 px-5 py-2 font-semibold text-white motion-safe:transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:outline-brand-300" type="button">
+          Reserve a seat
+        </button>
+        <button class="rounded-lg bg-brand-500 px-5 py-2 font-semibold text-white motion-safe:transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:outline-brand-300" type="button" disabled>
+          Hall A — waitlist full
+        </button>
+      </div>
+    </main>
+  </body>
+</html>

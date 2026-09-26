@@ -1,0 +1,129 @@
+/* ============================================================================
+   Cycle 1 — flex loses, grid wins.
+
+   The Eastgate branch page in five regions. Type, colour and the five boxes
+   are done. Everything the cycle changes is in the last block: the shell.
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font: 17px/1.55 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2a24;
+  background: #f3f6f2;
+  /* A word that does not fit its box breaks instead of pushing the page
+     sideways. It does NOT change how wide a column asks to be. */
+  overflow-wrap: break-word;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  background: #e6ede7;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* -- five regions, a surface each ------------------------------------------ */
+
+.top,
+.shelves,
+.reading,
+.hours,
+.bottom {
+  padding: 16px 20px;
+  border: 2px solid #c5d3c8;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.top {
+  border-color: #1f5f4a;
+  background: #1f5f4a;
+  color: #ffffff;
+}
+
+.top p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.shelf-title {
+  font-weight: 700;
+}
+
+.shelves ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shelves a {
+  display: block;
+  padding: 4px 0;
+  color: #1f5f4a;
+}
+
+.hours dl {
+  margin: 0;
+}
+
+.hours dt {
+  font-weight: 700;
+}
+
+.hours dd {
+  margin: 0 0 8px;
+}
+
+.bottom p {
+  margin: 0;
+  color: #4b5b50;
+}
+
+/* -- the shell --------------------------------------------------------------- */
+
+.frame {
+  max-width: 72rem;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.top,
+.bottom {
+  width: 100%;
+}
+
+.shelves {
+  width: 25%;
+}
+
+.reading {
+  width: 50%;
+}
+
+.hours {
+  width: 25%;
+}

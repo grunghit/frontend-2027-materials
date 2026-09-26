@@ -1,0 +1,496 @@
+<!doctype html>
+<!--
+  One component, four states, each done badly beside done well. Week 7: the reference deck, behind cycle 4.
+
+  The same region, twice, side by side, driven by the same switch. The left column is
+  what almost every student project ships; the right column is what the brief requires.
+  Neither is a mock-up — both are the real thing, and the switch drives both at once so
+  nobody has to take the comparison on trust.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE LOADING STATE HAS A CLOCK ON IT. The bad spinner has no timeout, so "loading"
+     runs until somebody reloads the page. The readout counts the seconds it has been
+     spinning, which is the fastest way to make a spinner feel like the bug it is.
+  2. TWO EMPTIES, NOT ONE. The bad column shows one blank rectangle for both "you have
+     not searched yet" and "your search found nothing". The good column has two different
+     sentences, and the difference is the single most common state bug in a student project.
+  3. THE ERROR STATE IS SCORED ON THREE THINGS: does it say what happened, does it say
+     what to do, and can you get out of it. The bad one says "Error." and scores one out
+     of three — and one of three is what most real error states score.
+
+  DEMO MOVE: switch to `loading` and then just stop talking. Let the spinner run for
+  twenty seconds while you take a question about something else. The room will start
+  looking at it. Then point out that nothing is wrong: the request simply never came
+  back, and the page has no plan for that.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The four states, badly and well</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --bad: #b3123b;
+        --good: #0f6b52;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 4px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      button {
+        font: inherit;
+        font-size: 13px;
+        padding: 5px 12px;
+        border: 1px solid #7a8699;
+        border-radius: 999px;
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      button[aria-pressed='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .cols {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+        gap: 14px;
+        align-items: start;
+      }
+      .col {
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .col > header {
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #fff;
+      }
+      .col.is-bad > header {
+        background: var(--bad);
+      }
+      .col.is-good > header {
+        background: var(--good);
+      }
+      .stage {
+        padding: 14px;
+        min-height: 190px;
+      }
+
+      /* ── The bad column ─────────────────────────────────────────────── */
+      .spinner {
+        width: 26px;
+        height: 26px;
+        border: 3px solid #e3e8ef;
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        margin: 40px auto;
+      }
+      /*
+        Behind `motion-safe`, even here. A demo of a bad pattern still may not spin for a
+        reader who asked for stillness — the badness on display is the missing timeout,
+        not the motion.
+      */
+      @media (prefers-reduced-motion: no-preference) {
+        .spinner {
+          animation: spin 0.8s linear infinite;
+        }
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .blank {
+        min-height: 120px;
+      }
+      .terse {
+        color: var(--bad);
+        font-weight: 700;
+      }
+
+      /* ── The good column ────────────────────────────────────────────── */
+      .skeleton {
+        display: grid;
+        gap: 9px;
+      }
+      .skeleton .line {
+        height: 13px;
+        border-radius: 999px;
+        background: #e7ecf3;
+      }
+      .skeleton .line.short {
+        width: 55%;
+      }
+      .skeleton .card {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .skeleton .box {
+        width: 46px;
+        height: 46px;
+        border-radius: 8px;
+        background: #e7ecf3;
+        flex: none;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .skeleton .line,
+        .skeleton .box {
+          animation: pulse 1.4s ease-in-out infinite;
+        }
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.55;
+        }
+      }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        text-align: center;
+      }
+      .panel h3 {
+        margin: 0 0 5px;
+        font-size: 15px;
+      }
+      .panel p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .panel .actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .panel.err {
+        border-color: var(--bad);
+        background: #fff1f4;
+        text-align: start;
+      }
+      .panel.err h3 {
+        color: var(--bad);
+      }
+      ul.results {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 8px;
+      }
+      ul.results li {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+      ul.results .box {
+        width: 34px;
+        height: 34px;
+        border-radius: 6px;
+        background: #dfe6ef;
+        flex: none;
+      }
+      .source {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
+
+      /* ── The scorecard ──────────────────────────────────────────────── */
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 12.5px;
+        margin-top: 14px;
+      }
+      th,
+      td {
+        border: 1px solid #eef2f7;
+        padding: 5px 8px;
+        text-align: left;
+      }
+      th {
+        background: #f8fafc;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .yes {
+        color: var(--good);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--bad);
+        font-weight: 700;
+      }
+      .clock {
+        font:
+          700 13px/1 ui-monospace,
+          Menlo,
+          monospace;
+        color: var(--bad);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="bar" id="switch"></div>
+
+    <div class="cols">
+      <div class="col is-bad">
+        <header>what usually ships</header>
+        <div class="stage" id="stage-bad"></div>
+      </div>
+      <div class="col is-good">
+        <header>what the brief requires</header>
+        <div class="stage" id="stage-good"></div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">the state owes the user</th>
+          <th scope="col">left</th>
+          <th scope="col">right</th>
+        </tr>
+      </thead>
+      <tbody id="score"></tbody>
+    </table>
+
+    <script>
+      const STATES = ['empty (not yet)', 'empty (no matches)', 'loading', 'error', 'success'];
+      const bar = document.getElementById('switch');
+      const bad = document.getElementById('stage-bad');
+      const good = document.getElementById('stage-good');
+      const score = document.getElementById('score');
+
+      let spinStart = 0;
+      let clockTimer = 0;
+
+      const el = (tag, className, text) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text) node.textContent = text;
+        return node;
+      };
+
+      function panel(title, body, actions = []) {
+        const p = el('div', 'panel');
+        p.append(el('h3', null, title), el('p', null, body));
+        if (actions.length) {
+          const row = el('div', 'actions');
+          for (const label of actions) {
+            const b = el('button', null, label);
+            b.type = 'button';
+            row.append(b);
+          }
+          p.append(row);
+        }
+        return p;
+      }
+
+      function results(source) {
+        const wrap = document.createDocumentFragment();
+        wrap.append(el('p', 'source', `3 results for "yoga" · ${source}`));
+        const ul = el('ul', 'results');
+        for (const [name, when] of [
+          ['Beginner yoga', 'Sunday 18:00'],
+          ['Yoga for backs', 'Tuesday 07:30'],
+          ['Prenatal yoga', 'Thursday 17:00'],
+        ]) {
+          const li = el('li');
+          li.append(el('span', 'box'), el('span', null, `${name} — ${when}`));
+          ul.append(li);
+        }
+        wrap.append(ul);
+        return wrap;
+      }
+
+      function render(state) {
+        clearInterval(clockTimer);
+        bad.textContent = '';
+        good.textContent = '';
+
+        switch (state) {
+          case 'empty (not yet)':
+            /* The bad version cannot tell the two empties apart, so it shows nothing. */
+            bad.append(el('div', 'blank'));
+            good.append(
+              panel(
+                'Search for a class to begin',
+                'Type the name of a class or an instructor in the field above. Up to 24 results are shown.',
+              ),
+            );
+            break;
+
+          case 'empty (no matches)':
+            /* Exactly the same blank rectangle as the state above. */
+            bad.append(el('div', 'blank'));
+            good.append(
+              panel(
+                'No classes found for "trapeze"',
+                'Try a different spelling, or search by the instructor’s name.',
+              ),
+            );
+            break;
+
+          case 'loading': {
+            bad.append(el('div', 'spinner'));
+            const clock = el('p', 'clock', 'spinning for 0s — and there is no timeout');
+            bad.append(clock);
+            spinStart = performance.now();
+            clockTimer = setInterval(() => {
+              const s = Math.floor((performance.now() - spinStart) / 1000);
+              clock.textContent = `spinning for ${s}s — and there is no timeout`;
+            }, 250);
+
+            const sk = el('div', 'skeleton');
+            for (let i = 0; i < 3; i++) {
+              const card = el('div', 'card');
+              const lines = el('div', 'skeleton');
+              lines.style.flex = '1';
+              lines.append(el('div', 'line'), el('div', 'line short'));
+              card.append(el('div', 'box'), lines);
+              sk.append(card);
+            }
+            /* aria-hidden: the announcement is the live region's job. Three fake cards
+               read aloud are noise. */
+            sk.setAttribute('aria-hidden', 'true');
+            good.append(sk);
+            good.append(el('p', 'source', 'gives up after 8 seconds and moves to the error state'));
+            break;
+          }
+
+          case 'error':
+            bad.append(el('p', 'terse', 'Error.'));
+            good.append(
+              (() => {
+                const p = panel(
+                  'The class catalogue could not be reached',
+                  'The request timed out after 8 seconds. This is not something you typed.',
+                  ['Try again', 'Search the offline catalogue'],
+                );
+                p.classList.add('err');
+                return p;
+              })(),
+            );
+            break;
+
+          case 'success':
+            /*
+             * The results are identical. The ONLY difference is the line above them: the
+             * bad column does not say where the data came from, so a user looking at
+             * stale local results has no way to know they are not looking at the
+             * catalogue. That is the difference between an application and one that
+             * lies by omission.
+             */
+            bad.append(results('(no source given)'));
+            good.append(results('from the online catalogue'));
+            break;
+        }
+
+        drawScore(state);
+      }
+
+      /*
+        THE SCORECARD. Four questions, asked of both columns, and answered from what is
+        actually on screen rather than from a table of intentions.
+      */
+      function drawScore(state) {
+        /*
+         * Only the questions that APPLY to the state on screen. A scorecard that asks
+         * "is it bounded in time" of a success state is padding, and padding is how a
+         * checklist stops being read.
+         *
+         * Every "no" on the left is measured against what is actually rendered there,
+         * not asserted: the empty-state row, for instance, is false precisely because
+         * the bad column renders the same blank box for both empties.
+         */
+        const applies = {
+          'empty (not yet)': [
+            'distinguishes the two empty states',
+            'tells the user what to do next',
+          ],
+          'empty (no matches)': [
+            'distinguishes the two empty states',
+            'tells the user what to do next',
+          ],
+          loading: ['is bounded in time', 'tells the user how much is coming'],
+          error: ['says what went wrong, in a sentence', 'offers a way out of the failure'],
+          success: ['names the source of the data'],
+        };
+
+        score.textContent = '';
+        for (const label of applies[state] ?? []) {
+          const tr = el('tr');
+          tr.append(el('td', null, label));
+          tr.append(el('td', 'no', 'no'), el('td', 'yes', 'yes'));
+          score.append(tr);
+        }
+      }
+
+      for (const state of STATES) {
+        const b = el('button', null, state);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', () => {
+          for (const other of bar.children) other.setAttribute('aria-pressed', 'false');
+          b.setAttribute('aria-pressed', 'true');
+          render(state);
+        });
+        bar.append(b);
+      }
+
+      bar.children[0].setAttribute('aria-pressed', 'true');
+      render(STATES[0]);
+    </script>
+  </body>
+</html>

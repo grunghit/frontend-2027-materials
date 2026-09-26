@@ -1,0 +1,134 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: system-ui, sans-serif;
+  font-size: 1.0625rem;
+  color: hsl(200 20% 15%);
+  background-color: hsl(170 30% 98%);
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  color: hsl(170 70% 28%);
+}
+
+h1 {
+  font-size: 2.07rem;
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: 1.66rem;
+  line-height: 1.15;
+}
+
+h3 {
+  font-size: 1.33rem;
+  line-height: 1.2;
+}
+
+header p,
+caption,
+footer {
+  color: hsl(170 10% 38%);
+}
+
+thead th {
+  background-color: hsl(170 25% 93%);
+}
+
+a {
+  color: hsl(170 70% 28%);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: hsl(170 80% 18%);
+  text-decoration-thickness: 2px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid hsl(170 20% 70%);
+}
+
+input[type="radio"] {
+  width: auto;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid hsl(170 20% 70%);
+  text-align: left;
+}
+
+thead th {
+  border-bottom-width: 2px;
+}
+
+section {
+  margin-top: 2.5rem;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+}
+
+p {
+  margin-top: 1rem;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid hsl(170 70% 28%);
+  outline-offset: 2px;
+}
+
+nav a[aria-current="page"] {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+button {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid hsl(170 70% 28%);
+  border-radius: 999px;
+  background-color: hsl(170 70% 28%);
+  color: hsl(170 30% 98%);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: hsl(170 80% 18%);
+  border-color: hsl(170 80% 18%);
+}

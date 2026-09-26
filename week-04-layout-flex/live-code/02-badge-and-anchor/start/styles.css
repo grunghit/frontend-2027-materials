@@ -1,0 +1,134 @@
+/* ============================================================================
+   Cycle 2 — the badge, the anchor, and the header that stays.
+
+   Cycle 1's bar, and a row of three tiles that is already Flexbox. Three things
+   are missing, and all three are `position`:
+     · the pill on the first tile should sit on its top-right corner
+     · the tile has to be the box the pill is measured from
+     · the header should stay at the top while the page scrolls — above the tiles
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 17px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
+}
+
+main {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: 24px;
+}
+
+section {
+  padding-block: 24px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin: 0 0 16px;
+  color: #0f172a;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+p {
+  max-width: 60ch;
+}
+
+/* -- the header and its bar (cycle 1) --------------------------------------- */
+
+.top {
+  background: #ccfbf1;
+  border-block-end: 3px solid #0f766e;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: 12px 24px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #134e4a;
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-inline-start: auto;
+}
+
+.links a {
+  display: block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: #134e4a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.links a:hover {
+  background: #99f6e4;
+}
+
+/* -- the tiles -------------------------------------------------------------- */
+
+/* Given. The row is cycle 1's `display: flex`; the `flex: 1 1 14rem` on each tile
+   is cycle 3's subject — it is here so the row survives a narrow window, and you
+   will type it yourself in forty minutes. */
+.tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  flex: 1 1 14rem;
+  padding: 20px;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.tile p {
+  margin: 0;
+}
+
+/* -- the pill --------------------------------------------------------------- */
+
+.pill {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}

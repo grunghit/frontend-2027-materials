@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  Cycle 5 — draw it, then build it from the phone up. THE MARKUP IS FINISHED:
+  every step is in styles.css. This is cycle 1's page, exactly as cycle 1 left it.
+  Compare your result with ../end/ and with ../checkpoint.png.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cycle 5 — draw it, then build it from the phone up</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="frame">
+      <header class="top">
+        <p>Riverside Library &middot; Eastgate branch</p>
+      </header>
+
+      <nav class="shelves" aria-label="Shelves">
+        <p class="shelf-title">Shelves</p>
+        <ul>
+          <li><a href="#main">New arrivals</a></li>
+          <li><a href="#main">Fiction</a></li>
+          <li><a href="#main">History</a></li>
+          <li><a href="#main">Children</a></li>
+          <li><a href="#main">Local papers</a></li>
+        </ul>
+      </nav>
+
+      <main class="reading" id="main">
+        <h1>This week at Eastgate</h1>
+        <p>
+          The reading room reopens on Monday with forty new chairs, a quiet corner for exam
+          season, and the long table by the window back where it belongs.
+        </p>
+        <p>
+          Returns go in the slot by the door. Anything with a pink ticket is on hold for someone,
+          so please leave it on the trolley rather than back on the shelf.
+        </p>
+        <p>
+          The new arrivals list lives in the catalogue:
+          <code>https://catalogue.riversidelibrary.example/eastgate/search?shelf=newarrivals&amp;sort=dateadded&amp;view=list</code>
+        </p>
+      </main>
+
+      <aside class="hours" aria-labelledby="hours-title">
+        <h2 id="hours-title">Opening hours</h2>
+        <dl>
+          <dt>Mon to Thu</dt>
+          <dd>9:00 to 20:00</dd>
+          <dt>Fri</dt>
+          <dd>9:00 to 14:00</dd>
+          <dt>Sat</dt>
+          <dd>Closed</dd>
+        </dl>
+      </aside>
+
+      <footer class="bottom">
+        <p>Riverside Library &middot; 14 Mill Lane &middot; Eastgate</p>
+      </footer>
+    </div>
+  </body>
+</html>

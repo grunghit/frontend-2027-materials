@@ -1,0 +1,436 @@
+<!doctype html>
+<!--
+  @apply, and why it is not the answer. Week-6 deck, act 6, and the arc closes here.
+
+  Every student meets @apply within a day of meeting Tailwind, and it looks like the
+  obvious fix for class soup: pull the utilities into a named class and write the name.
+  It reads better. It is shorter. It is the thing every "Tailwind best practices" blog
+  post from 2021 recommends.
+
+  It is also a round trip. This demo takes the SAME four measurements demo 01 took of a
+  hand-written stylesheet, and runs them against an @apply stylesheet. The numbers come
+  back the same, because they are the same stylesheet - you have not removed the CSS
+  file, you have only changed the syntax inside it.
+
+    invented names        back
+    rules that can die    back
+    specificity fights    back
+    two-file switching    back
+
+  What makes it teach rather than merely demonstrate:
+
+  1. IT REUSES DEMO 01'S INSTRUMENT, VERBATIM. The same audit function, applied to a
+     different sheet. That is what makes "you are back where you started" a measurement
+     rather than an opinion, and the room can check the claim by scrolling back.
+  2. It shows the @apply version FAILING at the one thing utilities were good at: the
+     `.btn` class is overridden by a later `.btn-danger` in one place and not in another,
+     because now source order matters again — and source order is what utilities took
+     out of your hands ON PURPOSE.
+  3. It is fair. There is one genuinely good use of @apply and it is on the panel: a
+     base-layer rule for an element you do not control the markup of. Say it out loud, so
+     the rule the room leaves with is "@apply for elements you cannot put a class on",
+     not "@apply bad".
+  4. It ends on the honest sentence: if you find yourself wanting @apply everywhere, what
+     you actually want is a component, and a component is week 10.
+
+  DEMO MOVE: write `.btn { @apply … }` on the board and ask the room whether it is better
+  than the six copies from demo 09. Most will say yes and they are not being stupid — it
+  IS better than six copies. Then run the audit. The point is not that they were wrong;
+  it is that they solved the wrong problem, and the right one was "one source", not
+  "shorter markup".
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The @apply trap</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .stage {
+        border: 3px solid #b91c1c;
+        background: #fff5f5;
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px dashed var(--line);
+      }
+      table {
+        margin: 12px 0 0;
+        border-collapse: collapse;
+        width: 100%;
+        font:
+          12.5px/1.6 ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      caption {
+        text-align: left;
+        padding: 8px 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 5px 9px;
+        text-align: left;
+      }
+      th {
+        background: #f1f5f9;
+      }
+      td.n {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+      }
+      .same {
+        color: #b91c1c;
+      }
+      pre.code {
+        margin: 10px 0 0;
+        padding: 9px 11px;
+        border-radius: 6px;
+        background: #0f172a;
+        color: #e2e8f0;
+        font:
+          11.5px/1.6 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        overflow-x: auto;
+      }
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          12.5px/1.7 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+      .fair {
+        margin: 12px 0 0;
+        padding: 11px 13px;
+        border-left: 5px solid #15803d;
+        background: #f0fdf4;
+        border-radius: 0 10px 10px 0;
+      }
+      .fair p {
+        margin: 0 0 5px;
+      }
+      .fair p:last-child {
+        margin-bottom: 0;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+    </style>
+
+    <script src="../vendor/tailwind.js"></script>
+
+    <!--
+      THE @apply STYLESHEET, and it is the artefact under measurement.
+
+      Read it with demo 01 open in another tab. It is the same shape: a component class,
+      a modifier, a variant that was renamed and never deleted, a page-scoped override,
+      and an escalation on top of that. Nobody wrote it badly. It just went the same way
+      that stylesheet went, because it IS that stylesheet.
+    -->
+    <style type="text/tailwindcss" id="authored">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+      }
+
+      .btn {
+        @apply cursor-pointer rounded-lg bg-brand-500 px-5 py-2 text-sm font-semibold text-white;
+      }
+      .btn:hover {
+        @apply bg-brand-700;
+      }
+      .btn-danger {
+        @apply bg-red-600;
+      }
+      .btn-danger:hover {
+        @apply bg-red-700;
+      }
+
+      /* The compact variant, for the modal that was removed in February. */
+      .btn-compact {
+        @apply px-3 py-1 text-xs;
+      }
+
+      /* Renamed to .btn-ghost. Nobody could prove it was safe to delete. */
+      .btn-quiet {
+        @apply bg-transparent text-brand-500;
+      }
+
+      /* The toolbar was replaced by the dashboard shell. */
+      .toolbar .btn {
+        @apply rounded-none;
+      }
+
+      /* And the escalation. .btn-danger lost to this, so it grew a second class,
+         and the fix for THAT needed an id. Exactly demo 01, in different syntax. */
+      .panel .btn {
+        @apply bg-brand-500;
+      }
+      .panel .btn.btn-danger {
+        @apply bg-red-600;
+      }
+      #footer .panel .btn {
+        @apply bg-slate-700;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="stage">
+      <h2>the same buttons, written with <code>@apply</code></h2>
+
+      <div class="row" id="plain">
+        <button type="button" class="btn">Renew</button>
+        <button type="button" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn">Archive</button>
+      </div>
+
+      <p style="margin: 10px 0 4px; font-size: 13px; color: #334155">
+        and the same two buttons again, inside <code>.panel</code> &mdash; which is a real
+        wrapper in a real page and not a trick:
+      </p>
+
+      <div class="panel">
+        <div class="row" id="in-panel">
+          <button type="button" class="btn">Renew</button>
+          <button type="button" class="btn btn-danger">Delete</button>
+          <button type="button" class="btn">Archive</button>
+        </div>
+      </div>
+
+      <pre class="code">.btn         { @apply cursor-pointer rounded-lg bg-brand-500 px-5 py-2 … }
+.btn-danger  { @apply bg-red-600; }
+
+.panel .btn  { @apply bg-brand-500; }   /* written later, by someone else */</pre>
+
+      <p class="readout" id="order" aria-live="polite"></p>
+    </div>
+
+    <table>
+      <caption>
+        demo 01's four measurements, run again &mdash; same instrument, different stylesheet
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">what was measured</th>
+          <th scope="col">utilities (demo 01)</th>
+          <th scope="col">this <code>@apply</code> sheet</th>
+        </tr>
+      </thead>
+      <tbody id="scores"></tbody>
+    </table>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <div class="fair">
+      <p>
+        <strong>And the one place it is genuinely right.</strong> When you do not control the
+        markup &mdash; a base rule for every <code>&lt;a&gt;</code> in prose, a
+        <code>::selection</code> colour, a third-party widget you cannot put a class on
+        &mdash; there is nowhere to write a utility, and <code>@apply</code> is the correct
+        tool. That is a handful of rules per project, in a base layer.
+      </p>
+      <p>
+        <strong>The rule to leave with:</strong> if you want <code>@apply</code> everywhere,
+        what you actually want is a <em>component</em>. This week that is
+        <code>components.html</code>. In week 10 it becomes a function, and then the problem
+        stops existing rather than changing syntax.
+      </p>
+    </div>
+
+    <script>
+      /* ────────────────────────────────────────────────────────────────────────
+         Demo 01's instrument, unchanged, pointed at a different stylesheet.
+         Copied rather than imported because every demo in this course is
+         self-contained and publishable on its own — the same trade-off recorded
+         for week 3's specificity function.
+         ──────────────────────────────────────────────────────────────────────── */
+      function specificity(selector) {
+        const s = selector.trim();
+        const ids = (s.match(/#[\w-]+/g) || []).length;
+        const classes = (s.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/g) || []).length;
+        const types = (s.match(/(^|[\s>+~])[a-zA-Z][\w-]*/g) || []).length;
+        return [ids, classes, types];
+      }
+
+      /**
+       * The authored rules. @apply is compiled away before the CSSOM ever sees it, so
+       * what is measured here is the CSS that actually shipped — which is the honest
+       * comparison and also, quietly, the point: there IS shipped CSS again.
+       *
+       * The generated sheet is found by looking for the selectors this file authored
+       * rather than by identity, because Tailwind compiles the <style> element's
+       * contents into a sheet of its own.
+       */
+      function auditApplySheet() {
+        const OURS = /^(\.btn|\.toolbar |\.panel |#footer )/;
+        const rules = [];
+        const walk = (list) => {
+          for (const rule of list) {
+            if (rule.selectorText && OURS.test(rule.selectorText)) rules.push(rule);
+            if (rule.cssRules) walk(rule.cssRules);
+          }
+        };
+        for (const sheet of document.styleSheets) {
+          try {
+            walk(sheet.cssRules);
+          } catch {
+            /* not ours */
+          }
+        }
+
+        const dead = [];
+        const names = new Set();
+        const escalated = [];
+        let worst = [0, 0, 0];
+
+        for (const rule of rules) {
+          if (document.querySelectorAll(rule.selectorText).length === 0) {
+            dead.push(rule.selectorText);
+          }
+          for (const name of rule.selectorText.match(/\.[\w-]+/g) || []) names.add(name);
+          const spec = specificity(rule.selectorText);
+          if (spec[0] > 0 || spec[1] > 1) escalated.push(rule.selectorText);
+          if (spec.join('') > worst.join('')) worst = spec;
+        }
+
+        return { total: rules.length, dead, names: [...names], escalated, worst };
+      }
+
+      const ready = async () => {
+        for (let frame = 0; frame < 120; frame++) {
+          if (getComputedStyle(document.querySelector('.btn')).paddingLeft !== '0px') break;
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+
+        const a = auditApplySheet();
+
+        const ROWS = [
+          ['rules in a stylesheet', '0 — there is no stylesheet', a.total],
+          ['…matching nothing on this page', '0 — nothing CAN die', a.dead.length],
+          ['class names invented', '0', a.names.length],
+          ['rules that escalated', '0', a.escalated.length],
+          ['highest specificity (a,b,c)', '0,1,0', a.worst.join(',')],
+          ['files you switch between', '1 — the markup', '2 — markup and stylesheet'],
+        ];
+
+        document.getElementById('scores').innerHTML = ROWS.map(
+          ([label, utilities, applied]) =>
+            '<tr><td>' +
+            label +
+            '</td><td class="n">' +
+            utilities +
+            '</td><td class="n same">' +
+            applied +
+            '</td></tr>',
+        ).join('');
+
+        /* The source-order failure, measured. Same markup, two places, two colours. */
+        const plain = getComputedStyle(
+          document.querySelector('#plain .btn-danger'),
+        ).backgroundColor;
+        const inPanel = getComputedStyle(
+          document.querySelector('#in-panel .btn-danger'),
+        ).backgroundColor;
+
+        document.getElementById('order').textContent =
+          '  the Delete button, measured in both rows:\n' +
+          '    outside .panel   ' +
+          plain +
+          '\n' +
+          '    inside  .panel   ' +
+          inPanel +
+          '\n\n' +
+          (plain === inPanel
+            ? '  they agree — only because .panel .btn.btn-danger was written to win the\n' +
+              '  fight that .panel .btn started. Delete that one line and the Delete button\n' +
+              '  turns brand-blue inside panels and nowhere else.'
+            : '  they disagree, and nothing in the markup says so. Same three classes, two\n' +
+              '  different renderings, decided by a selector somewhere else in a file you\n' +
+              '  are not looking at.') +
+          '\n\n' +
+          '  Utilities cannot do this to you. `bg-red-600` is one class at (0,1,0) and it\n' +
+          '  means the same thing on every element on every page — which is exactly the\n' +
+          '  freedom @apply hands back.';
+
+        document.getElementById('out').textContent =
+          '  Every number in the right-hand column came from the SAME audit function that\n' +
+          '  measured the hand-written stylesheet in demo 01. Not a similar one — the same\n' +
+          '  one, copied across. Scroll back and compare if you like.\n\n' +
+          '  ' +
+          a.dead.length +
+          ' of ' +
+          a.total +
+          ' rules match nothing on this page:\n' +
+          a.dead.map((s) => '    ' + s).join('\n') +
+          '\n\n' +
+          '  ' +
+          a.escalated.length +
+          ' escalated:\n' +
+          a.escalated.map((s) => '    ' + s).join('\n') +
+          '\n\n' +
+          '  This is not an argument that @apply is badly built. It does exactly what it\n' +
+          '  says. The point is narrower and more useful: @apply moves declarations from\n' +
+          '  the markup into a stylesheet, and EVERY cost in demo 01 was a cost of having\n' +
+          '  a stylesheet. Shorter markup was never the problem being solved.\n\n' +
+          '  What was? One source. @apply gives you one source for the STYLES and leaves\n' +
+          '  the markup duplicated — six <button class="btn"> is still six copies, and the\n' +
+          '  one that loses its btn-danger still looks fine until somebody clicks it.\n\n' +
+          '  components.html gives you one source for BOTH. A function, in week 10, makes it\n' +
+          '  impossible to have two.';
+      };
+      ready();
+    </script>
+  </body>
+</html>

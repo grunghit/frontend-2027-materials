@@ -1,0 +1,317 @@
+<!doctype html>
+<!--
+  Animate transform and opacity. Not width, not top, not margin. Week 5, cycle 5's you-do (polish).
+
+  Two identical-looking animations. One moves a box by changing `left` and `width`, the
+  other by changing `transform`. They look the same on an idle laptop, which is exactly
+  why students ship the first one — so this page puts the browser under load and lets
+  the difference become visible and countable.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. The frame rate is measured, per animation, with requestAnimationFrame — not
+     estimated and not asserted. The "busy" toggle adds real synchronous work on the
+     main thread, which is what a real page has and a demo usually does not.
+  2. The REASON is named in terms students already have from week 1. Changing `left`
+     or `width` invalidates layout, so the browser must run layout and paint again for
+     every frame of the animation; `transform` and `opacity` are handled by the
+     compositor and skip both. Week 1 taught that pipeline — DOM, CSSOM, layout, paint
+     — and this is the first time it pays rent.
+  3. It respects prefers-reduced-motion, and says so on screen when it is on. A demo
+     about animation that ignores the accessibility setting for animation would be an
+     embarrassing thing to project.
+  4. The rule printed at the bottom is the exact rule CA5's grader
+     enforces, so the assignment constraint is not arbitrary — the room sees where it
+     came from.
+
+  DEMO MOVE: start both, they look identical, and say so honestly. Tick "make the main
+  thread busy". The top one drops frames visibly and the counter falls; the bottom one
+  keeps going. That is the whole demo. Do not oversell it — on a fast machine the gap
+  may be small, and the readout reports what actually happened rather than what you
+  hoped.
+
+  Then the sentence: "the browser can move a layer without redoing the layout, and it
+  cannot do that for width."
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Animate transform, not layout</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h2 code {
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font:
+          600 13px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+        cursor: pointer;
+      }
+      input[type='checkbox'] {
+        accent-color: #1d4ed8;
+        margin-right: 4px;
+      }
+      button {
+        font:
+          600 13px/1.4 system-ui,
+          sans-serif;
+        padding: 6px 12px;
+        border: 2px solid #1d4ed8;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1e3a8a;
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      .track {
+        position: relative;
+        height: 56px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .track.bad {
+        border: 3px solid #b91c1c;
+        background: #fff5f5;
+      }
+      .track.good {
+        border: 3px solid #15803d;
+        background: #f0fdf4;
+      }
+      .box {
+        position: absolute;
+        inset-block-start: 8px;
+        inset-inline-start: 8px;
+        width: 70px;
+        height: 34px;
+        border-radius: 8px;
+        display: grid;
+        place-content: center;
+        font:
+          700 11px/1.2 ui-monospace,
+          Menlo,
+          monospace;
+        color: #fff;
+      }
+      .bad .box {
+        background: #b91c1c;
+      }
+      .good .box {
+        background: #15803d;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          13px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+      .flag {
+        margin: 10px 0 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 2px solid #b45309;
+        background: #fffbeb;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .flag[hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <button type="button" id="run">run both</button>
+      <label><input type="checkbox" id="busy" />make the main thread busy</label>
+    </div>
+
+    <h2>
+      Animating <code>inset-inline-start</code> and <code>width</code> &mdash; layout every frame
+    </h2>
+    <div class="track bad">
+      <div class="box" id="box-bad">left</div>
+    </div>
+
+    <h2>Animating <code>transform</code> &mdash; compositor only</h2>
+    <div class="track good">
+      <div class="box" id="box-good">transform</div>
+    </div>
+
+    <p class="flag" id="reduced" hidden>
+      prefers-reduced-motion is on, so both animations are held still. That is correct behaviour,
+      and it is why the readout below has no frame rates to report.
+    </p>
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const boxBad = document.getElementById('box-bad');
+      const boxGood = document.getElementById('box-good');
+      const run = document.getElementById('run');
+      const busy = document.getElementById('busy');
+      const out = document.getElementById('out');
+      const reducedFlag = document.getElementById('reduced');
+
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+      let running = false;
+      let frames = 0;
+      let dropped = 0;
+
+      function report(fps, worst) {
+        out.textContent =
+          '  frames drawn        ' +
+          frames +
+          '\n' +
+          '  average frame rate  ' +
+          (fps ? fps.toFixed(0) + ' fps' : 'not measured yet') +
+          '\n' +
+          '  longest frame       ' +
+          (worst ? worst.toFixed(1) + 'ms' : '—') +
+          '   (16.7ms is one frame at 60fps)\n' +
+          '  frames over budget  ' +
+          dropped +
+          '\n\n' +
+          (!busy.checked
+            ? '  On an idle machine these two look the same, and you should say so rather\n' +
+              '  than pretend otherwise. That is precisely why the slow one gets shipped.\n\n' +
+              '  Tick "make the main thread busy" and run it again. A real page has other\n' +
+              '  work going on; this demo normally does not.'
+            : '  Now the difference. Both animations want a frame every 16.7ms. The top\n' +
+              '  one has to redo LAYOUT and PAINT each time, because changing an inset or a\n' +
+              '  width means the browser no longer knows where anything is — that is the\n' +
+              '  pipeline from week 1, and this is the first time it costs you money.\n\n' +
+              '  The bottom one changes `transform`, which the compositor applies to an\n' +
+              '  existing layer. No layout, no paint, and on many machines not even the\n' +
+              '  main thread — so it keeps moving while everything else stutters.') +
+          '\n\n' +
+          '  THE RULE, and CA5 enforces it:\n' +
+          '    animate  transform and opacity (the compositor, no layout)\n' +
+          '    allowed  colour and shadow: no layout, but a repaint every frame --\n' +
+          '             fine for a short hover on a small element, not free\n' +
+          '    do not   width, height, top, left, margin, padding, or anything that\n' +
+          '             changes where other things are\n\n' +
+          '  A slide-in is translate, not left. A grow is scale, not width. A fade is\n' +
+          '  opacity. Almost every polish effect you want is one of those three.\n\n' +
+          '  And wrap anything that moves in prefers-reduced-motion, as this page does.';
+      }
+
+      function start() {
+        if (running) return;
+        if (reduced.matches) {
+          reducedFlag.hidden = false;
+          report(0, 0);
+          return;
+        }
+        reducedFlag.hidden = true;
+        running = true;
+        frames = 0;
+        dropped = 0;
+
+        const begin = performance.now();
+        let last = begin;
+        let worst = 0;
+        const DURATION = 2200;
+
+        const step = (now) => {
+          const delta = now - last;
+          last = now;
+          frames += 1;
+          if (frames > 1) {
+            worst = Math.max(worst, delta);
+            if (delta > 20) dropped += 1;
+          }
+
+          const t = Math.min(1, (now - begin) / DURATION);
+          const eased = 0.5 - Math.cos(t * Math.PI * 2) / 2;
+          const travel = Math.max(0, boxBad.parentElement.clientWidth - 86);
+
+          /* The expensive one: both of these invalidate layout. */
+          boxBad.style.insetInlineStart = 8 + eased * travel + 'px';
+          boxBad.style.width = 70 + eased * 30 + 'px';
+
+          /* The cheap one: same visual motion, composited. */
+          boxGood.style.transform =
+            'translateX(' + eased * travel + 'px) scaleX(' + (1 + eased * 0.43) + ')';
+
+          /* Real synchronous work on the main thread, so the comparison is not made
+             on an idle machine that flatters both. */
+          if (busy.checked) {
+            const until = performance.now() + 6;
+            let sink = 0;
+            while (performance.now() < until) sink += Math.sqrt(sink + 1);
+            if (sink < 0) boxBad.title = '';
+          }
+
+          if (t < 1) {
+            requestAnimationFrame(step);
+          } else {
+            running = false;
+            boxBad.style.insetInlineStart = '8px';
+            boxBad.style.width = '70px';
+            boxGood.style.transform = 'none';
+            report((frames / (now - begin)) * 1000, worst);
+          }
+        };
+
+        requestAnimationFrame(step);
+      }
+
+      run.addEventListener('click', start);
+      reduced.addEventListener('change', () => {
+        reducedFlag.hidden = !reduced.matches;
+      });
+      reducedFlag.hidden = !reduced.matches;
+      report(0, 0);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,303 @@
+<!doctype html>
+<!--
+  The inline-block whitespace gap. Embedded in the week-4 deck (act 2).
+
+  Three cards, width: 33.333%, display: inline-block, margin: 0, padding: 0. Three times
+  33.333 is 100, so they should fit. They do not, and the third one drops to a new line.
+
+  There is nothing wrong with the CSS. The gap is the SPACE AND NEWLINE between the
+  </div> and the next <div> in the source: an inline-block is an inline box, and inline
+  boxes are separated by whitespace exactly like words in a sentence are.
+
+  The four fixes below are the four that actually get used, and they are not equally good.
+  The readout measures the real gap each time, so "it went away" is a number, not a claim.
+
+  DEMO MOVE: with the default markup, ask the room to fix it. Someone will suggest making
+  the width smaller — do it, and point out that they have just guessed at the size of a
+  space in a font they do not control. Then show `font-size: 0`, and ask what happens to
+  any text inside a card (it disappears; the child has to set its own size back). Then
+  switch to flex and say the quiet part: this whole problem is why nobody lays out a row
+  with inline-block any more.
+
+  NOTHING HERE IS SIMULATED. The gap is measured between the real bounding boxes.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The inline-block whitespace gap</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      button {
+        font: inherit;
+        padding: 6px 12px;
+        border: 1px solid #7a8699;
+        border-radius: 999px;
+        background: #fff;
+        color: inherit;
+        cursor: pointer;
+      }
+      button[aria-pressed='true'] {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        color: #fff;
+      }
+      button:focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      /* The rail is exactly as wide as three 33.333% cards should be. */
+      .rail {
+        padding: 0;
+        border: 2px dashed #94a3b8;
+        border-radius: 8px;
+        background: #fff;
+      }
+      .row {
+        /* deliberately nothing here: the default is the bug */
+      }
+      .card {
+        display: inline-block;
+        width: 33.333%;
+        padding: 14px 8px;
+        background: #dbeafe;
+        border-block: 3px solid #1d4ed8;
+        color: #1e3a8a;
+        font-weight: 700;
+        text-align: center;
+        vertical-align: top;
+      }
+
+      /* ── fix 1 — kill the whitespace in the SOURCE (comments between the tags) ─────
+           handled in JS by rewriting the markup, because it is a markup fix, not a CSS one */
+
+      /* ── fix 2 — font-size: 0 on the parent, restored on the children ───────────── */
+      .row.zero {
+        font-size: 0;
+      }
+      .row.zero .card {
+        font-size: 15px;
+      }
+
+      /* ── fix 3 — pull the gap back with a negative margin ───────────────────────── */
+      .row.negative .card {
+        margin-inline-end: -4px;
+      }
+
+      /* ── fix 4 — stop using inline boxes. This is week 4's actual answer. ────────── */
+      .row.flex {
+        display: flex;
+      }
+      .row.flex .card {
+        flex: 1;
+        width: auto;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font: 13px/1.7 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        white-space: pre-wrap;
+      }
+      .verdict {
+        margin: 10px 0 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 2px solid #b91c1c;
+        background: #fef2f2;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .verdict.ok {
+        border-color: #15803d;
+        background: #dcfce7;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls" id="controls"></div>
+
+    <h2>Three cards at 33.333%, in a rail exactly wide enough for them</h2>
+    <div class="rail">
+      <div class="row" id="row">
+        <div class="card">one</div>
+        <div class="card">two</div>
+        <div class="card">three</div>
+      </div>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const row = document.getElementById('row');
+      const out = document.getElementById('out');
+      const verdict = document.getElementById('verdict');
+      const controls = document.getElementById('controls');
+
+      const pad = (v, n) => String(v).padStart(n, ' ');
+
+      /* The markup with whitespace between the divs (the bug) and without it (fix 1).
+         Kept as strings because fix 1 is the only one that is not a CSS change — and
+         saying that out loud is half the lesson. */
+      const SPACED =
+        '\n        <div class="card">one</div>\n' +
+        '        <div class="card">two</div>\n' +
+        '        <div class="card">three</div>\n      ';
+      const TIGHT =
+        '<div class="card">one</div><!--\n' +
+        '     --><div class="card">two</div><!--\n' +
+        '     --><div class="card">three</div>';
+
+      const MODES = [
+        {
+          id: 'bug',
+          label: 'the bug',
+          html: SPACED,
+          css: '',
+          note:
+            'Nothing is wrong with the CSS. The three cards are separated by the newline\n' +
+            'and indentation between the tags — an inline-block is an inline box, and\n' +
+            'inline boxes are separated by whitespace exactly like words are.',
+        },
+        {
+          id: 'tight',
+          label: 'fix 1 · remove the whitespace',
+          html: TIGHT,
+          css: '',
+          note:
+            'The tags now touch, with the newline hidden inside an HTML comment.\n' +
+            'It works, and it makes the markup unreadable. Every developer who\n' +
+            'reformats this file re-introduces the bug.',
+        },
+        {
+          id: 'zero',
+          label: 'fix 2 · font-size: 0',
+          html: SPACED,
+          css: 'zero',
+          note:
+            '.row { font-size: 0 } makes the separating space zero-width.\n' +
+            'The catch: it inherits, so every child has to set its size back —\n' +
+            'and anything you forget silently vanishes.',
+        },
+        {
+          id: 'negative',
+          label: 'fix 3 · negative margin',
+          html: SPACED,
+          css: 'negative',
+          note:
+            'margin-inline-end: -4px pulls the gap back. You have just hard-coded the\n' +
+            'width of a space in a font you do not control, at a size you may change.\n' +
+            'It is a guess that happens to be right today.',
+        },
+        {
+          id: 'flex',
+          label: 'fix 4 · display: flex',
+          html: SPACED,
+          css: 'flex',
+          note:
+            'The parent stops making inline boxes at all, so there is no whitespace to\n' +
+            'collapse and no gap to fight. The markup stays readable and the widths stop\n' +
+            'needing to add up to 100 by hand.\n\n' +
+            'This is what the rest of the lecture is about.',
+        },
+      ];
+
+      let current = MODES[0];
+
+      function apply(mode) {
+        current = mode;
+        row.className = 'row' + (mode.css ? ' ' + mode.css : '');
+        row.innerHTML = mode.html;
+
+        for (const button of controls.children) {
+          button.setAttribute('aria-pressed', String(button.dataset.id === mode.id));
+        }
+        measure();
+      }
+
+      function measure() {
+        const cards = [...row.querySelectorAll('.card')];
+        const boxes = cards.map((c) => c.getBoundingClientRect());
+
+        /* The gap is the real horizontal distance between card 1's right edge and
+           card 2's left edge. Cards 1 and 2 share a line even in the bug state — which
+           is exactly why this number is worth printing there: it is the whole
+           explanation of why card 3 had nowhere to go. */
+        const wrapped = Math.round(boxes[0].top) !== Math.round(boxes[2].top);
+        const sameLine = Math.round(boxes[0].top) === Math.round(boxes[1].top);
+        const gap = sameLine ? Math.round((boxes[1].left - boxes[0].right) * 100) / 100 : null;
+        const total = Math.round(boxes.reduce((sum, b) => sum + b.width, 0));
+        const rail = Math.round(row.getBoundingClientRect().width);
+
+        verdict.className = wrapped ? 'verdict' : 'verdict ok';
+        verdict.textContent = wrapped
+          ? 'The third card wrapped to a second line.'
+          : 'All three fit on one line.';
+
+        out.textContent =
+          '  three cards      ' +
+          pad(total, 5) +
+          'px  (3 × 33.333%)\n' +
+          '  two gaps         ' +
+          pad(gap === null ? '?' : Math.round(gap * 2 * 100) / 100, 5) +
+          'px  (' +
+          (gap === null ? '—' : gap + 'px between each pair') +
+          ')\n' +
+          '  ————————————————————\n' +
+          '  needed           ' +
+          pad(gap === null ? '?' : Math.round(total + gap * 2), 5) +
+          'px\n' +
+          '  the rail is      ' +
+          pad(rail, 5) +
+          'px\n\n' +
+          current.note;
+      }
+
+      for (const mode of MODES) {
+        const button = document.createElement('button');
+        button.textContent = mode.label;
+        button.dataset.id = mode.id;
+        button.addEventListener('click', () => apply(mode));
+        controls.append(button);
+      }
+
+      addEventListener('resize', measure);
+      apply(MODES[0]);
+    </script>
+  </body>
+</html>

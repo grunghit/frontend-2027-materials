@@ -1,0 +1,81 @@
+<!doctype html>
+<!--
+  AI cycle 4 — "make it responsive". The same page in all three folders:
+  start/ (as it was pasted), claude-p1/ (what came back for P1) and claude-p2/
+  (what came back for P2). Only styles.css differs. Open each one at 375, 768,
+  1100 and 1280 — and drag slowly between them.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Riverside Library &mdash; desk view</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="branch">
+      <header class="masthead">
+        <p class="logo">Riverside Library &middot; desk view</p>
+        <p class="who">Signed in: Eastgate desk</p>
+      </header>
+
+      <nav class="menu" aria-label="Desk">
+        <ul>
+          <li><a href="#main" aria-current="page">Today</a></li>
+          <li><a href="#main">Loans</a></li>
+          <li><a href="#main">Holds</a></li>
+          <li><a href="#main">Members</a></li>
+          <li><a href="#main">Rooms</a></li>
+        </ul>
+      </nav>
+
+      <main class="desk" id="main">
+        <h1>Eastgate, today</h1>
+        <p class="lede">Four numbers the desk looks at before it opens, and the queue after it does.</p>
+
+        <section class="figures" aria-label="This month in numbers">
+          <article class="figure">
+            <h2>Loans</h2>
+            <p class="figure-value">12,480</p>
+            <p class="figure-note">this month</p>
+          </article>
+          <article class="figure">
+            <h2>Returns</h2>
+            <p class="figure-value">11,906</p>
+            <p class="figure-note">this month</p>
+          </article>
+          <article class="figure">
+            <h2>Holds</h2>
+            <p class="figure-value">1,284</p>
+            <p class="figure-note">waiting on the trolley</p>
+          </article>
+          <article class="figure">
+            <h2>Visitors</h2>
+            <p class="figure-value">23,517</p>
+            <p class="figure-note">through the door</p>
+          </article>
+        </section>
+
+        <section class="queue" aria-labelledby="queue-title">
+          <h2 id="queue-title">Waiting at the desk</h2>
+          <ol>
+            <li>Two holds to collect, one overdue</li>
+            <li>A room booking for the homework club</li>
+            <li>A new member, and a library card to print</li>
+          </ol>
+        </section>
+      </main>
+
+      <aside class="notices" aria-labelledby="notices-title">
+        <h2 id="notices-title">Notices</h2>
+        <p>The lift is out until Thursday. Send anyone who needs it to the side entrance.</p>
+        <p>Story time moves to the big room this week.</p>
+      </aside>
+
+      <footer class="colophon">
+        <p>Riverside Library &middot; Eastgate &middot; desk view</p>
+      </footer>
+    </div>
+  </body>
+</html>

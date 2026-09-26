@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+  AI cycle 4 · the answer to P2 (transcript.md, "## Claude — P2"), completed into the whole
+  page the answer points at (header, main, the h1 in the brand colour, all three cards). P2
+  asked for vendor/tailwind.js by name, so there was no line to swap. Measured in
+  checkpoint-he.md.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Film club — highlights</title>
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+      }
+    </style>
+  </head>
+  <body class="bg-white text-slate-900">
+    <header class="mx-auto max-w-6xl px-4 pt-6">
+      <p class="text-lg font-bold">Film club</p>
+    </header>
+    <main class="mx-auto max-w-6xl px-4 py-12">
+      <h1 class="text-3xl font-bold text-brand-500">This term at the film club</h1>
+
+      <section aria-labelledby="highlights" class="mt-8">
+        <h2 id="highlights" class="sr-only">Highlights</h2>
+        <ul class="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3">
+          <li class="rounded-xl border border-slate-300 p-6">
+            <h3 class="text-lg font-semibold">Twelve films</h3>
+            <p class="mt-2 text-slate-600">One a week, Thursdays at eight, in Hall B.</p>
+            <a
+              href="#programme"
+              class="mt-4 inline-block rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >See the programme</a
+            >
+          </li>
+          <li class="rounded-xl border border-slate-300 p-6">
+            <h3 class="text-lg font-semibold">Introduced by students</h3>
+            <p class="mt-2 text-slate-600">Three of the films come with a ten-minute introduction.</p>
+            <a
+              href="#introductions"
+              class="mt-4 inline-block rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >Who is speaking</a
+            >
+          </li>
+          <li class="rounded-xl border border-slate-300 p-6">
+            <h3 class="text-lg font-semibold">84 seats</h3>
+            <p class="mt-2 text-slate-600">Members book first; the rest open on Tuesday.</p>
+            <a
+              href="#seats"
+              class="mt-4 inline-block rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white motion-safe:transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >Book a seat</a
+            >
+          </li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

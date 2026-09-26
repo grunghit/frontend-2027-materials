@@ -4,7 +4,7 @@
  * The grader imports it as it is, and every check below assumes these six ids in this
  * order. Adding a seventh is not a bonus; it is a failing test.
  *
- * `id` is a stable string and never an array index — week 9's rule, and here it earns
+ * `id` is a stable string and never an array index — week 10's rule, and here it earns
  * its keep twice more: it is the cache key inside the payload, and it is what a
  * `data-city` attribute carries.
  */

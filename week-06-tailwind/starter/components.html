@@ -1,0 +1,299 @@
+<!doctype html>
+<!--
+  CA6, part two — the component set. THIS IS YOUR STARTING POINT.
+
+  This page is the SINGLE SOURCE for every repeated piece of UI in the assignment. Each
+  component gets written out exactly once, here. Every use of it anywhere else — on the
+  dashboard, on the TinDog page — is a COPY of the line on this page.
+
+  That is the whole discipline of this half of the assignment, and it is measured: the
+  checker fingerprints every instance of every component by its computed styles, and the
+  row fails if two of them disagree.
+
+  ── Why not @apply
+
+  Because `@apply` moves the declarations into a stylesheet, and `demos/10-apply-trap/`
+  measures what that costs — the invented names come back, the dead rules come back, the
+  specificity fights come back. It also solves the wrong half: six `<button class="btn">`
+  is still six copies of the markup, and the one that lost its modifier still looks
+  perfect until somebody clicks it.
+
+  A gallery page solves the right half. One place a component is DEFINED, one place to
+  change it. In week 10 this page becomes a set of functions and the discipline becomes a
+  mechanism — see `demos/09-extraction/`, third panel.
+
+  ── What to build
+
+    Button    primary · secondary · ghost · danger · plus a disabled state
+    Card      the SAME class list the six .kpi cards on the dashboard use
+    Badge     three tones, and none of them may rely on colour alone
+    Field     label + input + hint, and a second one in an error state
+
+  Each one must work in BOTH colour ramps. Switch your operating system to dark mode and
+  look at this page again — that is the whole test, and there is no toggle button because
+  a toggle needs JavaScript.
+
+  The `data-component="…"` attributes are already in place. They are how the checker
+  groups instances; leave them alone.
+
+  ── Two things are given
+
+    1. The `@theme` block. Identical to the one on index.html, character for character.
+    2. Nothing else. This page is where you show you can do it without a worked example.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signal &mdash; component set</title>
+
+    <script src="vendor/tailwind.js"></script>
+
+    <!--
+      IDENTICAL to the block in index.html, character for character. With no build step
+      there is nowhere shared to put it. That duplication is a real cost of the
+      constraint and it is worth noticing: it is the same problem the rest of this page
+      exists to solve, in the one place the tools cannot solve it.
+    -->
+    <style type="text/tailwindcss">
+      @theme {
+        --spacing: 0.25rem;
+
+        /* Ground and surfaces — light ramp */
+        --color-page: hsl(0 0% 100%);
+        --color-surface: hsl(222 44% 98%);
+        --color-surface-2: hsl(222 38% 95%);
+        --color-edge: hsl(222 22% 82%);
+
+        /* Text */
+        --color-ink: hsl(222 47% 11%);
+        --color-ink-muted: hsl(222 20% 34%);
+        --color-ink-faint: hsl(222 16% 44%);
+
+        /* The course indigo, as a ramp */
+        --color-brand-100: hsl(234 100% 96%);
+        --color-brand-300: hsl(234 100% 78%);
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+
+        /* Dark ramp. A second set of decisions under the same 4.5:1 constraint —
+           not an inversion. The brand moves 500 -> 300 because 500 on a near-black
+           ground is about 3:1, which is legal for a border and illegal for a word. */
+        --color-page-dark: hsl(222 30% 9%);
+        --color-surface-dark: hsl(222 26% 13%);
+        --color-surface-2-dark: hsl(222 24% 17%);
+        --color-edge-dark: hsl(222 18% 30%);
+        --color-ink-dark: hsl(210 30% 96%);
+        --color-ink-muted-dark: hsl(214 18% 76%);
+        --color-ink-faint-dark: hsl(214 14% 64%);
+      }
+    </style>
+  </head>
+
+  <body class="CODE-HERE">
+    <main class="CODE-HERE">
+      <header class="CODE-HERE">
+        <div>
+          <h1 class="CODE-HERE">Component set</h1>
+          <p class="CODE-HERE">
+            Every repeated piece of UI in this project, defined once. Copy from here; never
+            edit a copy. Switch your operating system to dark mode and check this page again
+            &mdash; both ramps have to work.
+          </p>
+        </div>
+        <a
+          class="CODE-HERE"
+          href="index.html"
+          >Back to the dashboard</a
+        >
+      </header>
+
+      <!-- ── BUTTONS ──────────────────────────────────────────────────────── -->
+      <section
+        class="CODE-HERE"
+        aria-labelledby="buttons-title"
+      >
+        <h2 id="buttons-title" class="CODE-HERE">Button</h2>
+        <p class="CODE-HERE">
+          Four variants and a disabled state. Everything except the colour block is shared,
+          which is why they line up without anyone measuring.
+        </p>
+
+        <div class="CODE-HERE">
+          <button
+            type="button"
+            data-component="button-primary"
+            class="CODE-HERE"
+          >
+            Renew now
+          </button>
+
+          <button
+            type="button"
+            data-component="button-secondary"
+            class="CODE-HERE"
+          >
+            Details
+          </button>
+
+          <button
+            type="button"
+            data-component="button-ghost"
+            class="CODE-HERE"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            data-component="button-danger"
+            class="CODE-HERE"
+          >
+            Delete service
+          </button>
+
+          <button
+            type="button"
+            data-component="button-primary"
+            disabled
+            class="CODE-HERE"
+          >
+            Renew now
+          </button>
+        </div>
+
+        <p class="CODE-HERE">
+          The disabled one carries the primary class list plus <code>disabled:</code>. It is
+          the same component in a state, not a fifth variant &mdash; which is why it is not
+          allowed to drift from the first button.
+        </p>
+      </section>
+
+      <!-- ── CARD ─────────────────────────────────────────────────────────── -->
+      <section
+        class="CODE-HERE"
+        aria-labelledby="card-title"
+      >
+        <h2 id="card-title" class="CODE-HERE">Card</h2>
+        <p class="CODE-HERE">
+          This is the same class list the six <code>.kpi</code> cards on the dashboard use.
+          If you change it here, change it there &mdash; the grader compares them.
+        </p>
+
+        <div class="CODE-HERE">
+          <article
+            data-component="card"
+            class="CODE-HERE"
+          >
+            <h3 class="CODE-HERE">Requests</h3>
+            <p class="CODE-HERE">1.42M</p>
+            <p class="CODE-HERE">Median, end to end.</p>
+            <p class="CODE-HERE">updated 2 min ago</p>
+          </article>
+
+          <article
+            data-component="card"
+            class="CODE-HERE"
+          >
+            <h3 class="CODE-HERE">Latency</h3>
+            <p class="CODE-HERE">86ms</p>
+            <p class="CODE-HERE">Peak worker pool.</p>
+            <p class="CODE-HERE">updated 5 min ago</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── BADGE ────────────────────────────────────────────────────────── -->
+      <section
+        class="CODE-HERE"
+        aria-labelledby="badge-title"
+      >
+        <h2 id="badge-title" class="CODE-HERE">Badge</h2>
+        <p class="CODE-HERE">
+          Three tones. Note that none of them relies on colour alone &mdash; each carries a
+          word, because a colour is not information to everyone who reads this page.
+        </p>
+
+        <div class="CODE-HERE">
+          <span
+            data-component="badge-ok"
+            class="CODE-HERE"
+            >Healthy</span
+          >
+          <span
+            data-component="badge-warn"
+            class="CODE-HERE"
+            >Degraded</span
+          >
+          <span
+            data-component="badge-bad"
+            class="CODE-HERE"
+            >Down</span
+          >
+        </div>
+      </section>
+
+      <!-- ── FORM FIELD ───────────────────────────────────────────────────── -->
+      <section
+        class="CODE-HERE"
+        aria-labelledby="field-title"
+      >
+        <h2 id="field-title" class="CODE-HERE">Form field</h2>
+        <p class="CODE-HERE">
+          Label, control, hint and error. The hint and the error are wired to the input with
+          <code>aria-describedby</code>, so a screen reader announces them &mdash; putting the
+          text next to the box is not the same as attaching it.
+        </p>
+
+        <div class="CODE-HERE">
+          <div data-component="field" class="CODE-HERE">
+            <label class="CODE-HERE" for="alert-email">Alert email</label>
+            <input
+              class="CODE-HERE"
+              type="email"
+              id="alert-email"
+              name="alert-email"
+              aria-describedby="alert-email-hint"
+              placeholder="ops@example.com"
+            />
+            <p id="alert-email-hint" class="CODE-HERE">
+              We only write when a deploy fails.
+            </p>
+          </div>
+
+          <div data-component="field" class="CODE-HERE">
+            <label class="CODE-HERE" for="threshold">Error threshold</label>
+            <input
+              class="CODE-HERE"
+              type="text"
+              id="threshold"
+              name="threshold"
+              value="ten percent"
+              aria-describedby="threshold-error"
+              aria-invalid="true"
+            />
+            <p
+              id="threshold-error"
+              class="CODE-HERE"
+            >
+              Enter a number between 0 and 100. &ldquo;ten percent&rdquo; is not a number.
+            </p>
+          </div>
+        </div>
+
+        <p class="CODE-HERE">
+          The error state changes the border <em>and</em> says what is wrong in words. A red
+          outline on its own tells a colour-blind user nothing and a screen-reader user
+          nothing at all.
+        </p>
+      </section>
+
+      <footer class="CODE-HERE">
+        <p class="CODE-HERE">
+          Signal &middot; component set &middot; week 6. In week 10 every one of these becomes a
+          function, and copying stops being a step anyone can forget.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

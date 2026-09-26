@@ -1,0 +1,719 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CA5 — GRID AND RESPONSIVE.
+
+   Two pages, one stylesheet. warmup.html is part one; index.html is part two.
+   Both are finished markup and neither should be edited.
+
+   ── HOW THIS FILE WORKS
+   Every place you write something is marked `CODE HERE`. When there are no CODE
+   HERE markers left above the {stretch} banner, you have finished the core tier.
+
+   ── SECTIONS 1 AND 2 ARE ALREADY DONE
+   The reset, the tokens and the type scale are given. You may paste your own token
+   set from week 3 instead, or just change `--hue-brand` and make the page yours.
+   Neither is graded this week — colour was week 3's subject.
+
+   ── THE ORDER BELOW IS NOT DECORATION. WORK DOWN IT.
+
+     1  reset and tokens ........................ done for you
+     2  type ..................................... done for you
+     3  the painting ............................. {core}   <- you start here
+     4  the board ................................ {core}
+     5  the page shell, three ways ............... {core}   the heart of the week
+     6  the regions .............................. done for you
+     7  the card row ............................. {core}
+     8  the panel ................................ done for you
+     9  the status board ......................... {stretch}
+    10  polish ................................... {stretch}
+    11  the challenge tier ....................... {challenge}
+
+   ── WHAT IS FORBIDDEN THIS WEEK, AND WHY
+
+     no  @media (max-width: …)   Mobile-first only. Every width query in this file
+                                 must be min-width. This is the one constraint that
+                                 is really about how you think, and the grader
+                                 checks it: a single max-width query costs the mark
+                                 even if the page looks right.
+     no  fixed height on a       A layout region is as tall as what is in it. The
+         layout region           moment you write `height: 400px` on something that
+                                 holds text, you have built a page that breaks in a
+                                 language whose words are longer than English.
+     no  Tailwind                Week 6.
+     no  JavaScript              Week 8. Nothing on this page needs it.
+     no  transition on width,    Week 5 cycle 5, and demos/10-motion. These make
+         height, top, left,      the browser redo layout on every frame. Prefer
+         margin or padding —     transform and opacity (the compositor, no layout);
+         or `transition: all`    colour and shadow are allowed (no layout, but a
+                                 repaint every frame). `all` covers the layout ones
+                                 too, and so does a bare duration: `transition:
+                                 200ms` IS `transition: all 200ms`.
+     no  !important              If you need it, a selector above is wrong.
+
+   ── HOW IT IS MARKED
+   The grader measures the RENDERED PAGE at 375, 768 and 1280 — where boxes
+   actually are, how many columns they actually form, what the browser actually
+   resolved your tracks to. It does not read this file looking for property names,
+   so there is no phrase to guess and no way to score by writing a declaration that
+   does nothing.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   1 — RESET AND TOKENS                                               done for you
+   ──────────────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* One hue drives the whole page, as in week 3. Change this number. */
+  --hue-brand: 234;
+
+  --color-bg: hsl(var(--hue-brand) 30% 98%);
+  --color-surface: hsl(0 0% 100%);
+  --color-surface-2: hsl(var(--hue-brand) 34% 96%);
+  --color-border: hsl(var(--hue-brand) 20% 86%);
+  --color-text: hsl(var(--hue-brand) 40% 14%);
+  --color-text-muted: hsl(var(--hue-brand) 14% 38%);
+  --color-accent: hsl(var(--hue-brand) 74% 44%);
+  --color-accent-ink: hsl(0 0% 100%);
+  --color-accent-soft: hsl(var(--hue-brand) 90% 96%);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --measure: 62ch;
+  --duration: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* The painting's palette, from the original exercise. */
+  --mondrian-line: #232629;
+  --mondrian-white: #f0f1ec;
+  --mondrian-red: #e72f24;
+  --mondrian-blue: #004592;
+  --mondrian-yellow: #f9d01e;
+
+  --board-light: #f0d9b5;
+  --board-dark: #b58863;
+}
+
+/* Reduced motion goes through the token, so section 10 needs no !important and
+   there is exactly one place to change. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration: 0ms;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  line-height: 1.55;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 2;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   2 — TYPE                                                           done for you
+
+   The headline is fluid. Note the `rem` term inside clamp(): without it the
+   heading ignores the reader's own font-size setting, which is an accessibility
+   failure and not a matter of taste. See demos/08-responsive/02-clamp.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+h1 {
+  margin: 0 0 var(--space-2);
+  font-size: clamp(1.6rem, 1rem + 2.2vw, 2.6rem);
+  line-height: 1.15;
+}
+
+h2 {
+  margin: 0 0 var(--space-2);
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.lede {
+  margin: 0 0 var(--space-5);
+  max-width: var(--measure);
+  color: var(--color-text-muted);
+}
+
+.kicker {
+  margin: 0 0 var(--space-1);
+  font: 700 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   FROM HERE DOWN IS YOURS.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   3 — THE PAINTING                                                        {core}
+
+   images/warmups.png shows what you are aiming at, and
+   shared/legacy-assets/grid-targets/mondrian/dimensions.png has the measurements
+   the original exercise was written from:
+
+     columns   320  198  153  50          gap  9px
+     rows      414  130  155  22
+
+   THOSE ARE THE PROPORTIONS, NOT THE ANSWER. A painting written in pixels exists
+   at exactly one size. Yours has to be the same painting on a phone, which means
+   the tracks are fractions — and `fr` accepts any number, not only 1.
+
+   Keep it square without writing a single height.
+
+   The black lines are not borders and there is no element for any of them. Look
+   at what is behind the gap.
+
+   3.1  the container: the two track lists, the gap, the size, and the thing the
+        lines are actually made of.
+   3.2  the nine regions. Each one is placed by LINE. The `grid-area` shorthand
+        takes row-start / column-start / row-end / column-end, and the picture is
+        four columns by four rows, so the lines run 1 to 5 in both directions.
+
+        Work out the placements from the target image. There are nine regions and
+        sixteen cells, so most regions cover more than one.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.mondrian {
+  /* CODE HERE — 3.1 */
+}
+
+.mondrian > * {
+  background: var(--mondrian-white);
+}
+
+/* CODE HERE — 3.2: nine rules, one per region. The class names are in warmup.html
+   and they say where each one goes: m-red, m-white-top, m-white-left,
+   m-white-centre, m-blue, m-white-right, m-white-foot, m-yellow, m-black.
+   Three of them also need a background from the token set above. */
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   4 — THE BOARD                                                           {core}
+
+   Eight columns, sixty-four squares, and not one class in the markup.
+
+   4.1  the container: eight equal columns. There is a function that saves you
+        writing the same track eight times.
+   4.2  the squares: they must STAY square at every width. The original solution
+        wrote `width: 100px; height: 100px`, which is square at one window size
+        and a grid of rectangles at every other. There is a property that means
+        "whatever my width turns out to be, be that tall".
+        Give them the dark colour here.
+   4.3  the light squares.
+
+        WARNING, AND IT IS THE POINT OF THIS EXERCISE:
+        `:nth-child(odd)` DOES NOT WORK. Try it first — it takes ten seconds and
+        the result is worth seeing. You will get vertical stripes, because on a
+        board of EVEN width every row starts on the same parity as the row above.
+
+        Think about how many squares it takes to get back to where you started.
+        It is not 2 and it is not 8.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.board {
+  /* CODE HERE — 4.1. A 3px border in --mondrian-line finishes it off. */
+}
+
+.board > * {
+  /* CODE HERE — 4.2 */
+}
+
+/* CODE HERE — 4.3: the light squares. */
+
+/* Warm-up page chrome — given, not graded. */
+.warmups {
+  padding: var(--space-5) var(--space-4) var(--space-6);
+}
+
+.warmups .page-head,
+.warmups main,
+.warmups .page-foot {
+  max-width: 70rem;
+  margin-inline: auto;
+}
+
+.warmups main {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 64em) {
+  .warmups main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.task p {
+  max-width: var(--measure);
+  color: var(--color-text-muted);
+}
+
+.page-foot {
+  margin-block-start: var(--space-6);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   5 — THE PAGE SHELL                                                      {core}
+
+   This is the heart of the week. Five regions, three arrangements, and the whole
+   thing is three pictures.
+
+   Look at images/target-375.png, target-768.png and target-1280.png in that
+   order. Notice that it is the SAME five regions every time — nothing appears and
+   nothing disappears. Only the arrangement changes.
+
+   5.1  THE BASE. No media query. This is what a phone gets, and it is also what
+        everything else starts from.
+        One column. Five rows. Name them.
+
+        One thing to decide deliberately: in the markup the side nav comes BEFORE
+        the main region, because that is the right reading order for somebody
+        using a screen reader. On a phone you probably want the content first
+        visually. Grid lets the picture disagree with the source order, and this
+        is one of the few places where that is legitimate rather than a bug.
+
+   5.2  The regions themselves. Each one claims a NAME and says nothing about
+        lines or numbers — which is what makes 5.3 and 5.4 three lines each
+        instead of thirty.
+
+   5.3  The first breakpoint. Two columns: a narrow side nav beside the main
+        column, with the masthead, the activity list and the footer full width.
+
+   5.4  The second breakpoint. Three columns: side nav, main, activity, with the
+        masthead and footer still full width.
+
+   WHERE DO THE BREAKPOINTS GO?
+   Not at a phone width. Not at 768 because a table on the internet said so.
+   Make the window narrow, then widen it slowly until the layout starts wasting
+   space or the text gets too wide to read — THAT is where the query goes, and the
+   number will be yours rather than a device's. Two breakpoints is enough.
+
+   Use `em` rather than `px` for the query itself, so the breakpoint moves with a
+   reader who has set a larger default font.
+
+   AND REMEMBER THE ONE RULE: min-width only.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.layout {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  max-width: 90rem;
+  margin-inline: auto;
+
+  /* CODE HERE — 5.1: the one-column picture, and the column track. */
+}
+
+/* CODE HERE — 5.2: five rules. The classes are .site-header, .side-nav, .main,
+   .activity and .site-footer. Each one gets exactly one declaration. */
+
+/* CODE HERE — 5.3: the first breakpoint. */
+
+/* CODE HERE — 5.4: the second breakpoint. */
+
+/* ────────────────────────────────────────────────────────────────────────────
+   6 — THE REGIONS                                                    done for you
+
+   Surfaces, padding and the inside of each region. Note two things while you
+   read it, because both are graded by eye:
+
+   · the masthead is `display: flex`, not grid. It is a component with two things
+     on one axis, and reaching for Grid here is the mistake this week is most
+     likely to plant in you.
+   · nothing in this section has a height.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.site-header,
+.side-nav,
+.activity,
+.panel,
+.media,
+.site-footer {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.brand {
+  margin: 0;
+  font: 700 1.2rem/1.2 var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+.top-nav ul,
+.side-nav ul,
+.activity ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.top-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.side-nav-title {
+  margin: 0 0 var(--space-2);
+  font: 700 0.72rem/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.side-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.side-nav a {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.side-nav a:hover {
+  background: var(--color-accent-soft);
+}
+
+.side-nav a.is-current {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+@media (min-width: 40em) {
+  .side-nav ul {
+    flex-direction: column;
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+.activity li {
+  padding-block: var(--space-2);
+  border-block-end: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.activity li:last-child {
+  border-block-end: 0;
+}
+
+.activity time {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-accent);
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   7 — THE CARD ROW                                                        {core}
+
+   Six cards today. It has to work with four, or nine, or one, and it must do it
+   WITHOUT A MEDIA QUERY.
+
+   7.1  the row. Two decisions: how many tracks, and how wide.
+
+        For the count there is a keyword that means "as many as fit". There are
+        two of them and they are not the same — demos/04-auto-fit-fill exists
+        entirely because everybody gets this wrong. Pick the one that makes a
+        short row of cards fill the width rather than leaving empty tracks
+        standing, and be ready to say why in one sentence.
+
+        For the width there is a function that takes a floor and a ceiling. Below
+        about 15rem these cards stop being readable, so that is the floor.
+
+   7.2  the card. THIS IS A COMPONENT, NOT A PAGE. One axis, things stacked,
+        and the little grey footer line has to sit at the BOTTOM of every card
+        even though the notes above it are different lengths.
+
+        That is Flexbox, and it is the same trick you used for the pricing cards
+        last week. Using Grid here is not a disaster, but it is the wrong tool
+        and it is a mark.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.kpis {
+  gap: var(--space-4);
+  margin-block-end: var(--space-5);
+
+  /* CODE HERE — 7.1 */
+}
+
+.kpi {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  min-width: 0;
+  gap: var(--space-1);
+
+  /* CODE HERE — 7.2: make it a column, and make one of its children take the
+     slack so the footer is pushed down. */
+}
+
+.kpi h2 {
+  margin: 0;
+  font: 700 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.kpi-value {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.1;
+
+  /* CODE HERE — {stretch}: make this number fluid, the way h1 in section 2 is.
+     Between about 1.5rem and 2.1rem is right for these cards.
+
+     Keep a `rem` term in the middle argument. A preferred value made only of
+     `vw` ignores the reader's own font-size setting completely, which is an
+     accessibility failure rather than a matter of taste — see
+     demos/08-responsive/02-clamp, where you can watch it fail. */
+  font-size: 1.6rem;
+}
+
+.kpi-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.kpi-foot {
+  margin: 0;
+  padding-block-start: var(--space-2);
+  border-block-start: 1px solid var(--color-border);
+  font: 0.75rem/1.4 var(--font-mono);
+  color: var(--color-text-muted);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   8 — THE PANEL AND THE TABLE                                        done for you
+
+   Note the `overflow-x: auto` on the panel. A table does not shrink politely, so
+   it is allowed to scroll inside its own box rather than push the whole page
+   sideways. Horizontal scroll on the PAGE is a fault; horizontal scroll inside a
+   table is a feature.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.panel {
+  margin-block-end: var(--space-5);
+  overflow-x: auto;
+}
+
+.panel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.panel caption {
+  margin-block-end: var(--space-2);
+  text-align: start;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.panel th,
+.panel td {
+  padding: var(--space-2) var(--space-3);
+  border-block-end: 1px solid var(--color-border);
+  text-align: start;
+}
+
+.panel thead th {
+  font: 700 0.72rem/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.panel td {
+  font-family: var(--font-mono);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   9 — THE STATUS BOARD                                                 {stretch}
+
+   Three pictures of three different shapes. Right now the tall one drags the
+   whole row taller than it needs to be, and the images arrive at whatever size
+   they feel like.
+
+   9.1  the row: same idea as the card row, with a smaller floor.
+   9.2  the images. TWO properties doing TWO different jobs, and they are the
+        most-confused pair in this whole week:
+          · one decides how big the BOX is, and reserves it before the picture
+            has downloaded — which is what stops the page jumping.
+          · the other decides what happens to the PICTURE inside a box of the
+            wrong shape. Without it, the tall one is squashed.
+        Use both. 3 / 2 is a good box.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.media {
+  margin-block-end: var(--space-5);
+}
+
+.media-row {
+  gap: var(--space-4);
+
+  /* CODE HERE — 9.1 */
+}
+
+.shot {
+  margin: 0;
+  min-width: 0;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+
+  /* CODE HERE — 9.2 */
+}
+
+.shot figcaption {
+  padding-block-start: var(--space-2);
+  font: 0.8rem/1.4 var(--font-mono);
+  color: var(--color-text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   10 — POLISH                                                          {stretch}
+
+   Give the cards a hover state that lifts them slightly, and the nav links a
+   colour that fades in.
+
+   THE CONSTRAINT IS THE LESSON. Prefer `transform` and `opacity` — the compositor
+   moves a layer, no layout. `box-shadow` and colour are allowed: no layout, but a
+   repaint every frame, so keep them to a short hover. You may NOT transition width,
+   height, an inset or a margin — those force the browser to redo layout and paint
+   on every single frame, and the grader checks for it. demos/10-motion measures the difference.
+   `transition: all` fails too, and so does a duration with no property — `transition:
+   200ms` means `all 200ms`. Name the properties you animate.
+
+   Use `var(--duration)`, which a reduced-motion query at the top of this file
+   already sets to zero. That is why nothing here needs !important.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* CODE HERE — 10: a transition and a hover state for .kpi, and a transition for
+   .side-nav a and .top-nav a. */
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   11 — THE CHALLENGE TIER                                            {challenge}
+
+   Two independent pieces. Do either, or both, or neither.
+
+   11.1  MAKE THE FIRST CARD WIDE, AND LEAVE NO HOLE.
+         .kpi--featured should span two tracks once there is more than one track
+         to span — so it belongs inside a breakpoint, not in the base.
+
+         That leaves a gap somewhere in the row. There is a value of
+         `grid-auto-flow` that lets a later, smaller card climb back up into it.
+
+         It has a real cost: it changes the VISUAL order without changing the DOM,
+         so what somebody sees and what somebody tabs through stop matching. Write
+         a one-line comment saying why that is acceptable here. It would not be
+         acceptable in a form, and knowing the difference is the actual skill.
+
+   11.2  MAKE THE FOOTERS LINE UP ACROSS THE WHOLE ROW.
+         Your Flexbox card already pushes its own footer to its own bottom. Inside
+         a grid row the cards are equal height anyway, so this mostly looks right
+         already — until a card has much more text than its neighbours.
+
+         `subgrid` makes a card take its ROWS from the row track it sits in
+         instead of from its own content, so every card's value line, note and
+         footer sit on shared rows.
+
+         Wrap it in `@supports (grid-template-rows: subgrid)` so that a browser
+         without it keeps your Flexbox version, which is already good. That is
+         progressive enhancement, and it is worth a mark on its own.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* CODE HERE — 11.1 */
+
+/* CODE HERE — 11.2 */

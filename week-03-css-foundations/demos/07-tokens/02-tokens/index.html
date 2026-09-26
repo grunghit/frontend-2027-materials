@@ -1,0 +1,189 @@
+<!doctype html>
+<!--
+  Design tokens — stage 2 of 3. Byte-for-byte the same page. Every value now has a name.
+
+  The rules below did not get cleverer. They got HONEST: each one now says what it wants
+  ("the accent colour", "one step of space") instead of what it happens to be today.
+
+  Four families, and the whole course uses these four names:
+
+      --color-*    what things are coloured with
+      --space-*    every gap, in steps, not in one-off numbers
+      --radius-*   how round a corner is
+      --font-*     the family, and the sizes as a scale rather than a list
+
+  The spacing scale is not decoration. Five arbitrary numbers (13, 15, 18, 22, 26) became
+  four steps, and "a bit more air" is now one edit instead of a hunt.
+
+  DEMO MOVE: the same request as stage 1 — "make it purple". One line, line 30. Then
+  "more air" — change --space-5 and the whole page breathes together.
+
+  This is the shape the week-3 assignment asks for, and the shape shared/tokens.css uses
+  for every deck and demo in this course. Open that file next to this one.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruppin Coffee Club — tokens</title>
+    <style>
+      /* ── The tokens. One place. Every decision the page makes. ─────────────── */
+      :root {
+        /* Colour, in hsl, so the ramp is one number apart rather than three
+           unrelated hex codes. Same hue in every row. */
+        --color-bg: hsl(0 0% 100%);
+        --color-surface: hsl(210 40% 98%);
+        --color-border: hsl(214 25% 86%);
+        --color-text: hsl(215 25% 13%);
+        --color-text-muted: hsl(215 14% 40%);
+        --color-accent: hsl(175 77% 26%);
+        --color-accent-strong: hsl(175 79% 21%);
+
+        /* Space, as a scale. Steps, not numbers. */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.5rem;
+        --space-6: 2rem;
+
+        /* Shape. */
+        --radius-md: 12px;
+
+        /* Type. One family, and a scale with a ratio rather than four opinions. */
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-size-sm: 0.875rem;
+        --font-size-base: 1.0625rem;
+        --font-size-lg: 1.375rem;
+        --font-size-xl: 1.875rem;
+
+        --leading-tight: 1.15;
+        --leading-normal: 1.6;
+
+        --measure: 62ch;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: var(--space-6) var(--space-5);
+        font-family: var(--font-sans);
+        font-size: var(--font-size-base);
+        line-height: var(--leading-normal);
+        color: var(--color-text);
+        background: var(--color-bg);
+      }
+
+      header {
+        max-width: var(--measure);
+        margin: 0 auto var(--space-5);
+        padding-bottom: var(--space-3);
+        border-bottom: 3px solid var(--color-accent);
+      }
+
+      h1 {
+        margin: 0 0 var(--space-1);
+        font-size: var(--font-size-xl);
+        line-height: var(--leading-tight);
+        color: var(--color-accent);
+      }
+
+      .tagline {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+      }
+
+      main {
+        max-width: var(--measure);
+        margin: 0 auto;
+      }
+
+      h2 {
+        margin: var(--space-5) 0 var(--space-2);
+        font-size: var(--font-size-lg);
+        line-height: var(--leading-tight);
+        color: var(--color-accent);
+      }
+
+      p {
+        margin: 0 0 var(--space-3);
+      }
+
+      .card {
+        margin-bottom: var(--space-4);
+        padding: var(--space-3) var(--space-4);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+      }
+
+      .card h3 {
+        margin: 0 0 var(--space-1);
+        font-size: var(--font-size-base);
+        color: var(--color-accent);
+      }
+
+      .card p {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+      }
+
+      a {
+        color: var(--color-accent);
+        font-weight: 700;
+      }
+
+      a:hover {
+        color: var(--color-accent-strong);
+      }
+
+      a:focus-visible {
+        outline: 3px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+
+      footer {
+        max-width: var(--measure);
+        margin: var(--space-6) auto 0;
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--color-border);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Ruppin Coffee Club</h1>
+      <p class="tagline">Third floor, next to the printer that never works.</p>
+    </header>
+
+    <main>
+      <h2>This week</h2>
+      <p>Two coffees on the bar, both washed, both from producers we can actually name.</p>
+
+      <div class="card">
+        <h3>Ethiopia, Guji</h3>
+        <p>Stone fruit, jasmine, and the faint taste of someone else paying.</p>
+      </div>
+
+      <div class="card">
+        <h3>Colombia, Huila</h3>
+        <p>Caramel and red apple. The safe one, and there is no shame in that.</p>
+      </div>
+
+      <h2>Joining</h2>
+      <p>Turn up. <a href="#top">Put your name on the rota</a> if you want a key.</p>
+    </main>
+
+    <footer>Run by second-years who should have been revising.</footer>
+  </body>
+</html>

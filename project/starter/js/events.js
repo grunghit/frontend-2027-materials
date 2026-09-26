@@ -220,7 +220,7 @@ function editItem(id, patch) {
    *   state.items.map((item) => (item.id === id ? { ...item, ...patch } : item))
    *
    * Not `item.field = value`. Mutating in place works today and breaks the moment
-   * anything compares old state with new — and it is the habit that makes week 9's
+   * anything compares old state with new — and it is the habit that makes week 10's
    * mini-surgery hard.
    */
   // CODE HERE

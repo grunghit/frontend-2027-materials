@@ -1,0 +1,202 @@
+<!doctype html>
+<!--
+  CA5, part two — the dashboard. DO NOT CHANGE THIS FILE.
+
+  The markup is finished, semantic and validating. Every region you need already has a
+  landmark and a class. Your work is entirely in styles.css.
+
+  Read this once before you start, because the shape of the page is the assignment:
+
+    .layout      the page shell. Five regions: a masthead, a side nav, the main
+                 column, an aside, and a footer. It has to be laid out three
+                 different ways at three widths, and it is the reason this week
+                 exists.
+    .kpis        a card row of unknown length. It must not need a media query.
+    .kpi         one card. It is a component, so what happens INSIDE it is Flexbox
+                 and not Grid — that distinction is worth a mark.
+    .panel       a table, which has its own layout and needs nothing from you
+                 beyond somewhere to sit.
+    .media       the stretch tier lives here.
+
+  images/target-*.png show the three widths you are aiming at.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signal &mdash; service dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="layout">
+      <header class="site-header">
+        <p class="brand">Signal</p>
+        <nav class="top-nav" aria-label="Account">
+          <ul>
+            <li><a href="#main">Overview</a></li>
+            <li><a href="#activity">Activity</a></li>
+            <li><a href="warmup.html">Warm-ups</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <nav class="side-nav" aria-label="Sections">
+        <p class="side-nav-title">Services</p>
+        <ul>
+          <li><a class="is-current" href="#main" aria-current="page">Gateway</a></li>
+          <li><a href="#main">Checkout</a></li>
+          <li><a href="#main">Search</a></li>
+          <li><a href="#main">Mailer</a></li>
+          <li><a href="#main">Reports</a></li>
+        </ul>
+      </nav>
+
+      <main class="main" id="main" tabindex="-1">
+        <h1>Gateway</h1>
+        <p class="lede">
+          Everything on this page is one grid holding five regions, and one grid inside it holding a
+          row of cards that nobody counted in advance.
+        </p>
+
+        <section class="kpis" aria-label="Key figures">
+          <article class="kpi kpi--featured">
+            <h2>Requests</h2>
+            <p class="kpi-value">1.42M</p>
+            <p class="kpi-note">
+              Across all regions in the last twenty-four hours, including the retries that the
+              gateway absorbed on the client's behalf.
+            </p>
+            <p class="kpi-foot">updated 2 min ago</p>
+          </article>
+
+          <article class="kpi">
+            <h2>Latency</h2>
+            <p class="kpi-value">86ms</p>
+            <p class="kpi-note">Median, end to end.</p>
+            <p class="kpi-foot">updated 2 min ago</p>
+          </article>
+
+          <article class="kpi">
+            <h2>Errors</h2>
+            <p class="kpi-value">0.31%</p>
+            <p class="kpi-note">
+              Fives only. Fours are counted separately because most of them are somebody else's bug
+              and not ours.
+            </p>
+            <p class="kpi-foot">updated 2 min ago</p>
+          </article>
+
+          <article class="kpi">
+            <h2>Saturation</h2>
+            <p class="kpi-value">61%</p>
+            <p class="kpi-note">Peak worker pool.</p>
+            <p class="kpi-foot">updated 5 min ago</p>
+          </article>
+
+          <article class="kpi">
+            <h2>Uptime</h2>
+            <p class="kpi-value">99.98%</p>
+            <p class="kpi-note">Rolling thirty days.</p>
+            <p class="kpi-foot">updated 1 h ago</p>
+          </article>
+
+          <article class="kpi">
+            <h2>Cost</h2>
+            <p class="kpi-value">$4,180</p>
+            <p class="kpi-note">Month to date, before committed-use discounts are applied.</p>
+            <p class="kpi-foot">updated 1 h ago</p>
+          </article>
+        </section>
+
+        <section class="panel" aria-labelledby="regions-title">
+          <h2 id="regions-title">By region</h2>
+          <table>
+            <caption>
+              Request volume and error rate for the last twenty-four hours
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Region</th>
+                <th scope="col">Requests</th>
+                <th scope="col">Errors</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">eu-west</th>
+                <td>612k</td>
+                <td>0.28%</td>
+              </tr>
+              <tr>
+                <th scope="row">eu-central</th>
+                <td>404k</td>
+                <td>0.35%</td>
+              </tr>
+              <tr>
+                <th scope="row">us-east</th>
+                <td>288k</td>
+                <td>0.30%</td>
+              </tr>
+              <tr>
+                <th scope="row">ap-south</th>
+                <td>116k</td>
+                <td>0.41%</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="media" aria-labelledby="media-title">
+          <h2 id="media-title">Status board</h2>
+          <div class="media-row">
+            <figure class="shot">
+              <img
+                src="images/panel-wide.svg"
+                alt="A wide chart showing request volume rising through the day"
+                width="600"
+                height="400"
+              />
+              <figcaption>Volume</figcaption>
+            </figure>
+            <figure class="shot">
+              <img
+                src="images/panel-tall.svg"
+                alt="A tall chart showing error rate by region"
+                width="400"
+                height="600"
+              />
+              <figcaption>Errors by region</figcaption>
+            </figure>
+            <figure class="shot">
+              <img
+                src="images/panel-square.svg"
+                alt="A square chart showing worker pool saturation"
+                width="500"
+                height="500"
+              />
+              <figcaption>Saturation</figcaption>
+            </figure>
+          </div>
+        </section>
+      </main>
+
+      <aside class="activity" id="activity" aria-labelledby="activity-title">
+        <h2 id="activity-title">Activity</h2>
+        <ul>
+          <li><time datetime="2027-03-02T09:14">09:14</time> Deploy 4c81f2 finished</li>
+          <li><time datetime="2027-03-02T08:02">08:02</time> Worker pool scaled to 24</li>
+          <li><time datetime="2027-03-02T07:47">07:47</time> Alert cleared: eu-central latency</li>
+          <li><time datetime="2027-03-01T22:10">22:10</time> Certificate renewed</li>
+        </ul>
+      </aside>
+
+      <footer class="site-footer">
+        <p>Signal &middot; a teaching page for week 5</p>
+        <p><a href="warmup.html">Back to the warm-ups</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

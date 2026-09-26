@@ -1,0 +1,80 @@
+/* What came back for P1 — "put the three cards in a row", with the stylesheet
+   pasted as context. Run it: replace start/styles.css with this file, or open
+   this folder's index.html. Then resize to 375 and look at the row. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font: 17px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
+}
+
+.page {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin: 0 0 4px;
+}
+
+.lede {
+  margin: 0 0 24px;
+  color: #475569;
+}
+
+/* The row. The cards float left and take 31% each; the 3.5% right margin
+   between them makes 3 × 31 + 2 × 3.5 = 100. */
+.cards {
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+/* Clearfix — floated children leave the list with no height of its own, so
+   the sidebar below would ride up into the row without this. */
+.cards::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.card {
+  float: left;
+  width: 31%;
+  margin-right: 3.5%;
+  margin-bottom: 16px;
+  padding: 20px;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.card:last-child {
+  margin-right: 0;
+}
+
+.card h2 {
+  font-size: 1.2rem;
+  margin: 0 0 8px;
+}
+
+.card p {
+  margin: 0 0 12px;
+}
+
+.side {
+  float: right;
+  width: 30%;
+  min-width: 12rem;
+  padding: 16px;
+  border-left: 3px solid #cbd5e1;
+}

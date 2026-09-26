@@ -11,6 +11,11 @@
  *   · `run` returns a plain boolean. `expected` is a hint, never the answer.
  *
  * `page` is already loaded at the entry file, viewport 1280×900.
+ *
+ * HTML I (week 1 of the restructured course): no form check here — the form and the
+ * accessibility pass are HTML II (week 2). This set mirrors the core automatic rows of
+ * grading/specs/week-01.mjs one to one: document-basics · h1-single · landmarks ·
+ * nav-links · images-alt · links-quality · paths-portable · finished (CODE HERE).
  */
 
 export const publicChecks = [
@@ -64,35 +69,29 @@ export const publicChecks = [
       }),
   },
   {
-    title: 'הקישורים מתארים את היעד, ואין נתיב מקומי מוחלט',
-    expected: '"לחץ כאן" חסר משמעות מחוץ להקשר. `file:///Users/…` ו-`C:\\Users\\…` עובדים רק על מחשב אחד.',
+    title: 'הקישורים מתארים את היעד, ויש קישור פנימי',
+    expected: '"לחץ כאן" חסר משמעות מחוץ להקשר. לפחות שלושה קישורים, ואחד מהם לתוך העמוד (`href="#about"`).',
     run: async (page) =>
       page.evaluate(() => {
         const links = [...document.querySelectorAll('a[href]')];
         if (links.length < 3) return false;
         const vague = /^\s*(click here|here|link|read more|this|לחץ כאן|כאן|קישור|לחצו כאן)\s*$/i;
         if (links.some((a) => vague.test(a.textContent || ''))) return false;
-        const refs = [...document.querySelectorAll('a[href], img[src]')].map(
-          (el) => el.getAttribute('href') || el.getAttribute('src') || '',
-        );
-        return !refs.some((v) => /^file:/i.test(v) || /^[A-Za-z]:[\\/]/.test(v) || v.includes('\\'));
+        return links.some((a) => !/^(https?:|mailto:|tel:|file:)/i.test(a.getAttribute('href') || ''));
       }),
   },
   {
-    title: 'הטופס נגיש: `fieldset` ו-`legend`, ארבעה שדות עם תווית מקושרת, שדה `required` וכפתור שליחה',
-    expected: '`placeholder` הוא לא תווית. לכל שדה `<label for="…">` שמצביע על ה-`id` שלו.',
+    title: 'הנתיבים נוסעים: אין נתיב מקומי מוחלט, וכל תמונה נטענה באמת',
+    expected: '`file:///Users/…` ו-`C:\\Users\\…` עובדים רק על מחשב אחד. הנתיב נספר מהקובץ: `images/x.png`. פתח את Network — שורה אדומה היא תמונה שלא קיימת.',
     run: async (page) =>
       page.evaluate(() => {
-        if (!document.querySelector('form fieldset legend')) return false;
-        const fields = [
-          ...document.querySelectorAll(
-            'form input:not([type="submit"]):not([type="button"]):not([type="hidden"]), form textarea, form select',
-          ),
-        ];
-        if (fields.length < 4) return false;
-        if (!fields.every((el) => el.id && document.querySelector(`label[for="${el.id}"]`))) return false;
-        if (!document.querySelector('form [required]')) return false;
-        return !!document.querySelector('form button[type="submit"], form input[type="submit"]');
+        const images = [...document.querySelectorAll('img')];
+        if (images.length === 0) return false;
+        const refs = [...document.querySelectorAll('a[href], img[src]')].map(
+          (el) => el.getAttribute('href') || el.getAttribute('src') || '',
+        );
+        if (refs.some((v) => /^file:/i.test(v) || /^[A-Za-z]:[\\/]/.test(v) || v.includes('\\'))) return false;
+        return images.every((img) => img.complete && img.naturalWidth > 0);
       }),
   },
   {

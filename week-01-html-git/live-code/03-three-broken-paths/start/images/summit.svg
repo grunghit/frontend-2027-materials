@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="120" viewBox="0 0 160 120" role="img" aria-label="A mountain summit">
+  <rect width="160" height="120" fill="#dbeafe"/>
+  <polygon points="10,110 70,30 100,70 120,45 150,110" fill="#475569"/>
+  <polygon points="58,46 70,30 82,46" fill="#f8fafc"/>
+  <circle cx="130" cy="28" r="12" fill="#fbbf24"/>
+</svg>

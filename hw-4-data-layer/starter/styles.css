@@ -131,7 +131,7 @@ button:focus-visible {
   border-radius: 12px;
   padding: 12px 14px;
   background: #fff;
-  /* A grid item's automatic minimum size is its content. Week 3's `min-width: auto`,
+  /* A grid item's automatic minimum size is its content. Week 4's `min-width: auto`,
      and without this a long weather description widens the whole column. */
   min-width: 0;
 }

@@ -1,0 +1,296 @@
+<!doctype html>
+<!--
+  Why 1fr overflows, and why minmax(0, 1fr) does not. Week 5, cycle 1 (the floor).
+
+  This is week 4's `min-width: auto` gotcha wearing a different hat, and it should be
+  taught as a callback rather than as a new fact. A flex item will not shrink below its
+  content; neither will a grid track, because `1fr` is shorthand for `minmax(auto, 1fr)`
+  and that `auto` minimum is the same floor by another name.
+
+  Teach it as: you have met this bug. It is the same bug. Here is the same fix, spelled
+  for tracks.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. The two grids are identical except for one declaration, and the offending content
+     is a long unbreakable string of exactly the kind users paste into things — a URL.
+     Nothing here is contrived except the decision to show it.
+  2. The readout expands `1fr` to `minmax(auto, 1fr)` in writing, because that identity
+     is the entire explanation and it is not obvious from the spelling. Once a student
+     has seen it, `minmax(0, 1fr)` stops looking like a superstition.
+  3. The overflow is measured against the container, so "it bursts" is a pixel count.
+  4. The two usual suggestions are available as toggles: `overflow: hidden` on the grid
+     item, and a smaller sidebar track. Measured in Chromium at 375 (batch 04): the
+     smaller track does NOT help (the page still overflows), but `overflow: hidden` on
+     the item DOES — a scroll container has no content-based minimum, so the track can
+     shrink. It fixes the width by clipping whatever sticks out (a focus ring, a
+     dropdown), which is why the track-level `minmax(0, 1fr)` is the fix to keep. An
+     earlier version of this file said `overflow: hidden` could not help; it was wrong.
+
+  DEMO MOVE: turn on the long URL. Both grids burst. Ask for a fix and take the first
+  two answers seriously — tick `overflow: hidden`: at a narrow width it works, and ask
+  what it costs (it clips). Tick the narrower sidebar: it does not help. Then show the
+  fix on the second grid alone, so the two sit side by side with one declaration
+  between them.
+
+  Ask, at the end: "where have you seen this before?" Week 4, min-width: auto, on flex
+  items. Same floor. Same fix.
+
+  The stages are their own scroll containers so the page stays clean at 375px.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>1fr, and why it overflows</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h2 code {
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .controls label {
+        font:
+          600 13px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+        cursor: pointer;
+      }
+      input[type='checkbox'] {
+        accent-color: #1d4ed8;
+        margin-right: 4px;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+
+      .stage {
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+      }
+      .stage.bad {
+        border: 3px solid #b91c1c;
+        background: #fff5f5;
+      }
+      .stage.good {
+        border: 3px solid #15803d;
+        background: #f0fdf4;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 10px;
+      }
+      .good .grid.fixed {
+        grid-template-columns: 200px minmax(0, 1fr);
+      }
+      .grid.narrow {
+        grid-template-columns: 120px 1fr;
+      }
+      .good .grid.fixed.narrow {
+        grid-template-columns: 120px minmax(0, 1fr);
+      }
+      .side {
+        padding: 12px 10px;
+        border-radius: 6px;
+        background: #e2e8f0;
+        border: 2px solid #94a3b8;
+        color: #334155;
+        font:
+          700 12px/1.4 ui-monospace,
+          Menlo,
+          monospace;
+      }
+      .body {
+        padding: 12px 10px;
+        border-radius: 6px;
+        background: #fff;
+        border: 2px solid var(--line);
+        font-size: 13px;
+      }
+      .body p {
+        margin: 0 0 6px;
+      }
+      .body .url {
+        display: none;
+        font:
+          700 12px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+        color: #b91c1c;
+      }
+      .grid.longword .url {
+        display: block;
+      }
+      .grid.clipped .body {
+        overflow: hidden;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font:
+          13px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="controls">
+      <label><input type="checkbox" id="longword" />paste a long URL into the content</label>
+      <label><input type="checkbox" id="clipped" />try <code>overflow: hidden</code></label>
+      <label><input type="checkbox" id="narrow" />try a narrower sidebar</label>
+    </div>
+
+    <div class="stage bad" id="stage-bad">
+      <h2><code>grid-template-columns: 200px 1fr</code></h2>
+      <div class="grid" id="grid-bad">
+        <div class="side">sidebar</div>
+        <div class="body">
+          <p>Ordinary text wraps, so nothing is wrong until something cannot wrap.</p>
+          <p class="url">
+            https://ruppin.example/a-very-long-unbreakable-url-of-the-kind-people-paste
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage good" id="stage-good">
+      <h2><code>grid-template-columns: 200px minmax(0, 1fr)</code></h2>
+      <div class="grid fixed" id="grid-good">
+        <div class="side">sidebar</div>
+        <div class="body">
+          <p>Ordinary text wraps, so nothing is wrong until something cannot wrap.</p>
+          <p class="url">
+            https://ruppin.example/a-very-long-unbreakable-url-of-the-kind-people-paste
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+
+    <script>
+      const gridBad = document.getElementById('grid-bad');
+      const gridGood = document.getElementById('grid-good');
+      const stageBad = document.getElementById('stage-bad');
+      const out = document.getElementById('out');
+      const toggles = {
+        longword: document.getElementById('longword'),
+        clipped: document.getElementById('clipped'),
+        narrow: document.getElementById('narrow'),
+      };
+
+      function render() {
+        for (const [name, box] of Object.entries(toggles)) {
+          gridBad.classList.toggle(name, box.checked);
+          gridGood.classList.toggle(name, box.checked);
+        }
+
+        requestAnimationFrame(() => {
+          const inner = Math.round(stageBad.clientWidth) - 20;
+          const badWants = Math.round(gridBad.scrollWidth);
+          const goodWants = Math.round(gridGood.scrollWidth);
+          const over = badWants - inner;
+
+          out.textContent =
+            '  container inner width       ' +
+            inner +
+            'px\n' +
+            '  200px 1fr             wants ' +
+            badWants +
+            'px  (' +
+            (over > 0 ? '+' + over : String(over)) +
+            ')\n' +
+            '  200px minmax(0, 1fr)  wants ' +
+            goodWants +
+            'px\n' +
+            '  resolved, top grid          ' +
+            getComputedStyle(gridBad).gridTemplateColumns +
+            '\n' +
+            '  resolved, bottom grid       ' +
+            getComputedStyle(gridGood).gridTemplateColumns +
+            '\n\n' +
+            (!toggles.longword.checked
+              ? '  Nothing is wrong yet, and nothing will be while the content can wrap.\n' +
+                '  That is why this bug reaches production: it needs a URL, a long token,\n' +
+                "  a wide <pre> or a table, and none of those are in anybody's test data.\n\n" +
+                '  Tick the first box.'
+              : '  1fr IS minmax(auto, 1fr).\n\n' +
+                '  That is the whole thing. The maximum is one fraction of the free space,\n' +
+                '  which is what everyone reads it as — but the MINIMUM is `auto`, which\n' +
+                '  for a track means "at least as wide as the content in it". The URL\n' +
+                '  cannot be broken, so the minimum is the length of the URL, and the\n' +
+                '  track refuses to go under it. The grid is then wider than its parent.\n\n' +
+                (toggles.clipped.checked
+                  ? '  `overflow: hidden` on the item DID shrink the track: a scroll container\n' +
+                    '  has no content-based minimum. But it clips whatever sticks out of the\n' +
+                    '  box, a focus ring included. The floor belongs on the track instead.\n\n'
+                  : '') +
+                (toggles.narrow.checked
+                  ? '  A narrower sidebar did not help either. It gives the second track more\n' +
+                    '  room, but the floor moves with it — the minimum is the content, not a\n' +
+                    '  share of anything.\n\n'
+                  : '') +
+                '  minmax(0, 1fr) lowers the floor to zero. The track may now be narrower\n' +
+                "  than its content, and the content's own overflow rules take over.\n\n" +
+                '  YOU HAVE MET THIS BEFORE. Week 4: a flex item will not shrink below its\n' +
+                '  content, because its min-width computes to auto, and the fix was\n' +
+                '  min-width: 0 on the item. Same floor, same fix, spelled for tracks.\n\n' +
+                "  This is also why every .cols child in this course's own slides\n" +
+                "  carries min-width: 0: the columns you watched today would overflow without it.");
+        });
+      }
+
+      for (const box of Object.values(toggles)) {
+        box.addEventListener('change', render);
+      }
+      addEventListener('resize', render);
+      render();
+    </script>
+  </body>
+</html>

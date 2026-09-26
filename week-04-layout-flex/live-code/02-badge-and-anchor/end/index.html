@@ -1,0 +1,74 @@
+<!doctype html>
+<!--
+  Cycle 2 — the badge, the anchor, and the header that stays. THE MARKUP IS FINISHED.
+  The bar is cycle 1's; the three tiles are already a flex row. What this cycle adds
+  is `position`, three times: a badge on a corner, an anchor for it, and a header
+  that stays while the page scrolls. Compare with ../end/ and ../checkpoint.png.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cycle 2 — the badge and the anchor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <header class="top">
+      <nav class="bar" aria-label="Main">
+        <a class="brand" href="#work">Studio North</a>
+        <ul class="links">
+          <li><a href="#work">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section id="work">
+        <h1>Selected work</h1>
+        <ul class="tiles">
+          <li class="tile">
+            <span class="pill">New</span>
+            <h2>Timetable</h2>
+            <p>A week view for the course schedule that loads in under a second.</p>
+          </li>
+          <li class="tile">
+            <h2>Reading list</h2>
+            <p>Everything read for the degree, filterable by course.</p>
+          </li>
+          <li class="tile">
+            <h2>Lab notebook</h2>
+            <p>A page per experiment, written in plain HTML and styled once.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section id="about">
+        <h2>About</h2>
+        <p>
+          Scroll. The header should stay at the top of the window while this text moves under
+          it — and the tiles should slide under the header, not over it.
+        </p>
+        <p>
+          A badge that says <em>New</em> belongs on the corner of its tile. If it ends up on the
+          corner of the page instead, nothing about the badge is wrong: the box it is measured
+          from is.
+        </p>
+        <p>
+          Three uses of <code>position</code>, and not one of them places a column. Layout is
+          Flexbox; <code>position</code> is for the badge and the header.
+        </p>
+      </section>
+
+      <section id="contact">
+        <h2>Contact</h2>
+        <p>studio@example.ac.il</p>
+        <p>Nothing below this line matters. It is here so the page is tall enough to scroll.</p>
+        <p>One more paragraph, for the same reason. Keep scrolling and watch the header.</p>
+        <p>And one more. That is enough.</p>
+      </section>
+    </main>
+  </body>
+</html>

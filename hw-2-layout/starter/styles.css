@@ -35,7 +35,7 @@
      no  fixed height on a       The original used `min-height: 95vh` to push the
          layout region           footer down. There is an exact way to do that now
                                  and it is in section 2.
-     no  Tailwind                Week 5.
+     no  Tailwind                Week 6.
      no  JavaScript              Nothing here needs it.
      no  !important              If you need it, a selector above is wrong.
 
@@ -52,7 +52,7 @@
    1 — RESET AND TOKENS                                               done for you
 
    Change `--hue-brand` and the page changes colour. Colour is not graded here —
-   it was graded in week 2 — but a page you like looking at is a page you finish.
+   it was graded in week 3 — but a page you like looking at is a page you finish.
    ──────────────────────────────────────────────────────────────────────────── */
 
 *,
@@ -526,7 +526,7 @@ h1 {
    for it in index.html, and this is the only part of that file you may touch.
 
    It has to be genuinely yours. Suggestions, not requirements: a team row, a
-   pricing table, a testimonial strip, a contact form (labels, please — week 1).
+   pricing table, a testimonial strip, a contact form (labels, please — week 2).
 
    Requirements:
      · semantic, with a heading, and it validates
@@ -543,11 +543,13 @@ h1 {
 
    Give the buttons and the cards something on hover.
 
-   THE CONSTRAINT IS THE LESSON. You may transition `transform`, `opacity`,
-   `box-shadow` and colour. You may NOT transition width, height, an inset or a
-   margin — those force the browser to redo layout and paint on every frame, and
-   the grader checks for it. `transition: all` fails too: it covers the expensive
-   ones as well, and nobody who writes it knows what it covered.
+   THE CONSTRAINT IS THE LESSON. Prefer `transform` and `opacity` — the compositor
+   moves a layer, no layout. `box-shadow` and colour are allowed: no layout, but a
+   repaint every frame, so keep them to a short hover. You may NOT transition width,
+   height, an inset or a margin — those force the browser to redo layout and paint
+   on every frame, and the grader checks for it. `transition: all` fails too — and so
+   does a duration with no property, because `transition: 200ms` means `all 200ms`: it
+   covers the layout ones as well, and nobody who writes it knows what it covered.
 
    Use `var(--duration)`, which the reduced-motion query at the top of this file
    already sets to zero. That is why nothing here needs `!important`.

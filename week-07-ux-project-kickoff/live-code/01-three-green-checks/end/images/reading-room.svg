@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A stand-in picture of the library's reading room, drawn rather than sourced. No title
+     and no aria-label on purpose: the img's own alt is what the cycle audits. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <rect width="320" height="180" fill="#e9e1d4"/>
+  <rect x="24" y="30" width="80" height="120" fill="#b89f7e"/>
+  <rect x="120" y="30" width="80" height="120" fill="#a3876a"/>
+  <rect x="216" y="30" width="80" height="120" fill="#b89f7e"/>
+  <rect x="0" y="150" width="320" height="30" fill="#8c7156"/>
+</svg>

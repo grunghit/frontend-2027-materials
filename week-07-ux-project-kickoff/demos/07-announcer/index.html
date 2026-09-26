@@ -1,0 +1,499 @@
+<!doctype html>
+<!--
+  The screen-reader stand-in. Week 7: on the spine, cycle 5's opener — and the demo that makes the whole act
+  honest.
+
+  It computes, for every focusable element on the specimen panel, what a screen reader
+  would announce: the ROLE, the ACCESSIBLE NAME, and the STATE. Then it prints the
+  announcement string. Tab through the panel and watch the announcements go past.
+
+  ── WHY THIS EXISTS RATHER THAN A RECORDING
+
+  A recording of VoiceOver is a video: the room watches it once, cannot poke at it, and
+  learns that accessibility is something that happens to other people. This is a live
+  instrument — change the markup with the switches and the announcement changes in front
+  of you, which is the only way the connection between an attribute and a spoken sentence
+  becomes real.
+
+  It is a STAND-IN, and it says so on screen. It implements a useful subset of the
+  accessible-name computation (aria-labelledby, then aria-label, then a wrapping label or
+  label[for], then alt, then text content) and the states that matter here. It is not
+  AT-SPEC compliant and it does not pretend to be. Run the real thing too — the run-sheet
+  with the exact VoiceOver and NVDA keystrokes is in instructor-notes-he.md.
+
+  ── THE FOUR SWITCHES ARE THE LESSON
+
+  Each one takes a control that LOOKS correct and breaks only its announcement:
+
+    label after field   the visual layout is unchanged; the name is still computed, and
+                        the demo shows it, which is why "it has a label" is not the
+                        question — "what does it announce" is.
+    aria-label wins     put an aria-label on a button that already has visible text and
+                        the visible text stops being what is announced. A sighted user
+                        reading "Send" and a screen-reader user hearing "Submit form 4"
+                        are now looking at different applications.
+    div with role       role="button" makes it announce as a button. It still is not one:
+                        no keyboard, no Enter, no Space. ARIA changed the announcement and
+                        nothing else.
+    icon only           a button whose entire content is a glyph announces the glyph, or
+                        nothing at all.
+
+  DEMO MOVE: turn on "aria-label wins", then read the visible button text aloud and read
+  the announcement aloud. Two different sentences, same button. Ask which one is right.
+  The answer is that the question is wrong — they must not differ.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>What a screen reader would announce</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --bad: #b3123b;
+        --good: #0f6b52;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-size: 12.5px;
+      }
+      .bar label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+      input[type='checkbox'] {
+        accent-color: var(--bad);
+      }
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+        gap: 14px;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .split {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .panel {
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+      }
+      .panel .row {
+        display: grid;
+        gap: 3px;
+      }
+      .panel label {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .panel input[type='text'],
+      .panel select {
+        font: inherit;
+        font-size: 14px;
+        padding: 5px 8px;
+        border: 1px solid #7a8699;
+        border-radius: 6px;
+      }
+      .panel button,
+      .fake-button {
+        font: inherit;
+        font-size: 13px;
+        padding: 6px 12px;
+        border: 1px solid #7a8699;
+        border-radius: 999px;
+        background: #fff;
+        cursor: pointer;
+        display: inline-block;
+      }
+      .panel :focus-visible,
+      .fake-button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      /* The label-after-field failure. Visual only; the name is still computed. */
+      .panel[data-after='on'] .row {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: start;
+      }
+      .panel[data-after='on'] .row label {
+        font-size: 9px;
+        color: #c4c4c4;
+        font-weight: 400;
+      }
+
+      .log {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .log > header {
+        background: #14181f;
+        color: #eef2f7;
+        padding: 6px 12px;
+        font:
+          700 11px/1.6 ui-monospace,
+          Menlo,
+          monospace;
+        letter-spacing: 0.06em;
+      }
+      ol {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        max-height: 260px;
+        overflow: auto;
+      }
+      ol li {
+        padding: 7px 12px;
+        border-bottom: 1px solid #eef2f7;
+        font:
+          13px/1.45 ui-monospace,
+          Menlo,
+          monospace;
+      }
+      ol li:last-child {
+        border-bottom: 0;
+      }
+      ol li b {
+        color: var(--accent);
+      }
+      ol li.warn {
+        background: #fff1f4;
+      }
+      ol li.warn b {
+        color: var(--bad);
+      }
+      ol li em {
+        display: block;
+        font:
+          italic 12px/1.4 system-ui,
+          sans-serif;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+      .empty {
+        padding: 14px 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .caveat {
+        margin-top: 12px;
+        font-size: 12.5px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border-left: 4px solid #a35a06;
+        background: #fff8ec;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="bar">
+      <label><input type="checkbox" id="sw-after" /> label after the field</label>
+      <label><input type="checkbox" id="sw-arialabel" /> aria-label on the Send button</label>
+      <label><input type="checkbox" id="sw-div" /> the Cancel control is a div</label>
+      <label><input type="checkbox" id="sw-icon" /> the Delete button is icon-only</label>
+    </div>
+
+    <div class="split">
+      <div>
+        <h2>the panel — tab through it</h2>
+        <div class="panel" id="panel" data-after="off">
+          <div class="row">
+            <label for="an-name">Full name</label>
+            <input type="text" id="an-name" />
+          </div>
+          <div class="row">
+            <label for="an-class">Class</label>
+            <select id="an-class">
+              <option>Beginner yoga</option>
+              <option>Classical guitar</option>
+            </select>
+          </div>
+          <div class="row">
+            <!-- Wrapping the control IS the association; a `for` pointing at the same
+                 id as well is redundant (html-validate: no-redundant-for). -->
+            <label>
+              <input type="checkbox" id="an-terms" />
+              I accept the registration terms
+            </label>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button type="button" id="an-send">Send</button>
+            <button type="button" id="an-cancel">Cancel</button>
+            <button type="button" id="an-delete">Delete registration</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>what a screen reader would say</h2>
+        <div class="log">
+          <header>ANNOUNCEMENT LOG</header>
+          <ol id="log">
+            <li class="empty" id="empty-note">
+              Press Tab on the panel. Each stop is announced here, computed from the DOM.
+            </li>
+          </ol>
+        </div>
+        <p class="caveat">
+          A stand-in, not a screen reader. It implements the useful part of the accessible-name
+          computation and the states that matter here — enough to make the link between an attribute
+          and a spoken sentence visible. Run the real thing too.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const panel = document.getElementById('panel');
+      const log = document.getElementById('log');
+      const emptyNote = document.getElementById('empty-note');
+
+      /* ── The switches ─────────────────────────────────────────────────── */
+      const send = document.getElementById('an-send');
+      const cancel = document.getElementById('an-cancel');
+      const del = document.getElementById('an-delete');
+
+      document.getElementById('sw-after').addEventListener('change', (e) => {
+        panel.dataset.after = e.target.checked ? 'on' : 'off';
+      });
+
+      document.getElementById('sw-arialabel').addEventListener('change', (e) => {
+        if (e.target.checked) send.setAttribute('aria-label', 'Submit form 4');
+        else send.removeAttribute('aria-label');
+      });
+
+      document.getElementById('sw-div').addEventListener('change', (e) => {
+        const replacement = document.createElement(e.target.checked ? 'div' : 'button');
+        replacement.id = 'an-cancel';
+        replacement.textContent = 'Cancel';
+        if (e.target.checked) {
+          replacement.className = 'fake-button';
+          replacement.setAttribute('role', 'button');
+          /* No tabindex, deliberately: this is what the pattern looks like in the wild. */
+        } else {
+          replacement.type = 'button';
+        }
+        document.getElementById('an-cancel').replaceWith(replacement);
+      });
+
+      document.getElementById('sw-icon').addEventListener('change', (e) => {
+        const button = document.getElementById('an-delete');
+        button.textContent = e.target.checked ? '✕' : 'Delete registration';
+      });
+
+      /* ── The accessible-name computation, the useful subset ───────────── */
+
+      /**
+       * A deliberately partial implementation of the accname spec, in the real order of
+       * precedence. The order is the part that matters pedagogically: `aria-label` beats
+       * visible text, which is why the "aria-label wins" switch is a bug and not a
+       * refinement.
+       */
+      function accessibleName(el) {
+        const labelledby = el.getAttribute('aria-labelledby');
+        if (labelledby) {
+          const text = labelledby
+            .split(/\s+/)
+            .map((id) => document.getElementById(id)?.textContent?.trim() ?? '')
+            .filter(Boolean)
+            .join(' ');
+          if (text) return { name: text, from: 'aria-labelledby' };
+        }
+
+        const label = el.getAttribute('aria-label');
+        if (label?.trim()) return { name: label.trim(), from: 'aria-label' };
+
+        /* A wrapping <label>, or one pointing at this id. */
+        const wrapping = el.closest('label');
+        if (wrapping) {
+          const clone = wrapping.cloneNode(true);
+          for (const control of clone.querySelectorAll('input, select, textarea')) control.remove();
+          const text = clone.textContent.trim();
+          if (text) return { name: text, from: 'wrapping <label>' };
+        }
+        if (el.id) {
+          const forLabel = document.querySelector(`label[for="${el.id}"]`);
+          if (forLabel?.textContent.trim())
+            return { name: forLabel.textContent.trim(), from: 'label[for]' };
+        }
+
+        if (el.tagName === 'IMG') {
+          const alt = el.getAttribute('alt');
+          if (alt === '') return { name: '', from: 'alt="" (decorative)' };
+          if (alt) return { name: alt, from: 'alt' };
+          return { name: el.getAttribute('src') ?? '', from: 'the file name — there is no alt' };
+        }
+
+        const own = el.textContent.trim();
+        if (own) return { name: own, from: 'its own text' };
+
+        const title = el.getAttribute('title');
+        if (title) return { name: title, from: 'title — the last resort, and invisible' };
+
+        return { name: '', from: 'nothing' };
+      }
+
+      /** The role, native first — because a native role is the one you get for free. */
+      function roleOf(el) {
+        const explicit = el.getAttribute('role');
+        const native = {
+          BUTTON: 'button',
+          SELECT: 'combo box',
+          A: el.hasAttribute('href') ? 'link' : null,
+          TEXTAREA: 'text field',
+        }[el.tagName];
+        const byType =
+          el.tagName === 'INPUT'
+            ? {
+                text: 'text field',
+                search: 'search field',
+                checkbox: 'checkbox',
+                radio: 'radio button',
+              }[el.type]
+            : null;
+        const real = native ?? byType ?? 'group';
+        return { real, explicit, announced: explicit ?? real };
+      }
+
+      function stateOf(el) {
+        const bits = [];
+        if (el.type === 'checkbox' || el.type === 'radio')
+          bits.push(el.checked ? 'checked' : 'not checked');
+        if (el.disabled) bits.push('dimmed');
+        if (el.getAttribute('aria-invalid') === 'true') bits.push('invalid data');
+        if (el.tagName === 'SELECT') bits.push(`${el.selectedIndex + 1} of ${el.options.length}`);
+        return bits;
+      }
+
+      /*
+        THE HONEST BIT. A control that ARIA has renamed as a button but which is a <div>
+        with no tabindex is not reachable at all — so it never appears in this log, and
+        the demo says so out loud rather than letting its absence pass unnoticed.
+      */
+      function announce(el) {
+        const { name, from } = accessibleName(el);
+        const role = roleOf(el);
+        const states = stateOf(el);
+
+        const parts = [name || '(no name)', role.announced, ...states];
+        const line = document.createElement('li');
+        const strong = document.createElement('b');
+        strong.textContent = parts.join(', ');
+        line.append(strong);
+
+        const notes = [];
+        if (!name)
+          notes.push('No accessible name. A control that announces only its role is unusable.');
+        if (
+          from.startsWith('aria-label') &&
+          el.textContent.trim() &&
+          el.textContent.trim() !== name
+        ) {
+          notes.push(
+            `The visible text is "${el.textContent.trim()}" but the announcement is "${name}" — ` +
+              'aria-label REPLACED it. Two users are now looking at different applications.',
+          );
+        }
+        if (from.includes('the file name') || from.includes('title'))
+          notes.push(`name taken from ${from}`);
+        if (role.explicit && role.explicit === role.real) {
+          notes.push(`role="${role.explicit}" is redundant — the element already had that role.`);
+        }
+        if (role.explicit && role.explicit !== role.real) {
+          notes.push(
+            `role="${role.explicit}" on a <${el.tagName.toLowerCase()}>: the announcement changed, the BEHAVIOUR did not. ` +
+              'No Enter, no Space, and it is only focusable if somebody added tabindex.',
+          );
+        }
+        if (notes.length) {
+          line.classList.add('warn');
+          for (const note of notes) {
+            const em = document.createElement('em');
+            em.textContent = note;
+            line.append(em);
+          }
+        } else {
+          const em = document.createElement('em');
+          em.textContent = `name from ${from}`;
+          line.append(em);
+        }
+
+        emptyNote?.remove();
+        log.prepend(line);
+        while (log.children.length > 12) log.lastElementChild.remove();
+      }
+
+      /* Announce on focus, because focus is what a screen reader follows. */
+      panel.addEventListener('focusin', (event) => {
+        if (event.target instanceof HTMLElement) announce(event.target);
+      });
+
+      /*
+        And report what is NOT reachable, which is the failure the log can never show by
+        itself. Recomputed on every switch change.
+      */
+      function reportUnreachable() {
+        const clickable = [...panel.querySelectorAll('[role="button"], .fake-button')];
+        const stranded = clickable.filter((el) => el.tabIndex < 0);
+        if (!stranded.length) return;
+        emptyNote?.remove();
+        const line = document.createElement('li');
+        line.className = 'warn';
+        const b = document.createElement('b');
+        b.textContent = '(never announced)';
+        const em = document.createElement('em');
+        em.textContent =
+          `${stranded.length} control(s) on this panel cannot be reached by Tab at all, so they will never appear ` +
+          'in this log. ARIA gave them a role; it could not give them a tab stop.';
+        line.append(b, em);
+        log.prepend(line);
+      }
+
+      for (const id of ['sw-after', 'sw-arialabel', 'sw-div', 'sw-icon']) {
+        document
+          .getElementById(id)
+          .addEventListener('change', () => setTimeout(reportUnreachable, 0));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,592 @@
+<!doctype html>
+<!--
+  The translator. Week-6 deck, act 3 — the centrepiece of the whole lecture.
+
+  Type a utility, get the CSS it generates. The CSS is not looked up in a table in this
+  file: the class is applied to a live element, Tailwind's compiler notices and emits a
+  rule, and this page then READS that rule back out of document.styleSheets. Every
+  answer on screen is the browser's, and an answer this page's author never knew is
+  still correct.
+
+  That matters more than it sounds. The single worst outcome of this week is a student
+  who MEMORISES classes. A memoriser is helpless the moment they meet a utility they have
+  not seen, and they will meet one in week 7. A student who knows the translation is
+  never stuck, because the translation is mechanical and this box performs it on demand.
+  Tell them: you are not being asked to learn a vocabulary. You are being handed a
+  dictionary that you already know how to write the other half of.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. It is two-way. Left: utility -> CSS. Right: paste a declaration from the week-5
+     stylesheet and get candidate utilities, ranked by how exactly the generated CSS
+     matches what you asked for. The right-hand direction is the one that makes the
+     week's thesis land, because it is the direction students actually need.
+  2. The at-rule context is shown, so `md:`, `hover:` and `dark:` reveal themselves as
+     ordinary @media rules rather than as framework magic.
+  3. An unknown utility says so, loudly, instead of silently producing nothing. "There
+     is no such class" is the correct answer to `text-huge`, and students need to see
+     the failure mode as clearly as the success one.
+  4. The preset row is the week-5 stylesheet, line by line. Everything in it is CSS the
+     room wrote seven days ago.
+
+  DEMO MOVE: do NOT open on the left box. Open on the right one, paste
+  `padding: 1rem` and let it answer `p-4`. Then `display: flex` -> `flex`. Then
+  `border-radius: 999px` -> `rounded-full`. Four of these and someone will call out the
+  fifth before you type it. THAT is the moment the week is won; only then show the left
+  box, and use it to answer the questions the room now has.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The translator: utility to CSS, and back</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .pair {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+      .box {
+        min-width: 0;
+        border: 3px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: #f8fafc;
+      }
+      .box.left {
+        border-color: #1d4ed8;
+        background: #eff6ff;
+      }
+      .box.right {
+        border-color: #15803d;
+        background: #f0fdf4;
+      }
+      label {
+        display: block;
+        font:
+          600 12px/1.6 ui-monospace,
+          Menlo,
+          monospace;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      input[type='text'],
+      textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        font:
+          14px/1.5 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 74px;
+      }
+      :focus-visible {
+        outline: 3px solid #b45309;
+        outline-offset: 2px;
+      }
+      .presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin: 8px 0 0;
+      }
+      .presets button {
+        font:
+          600 12px/1.3 ui-monospace,
+          Menlo,
+          monospace;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: #1d4ed8;
+        cursor: pointer;
+      }
+      .presets button:hover {
+        background: #dbeafe;
+      }
+      .answer {
+        margin: 10px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        font:
+          12.5px/1.7 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        white-space: pre-wrap;
+        min-height: 120px;
+      }
+      .miss {
+        color: #b91c1c;
+        font-weight: 700;
+      }
+      .hit {
+        color: #15803d;
+      }
+      .sample {
+        margin: 10px 0 0;
+        padding: 12px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .sample p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .note {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border-left: 5px solid #1d4ed8;
+        background: #eff6ff;
+        border-radius: 0 8px 8px 0;
+      }
+      .note p {
+        margin: 0;
+      }
+    </style>
+
+    <script src="../vendor/tailwind.js"></script>
+    <!--
+      The same @theme the whole week uses: the week-3 tokens, restated so Tailwind can
+      generate utilities from them. `--color-brand-500` here IS `--color-accent` there.
+    -->
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+        --color-brand-100: hsl(234 100% 96%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="pair">
+      <div class="box left">
+        <h2>utility &rarr; CSS</h2>
+        <label for="cls">a class, exactly as you would write it in the markup</label>
+        <input type="text" id="cls" value="p-4" autocomplete="off" spellcheck="false" />
+        <div class="presets" id="cls-presets"></div>
+        <p class="answer" id="cls-out" aria-live="polite"></p>
+        <div class="sample">
+          <p>applied to a real element, live:</p>
+          <div id="specimen" class="p-4">specimen</div>
+        </div>
+      </div>
+
+      <div class="box right">
+        <h2>CSS &rarr; utility</h2>
+        <label for="css">a declaration, straight out of last week's stylesheet</label>
+        <textarea id="css" spellcheck="false">padding: 1rem;</textarea>
+        <div class="presets" id="css-presets"></div>
+        <p class="answer" id="css-out" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p>
+        <strong>Nothing here is a lookup table.</strong> Each candidate class is put on a real
+        element; Tailwind's compiler generates a rule for it; this page reads that rule back out
+        of <code>document.styleSheets</code> and compares it with what you asked for. That is
+        why it can answer for classes whoever wrote this page had never thought of &mdash; and
+        why you never have to memorise one.
+      </p>
+    </div>
+
+    <script>
+      /* ────────────────────────────────────────────────────────────────────────
+         Reading the generated stylesheet.
+
+         Tailwind's browser build watches the DOM, so a class only exists as CSS
+         AFTER it has appeared in the markup and the compiler has run. Everything
+         below therefore applies a class first and then waits for the rule to turn
+         up, rather than assuming it is already there.
+         ──────────────────────────────────────────────────────────────────────── */
+
+      const specimen = document.getElementById('specimen');
+
+      /*
+        The probe is where a candidate class is applied so the compiler will generate it
+        and so its computed values can be read back. It is held off-screen by a WRAPPER,
+        never by its own style attribute: the probe's own `style` has to stay empty, or
+        an inline declaration would beat the class being measured and every answer would
+        be this file's rather than Tailwind's.
+
+        Off-screen and laid out, not `display: none` — a hidden element still gets
+        computed styles, but keeping it in flow means a mistake here surfaces visually
+        instead of silently producing plausible-looking numbers.
+      */
+      const probeStage = document.createElement('div');
+      probeStage.setAttribute('aria-hidden', 'true');
+      probeStage.style.cssText = 'position:absolute;left:-9999px;top:0;width:400px;';
+      const probe = document.createElement('div');
+      probeStage.append(probe);
+      document.body.append(probeStage);
+
+      /** Every rule whose selector starts with this class, with its at-rule context. */
+      function rulesFor(cls) {
+        const esc = '.' + CSS.escape(cls);
+        const found = [];
+        const walk = (rules, context) => {
+          for (const rule of rules) {
+            if (
+              rule.selectorText &&
+              rule.selectorText.split(',').some((s) => s.trim().startsWith(esc))
+            ) {
+              found.push({
+                context: context.slice(),
+                selector: rule.selectorText,
+                body: rule.style.cssText,
+              });
+            }
+            if (rule.cssRules) {
+              const label =
+                rule.conditionText !== undefined
+                  ? (rule.media !== undefined ? '@media ' : '@supports ') + rule.conditionText
+                  : null;
+              walk(rule.cssRules, label ? context.concat(label) : context);
+            }
+          }
+        };
+        for (const sheet of document.styleSheets) {
+          try {
+            walk(sheet.cssRules, []);
+          } catch {
+            /* not ours to read */
+          }
+        }
+        return found;
+      }
+
+      /** Apply `cls` to the hidden probe, then wait for its rule to be generated. */
+      async function compile(cls) {
+        if (!cls) return [];
+        probe.className = cls;
+        for (let frame = 0; frame < 90; frame++) {
+          const hits = rulesFor(cls);
+          if (hits.length) return hits;
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        return [];
+      }
+
+      const show = (hits) =>
+        hits
+          .map(
+            (h) =>
+              (h.context.length ? '  ' + h.context.join('\n  and ') + '\n' : '') +
+              '  ' +
+              h.selector +
+              ' {\n' +
+              h.body
+                .split(';')
+                .map((d) => d.trim())
+                .filter(Boolean)
+                .map((d) => '    ' + d + ';')
+                .join('\n') +
+              '\n  }',
+          )
+          .join('\n\n');
+
+      /* ── Left: utility -> CSS ─────────────────────────────────────────────── */
+
+      const clsInput = document.getElementById('cls');
+      const clsOut = document.getElementById('cls-out');
+
+      async function renderClass() {
+        const cls = clsInput.value.trim().split(/\s+/)[0];
+        clsOut.textContent = '  compiling…';
+        const hits = await compile(cls);
+
+        if (!cls) {
+          clsOut.textContent = '  type a class.';
+          return;
+        }
+        if (hits.length === 0) {
+          clsOut.textContent =
+            '  THERE IS NO SUCH CLASS.\n\n' +
+            '  `' +
+            cls +
+            '` generated nothing, so it does nothing. In the markup it would\n' +
+            '  sit there looking like styling and having no effect at all — which is the\n' +
+            '  one genuinely nasty failure mode of this system, because there is no error.\n\n' +
+            '  This is what a typo looks like. It is also what happens when you guess a\n' +
+            '  name that sounds right (text-huge, margin-4, bg-brand) instead of checking.\n' +
+            '  Install the Tailwind IntelliSense extension and it tells you as you type.';
+          specimen.className = '';
+          return;
+        }
+
+        specimen.className = cls;
+        clsOut.textContent = show(hits) + '\n\n  …and that is all it is. One class, one rule.';
+      }
+
+      /* ── Right: CSS -> utility ────────────────────────────────────────────── */
+
+      const cssInput = document.getElementById('css');
+      const cssOut = document.getElementById('css-out');
+
+      /**
+       * Resolve a declaration list to computed values.
+       *
+       * The measuring element sits inside a positioned WRAPPER rather than being
+       * positioned itself. That separation matters: `measured.style` is iterated to
+       * discover which properties the user actually asked about, so anything this file
+       * puts on the same element is indistinguishable from what the user typed. The
+       * first version stacked the two and cheerfully reported `left: -9999px` as part
+       * of the question, which is a good illustration of why you measure the thing and
+       * not the scaffolding around it.
+       */
+      const stage = document.createElement('div');
+      stage.setAttribute('aria-hidden', 'true');
+      stage.style.cssText = 'position:absolute;left:-9999px;top:0;width:400px;';
+      const measured = document.createElement('div');
+      stage.append(measured);
+      document.body.append(stage);
+
+      function resolve(declarations) {
+        measured.className = '';
+        measured.style.cssText = declarations;
+        const computed = getComputedStyle(measured);
+        const out = {};
+        for (const prop of measured.style) out[prop] = computed.getPropertyValue(prop);
+        return out;
+      }
+
+      async function resolveClass(cls, properties) {
+        probe.className = '';
+        probe.style.cssText = '';
+        await compile(cls);
+        const computed = getComputedStyle(probe);
+        const out = {};
+        for (const prop of properties) out[prop] = computed.getPropertyValue(prop);
+        return out;
+      }
+
+      /**
+       * The candidate pool. Deliberately NOT a property->class mapping: it is a list of
+       * classes to TRY, and the winner is decided by measuring. That is why a class this
+       * list happens to contain for the wrong reason still cannot produce a wrong answer.
+       */
+      const CANDIDATES = [
+        'p-0', 'p-1', 'p-2', 'p-3', 'p-4', 'p-5', 'p-6', 'p-8', 'p-10', 'p-12', 'p-16',
+        'px-2', 'px-3', 'px-4', 'px-6', 'px-8', 'py-1', 'py-2', 'py-3', 'py-4', 'py-6',
+        'm-0', 'm-2', 'm-4', 'm-6', 'm-8', 'mx-auto', 'mt-2', 'mt-4', 'mb-2', 'mb-4',
+        'gap-1', 'gap-2', 'gap-3', 'gap-4', 'gap-6', 'gap-8',
+        'block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'hidden',
+        'flex-row', 'flex-col', 'flex-wrap', 'flex-1', 'flex-auto', 'flex-none',
+        'items-start', 'items-center', 'items-end', 'items-stretch', 'items-baseline',
+        'justify-start', 'justify-center', 'justify-end', 'justify-between', 'justify-around',
+        'grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-12',
+        'rounded-none', 'rounded-sm', 'rounded', 'rounded-md', 'rounded-lg', 'rounded-xl',
+        'rounded-2xl', 'rounded-3xl', 'rounded-full',
+        'text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl',
+        'text-4xl', 'font-normal', 'font-medium', 'font-semibold', 'font-bold',
+        'text-left', 'text-center', 'text-right', 'uppercase', 'lowercase', 'capitalize',
+        'w-full', 'w-auto', 'w-px', 'w-4', 'w-8', 'w-12', 'h-full', 'h-4', 'h-8', 'h-12',
+        'max-w-none', 'max-w-xs', 'max-w-sm', 'max-w-md', 'max-w-lg', 'max-w-xl',
+        'min-w-0', 'overflow-hidden', 'overflow-auto', 'overflow-x-auto',
+        'static', 'relative', 'absolute', 'fixed', 'sticky',
+        'border-0', 'border', 'border-2', 'border-4',
+        'bg-white', 'bg-black', 'bg-transparent', 'bg-brand-500', 'bg-brand-100',
+        'text-white', 'text-black', 'text-brand-500',
+        'opacity-0', 'opacity-50', 'opacity-100',
+        'shadow-none', 'shadow-sm', 'shadow', 'shadow-md', 'shadow-lg',
+        'cursor-pointer', 'select-none', 'list-none', 'sr-only',
+      ];
+
+      async function renderCss() {
+        const declarations = cssInput.value.trim();
+        if (!declarations) {
+          cssOut.textContent = '  paste a declaration.';
+          return;
+        }
+        cssOut.textContent = '  measuring…';
+
+        let wanted;
+        try {
+          wanted = resolve(declarations.endsWith(';') ? declarations : declarations + ';');
+        } catch {
+          cssOut.textContent = '  that is not a CSS declaration I can parse.';
+          return;
+        }
+
+        const properties = Object.keys(wanted);
+        if (properties.length === 0) {
+          cssOut.textContent =
+            '  the browser did not accept any of that as a declaration.\n' +
+            '  (a misspelled property is dropped silently — week 3, the same lesson)';
+          return;
+        }
+
+        /* A candidate is judged on how many of the asked-for properties it reproduces
+           EXACTLY. Exact matches are the answer.
+
+           When nothing matches exactly the NEAREST candidate is reported instead, ranked
+           by numeric distance rather than by a count of exact hits. Counting hits was the
+           first attempt and it is useless here: `padding: 13px` matches none of the four
+           longhands on any candidate, so every candidate scored zero and the answer was
+           "nothing comes close" — for a value that is 1px away from `p-3`. The near-miss
+           IS the lesson on this box, so it has to be found properly. */
+        const px = (value) => {
+          const n = parseFloat(value);
+          return /^-?[\d.]+px$/.test(String(value).trim()) && Number.isFinite(n) ? n : null;
+        };
+
+        const exact = [];
+        let best = null;
+        for (const candidate of CANDIDATES) {
+          const got = await resolveClass(candidate, properties);
+
+          let hits = 0;
+          let distance = 0;
+          let comparable = true;
+          for (const property of properties) {
+            if (got[property] === wanted[property]) {
+              hits++;
+              continue;
+            }
+            const a = px(wanted[property]);
+            const b = px(got[property]);
+            if (a === null || b === null) comparable = false;
+            else distance += Math.abs(a - b);
+          }
+
+          if (hits === properties.length) exact.push(candidate);
+          else if (comparable && (!best || distance < best.distance)) {
+            best = { candidate, distance, got };
+          }
+        }
+
+        const near = () => {
+          if (!best) return '  and nothing in the list is close enough to be worth naming.';
+          const differing = properties.filter((p) => best.got[p] !== wanted[p]);
+          return (
+            '  the nearest thing on the scale is `' +
+            best.candidate +
+            '`:\n' +
+            differing
+              .map((p) => '    ' + p + ': you asked ' + wanted[p] + ', it gives ' + best.got[p])
+              .join('\n')
+          );
+        };
+
+        cssOut.textContent =
+          '  you asked for:\n' +
+          properties.map((p) => '    ' + p + ': ' + wanted[p]).join('\n') +
+          '\n\n' +
+          (exact.length
+            ? '  these classes resolve to exactly that:\n' +
+              exact.map((c) => '    ' + c).join('\n') +
+              '\n\n' +
+              '  Checked by MEASURING, not by looking up a table: each one was applied to a\n' +
+              '  real element and its computed value compared with yours. That is why the\n' +
+              '  answer is trustworthy even for a property nobody anticipated.'
+            : '  nothing resolves to exactly that.\n\n' +
+              near() +
+              '\n\n' +
+              '  This is a real answer and it is worth sitting with. The scale is deliberately\n' +
+              '  coarse — that is the point of a scale — so a value that is not on it has three\n' +
+              '  honest outcomes:\n' +
+              '    1. the nearest step is fine, and your original number was arbitrary anyway.\n' +
+              '       (this is the answer roughly nine times in ten)\n' +
+              '    2. the value belongs in the theme, because you keep needing it. Add it to\n' +
+              '       @theme and it becomes a first-class utility.\n' +
+              '    3. it genuinely is a one-off, and it goes in square brackets. See demo 08\n' +
+              '       for when that is legitimate and when it is you losing an argument.');
+      }
+
+      /* ── Presets: last week's stylesheet, line by line ─────────────────────── */
+
+      const clsPresets = ['p-4', 'md:px-8', 'hover:bg-brand-700', 'dark:bg-slate-900', 'flex', 'gap-4', 'rounded-xl', 'text-huge'];
+      const cssPresets = [
+        'padding: 1rem;',
+        'display: flex;',
+        'gap: 1rem;',
+        'justify-content: space-between;',
+        'font-weight: 600;',
+        /* The two deliberate near-misses. `13px` is a number somebody nudged until it
+           looked right and it is not on any scale; `62ch` is week 3's measure token,
+           which is a real design decision and therefore belongs in @theme rather than
+           in a bracket. Press these two LAST — they are where the scale conversation
+           starts, and both readouts say so. */
+        'padding: 13px;',
+        'max-width: 62ch;',
+      ];
+
+      for (const [id, values, input, render] of [
+        ['cls-presets', clsPresets, clsInput, renderClass],
+        ['css-presets', cssPresets, cssInput, renderCss],
+      ]) {
+        const host = document.getElementById(id);
+        for (const value of values) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = value;
+          button.addEventListener('click', () => {
+            input.value = value;
+            render();
+          });
+          host.append(button);
+        }
+      }
+
+      let clsTimer;
+      clsInput.addEventListener('input', () => {
+        clearTimeout(clsTimer);
+        clsTimer = setTimeout(renderClass, 220);
+      });
+
+      let cssTimer;
+      cssInput.addEventListener('input', () => {
+        clearTimeout(cssTimer);
+        cssTimer = setTimeout(renderCss, 400);
+      });
+
+      renderClass();
+      renderCss();
+    </script>
+  </body>
+</html>

@@ -93,7 +93,7 @@ footer: פיתוח צד לקוח 2027 · המרכז האקדמי רופין
 > ו-`NaN` במקום מספר דקות על המסך — כן.
 
 > [!note] למה `fetchedAt` הוא מספר ולא `Date`
-> שבוע 10, מטלה אחת אחר כך. `JSON.stringify(new Date())` מייצר מחרוזת ISO, ול-`JSON.parse`
+> שבוע 11, מטלה אחת אחר כך. `JSON.stringify(new Date())` מייצר מחרוזת ISO, ול-`JSON.parse`
 > אין מושג שזה היה פעם משהו אחר — אז יישום שמחזיק `Date` בזיכרון עובד מצוין עד הרענון
 > הראשון, ואז `entry.fetchedAt.getTime is not a function` נזרק מתוך `render`.
 >

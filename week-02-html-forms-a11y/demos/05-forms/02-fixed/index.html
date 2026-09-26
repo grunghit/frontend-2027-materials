@@ -1,0 +1,108 @@
+<!doctype html>
+<!--
+  The same form, done properly. Three changes, and every one of them is graded from week 2:
+    · every field has a real <label for> pointing at the field's id
+    · every field has a `name` — that is what actually gets submitted
+    · the group has a <fieldset> and a <legend>, and one field is `required`
+
+  Live: click the WORD "Full name". The cursor jumps into the field. That is what a label is.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact us</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #14181f;
+        background: #fff;
+      }
+      fieldset {
+        border: 1px solid #d3dae4;
+        border-radius: 8px;
+        padding: 12px 14px;
+        max-width: 380px;
+      }
+      legend {
+        padding: 0 6px;
+        font-weight: 600;
+      }
+      label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 13px;
+        color: #14181f;
+        cursor: pointer;
+      }
+      input,
+      textarea {
+        font: inherit;
+        width: 100%;
+        padding: 7px 9px;
+        border: 1px solid #d3dae4;
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+      input:focus-visible,
+      textarea:focus-visible,
+      button:focus-visible {
+        outline: 3px solid #0b5f8f;
+        outline-offset: 2px;
+      }
+      button {
+        font: inherit;
+        padding: 7px 16px;
+        border: 1px solid #0b5f8f;
+        border-radius: 999px;
+        background: #0b5f8f;
+        color: #fff;
+        cursor: pointer;
+      }
+      #out {
+        margin-top: 14px;
+        padding: 10px 12px;
+        border: 1px solid #d3dae4;
+        border-radius: 8px;
+        font: 13px/1.7 ui-monospace, Menlo, Consolas, monospace;
+        color: #1c6b3f;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Contact us</h1>
+
+    <form id="contact">
+      <fieldset>
+        <legend>Your details</legend>
+
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="3"></textarea>
+
+        <button type="submit">send</button>
+      </fieldset>
+    </form>
+
+    <div id="out" aria-live="polite">Fill it in and press "send".</div>
+
+    <script>
+      document.getElementById('contact').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const pairs = [...data.entries()].map(([key, value]) => `${key}=${encodeURIComponent(value)}`);
+        document.getElementById('out').textContent = `sent: ?${pairs.join('&')}`;
+      });
+    </script>
+  </body>
+</html>

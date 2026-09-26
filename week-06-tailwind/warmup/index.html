@@ -1,0 +1,130 @@
+<!doctype html>
+<!--
+  Week-6 warm-up — cycle 1's you-do, AI-free. Eight minutes, ungraded, no git.
+
+  Two identical boxes. The left one is styled by the stylesheet in styles.css, which is
+  ordinary week-3 CSS. The right one has no styling at all. Make the right one match the
+  left one, using nothing but utilities.
+
+  The referee at the bottom is not decorative: it compares twenty-five computed properties on
+  the two boxes and tells you exactly which ones still disagree. You are done when it
+  says so, not when it looks close.
+
+  Instructor: the answer is in instructor-notes-he.md (§3.1), not in this folder — the
+  publisher ships this warm-up file by file, and solution/ stays behind.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Warm-up &mdash; match the box</title>
+
+    <link rel="stylesheet" href="styles.css" />
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      /* GIVEN — the same tokens as the assignment. Every colour you need has a name. */
+      @theme {
+        --spacing: 0.25rem;
+        --color-surface: hsl(222 44% 98%);
+        --color-edge: hsl(222 22% 82%);
+        --color-ink: hsl(222 47% 11%);
+        --color-ink-muted: hsl(222 20% 34%);
+        --color-brand-500: hsl(234 89% 52%);
+        --color-brand-700: hsl(234 78% 38%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Match the box</h1>
+      <p class="intro">
+        The left box is styled by <code>styles.css</code>. The right box is not styled at all.
+        Give the right box utilities until the referee below reports zero differences. Ten
+        minutes. Do not touch <code>styles.css</code>.
+      </p>
+    </header>
+
+    <main>
+      <div class="pair">
+        <div>
+          <h2>styles.css</h2>
+          <div class="notice" id="target">
+            <p class="notice-title">Certificate expires in 6 days</p>
+            <p class="notice-text">Renew it before Friday.</p>
+            <a class="notice-link" href="#nowhere">Renew now</a>
+          </div>
+        </div>
+
+        <div>
+          <h2>utilities</h2>
+          <!-- CODE HERE — five elements. Replace every CODE-HERE with utilities. -->
+          <div class="CODE-HERE" id="yours">
+            <p class="CODE-HERE">Certificate expires in 6 days</p>
+            <p class="CODE-HERE">Renew it before Friday.</p>
+            <a class="CODE-HERE" href="#nowhere">Renew now</a>
+          </div>
+        </div>
+      </div>
+
+      <h2>referee</h2>
+      <p class="referee" id="referee" aria-live="polite">measuring&hellip;</p>
+    </main>
+
+    <script>
+      /*
+        The referee. It compares the two boxes property by property, on the RENDERED page,
+        and names every one that still differs. Guessing at it is slower than reading
+        styles.css, which is the point.
+      */
+      const WATCH = [
+        ['the box', '#target', '#yours', ['display', 'gap', 'padding', 'borderRadius', 'borderTopWidth', 'borderTopColor', 'backgroundColor', 'maxWidth', 'flexDirection']],
+        ['the title', '#target .notice-title', '#yours > p:nth-of-type(1)', ['margin', 'fontSize', 'fontWeight', 'color']],
+        ['the text', '#target .notice-text', '#yours > p:nth-of-type(2)', ['margin', 'fontSize', 'color']],
+        ['the link', '#target .notice-link', '#yours > a', ['display', 'padding', 'borderRadius', 'backgroundColor', 'color', 'fontSize', 'fontWeight', 'textDecorationLine', 'alignSelf']],
+      ];
+
+      function report() {
+        const lines = [];
+        let differences = 0;
+
+        for (const [label, leftSel, rightSel, properties] of WATCH) {
+          const left = document.querySelector(leftSel);
+          const right = document.querySelector(rightSel);
+          if (!left || !right) {
+            lines.push('  ' + label + ': element not found — did you change the markup?');
+            differences++;
+            continue;
+          }
+          const a = getComputedStyle(left);
+          const b = getComputedStyle(right);
+          const bad = properties.filter((p) => a[p] !== b[p]);
+          differences += bad.length;
+          lines.push(
+            bad.length === 0
+              ? '  ' + label.padEnd(12) + 'matches'
+              : '  ' +
+                  label.padEnd(12) +
+                  bad.length +
+                  ' to go\n' +
+                  bad.map((p) => '      ' + p.padEnd(20) + 'want ' + a[p] + '   ·   got ' + b[p]).join('\n'),
+          );
+        }
+
+        document.getElementById('referee').textContent =
+          (differences === 0
+            ? '  ZERO DIFFERENCES. Done.\n\n  Now the question worth two minutes: how many class names did the left\n  box need, and how many did the right one? And which of the two could\n  you delete without checking anything first?\n\n'
+            : '  ' + differences + ' propert' + (differences === 1 ? 'y' : 'ies') + ' still differ.\n\n') +
+          lines.join('\n');
+      }
+
+      /* Re-measure whenever the compiler has produced something new. */
+      new MutationObserver(() => requestAnimationFrame(report)).observe(document.head, {
+        childList: true,
+        subtree: true,
+      });
+      setInterval(report, 500);
+      report();
+    </script>
+  </body>
+</html>

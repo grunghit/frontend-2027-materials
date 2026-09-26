@@ -58,7 +58,7 @@ export function esc(value) {
 }
 
 /*
- * Shared class lists. ONE definition, used everywhere — week 5's component argument,
+ * Shared class lists. ONE definition, used everywhere — week 6's component argument,
  * with a real place to put the answer now that there is JavaScript.
  *
  * Add `motion-safe:` to every transition you write. It compiles to

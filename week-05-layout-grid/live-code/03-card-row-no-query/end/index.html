@@ -1,0 +1,112 @@
+<!doctype html>
+<!--
+  Cycle 3 — a card row that needs no query. THE MARKUP IS FINISHED: every step
+  is in styles.css. The third section, the staff row, is yours in "you do".
+  Compare your result with ../end/ and with ../checkpoint.png.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cycle 3 — a card row that needs no query</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <header class="site">
+      <p>Riverside Library &middot; Eastgate</p>
+    </header>
+
+    <main>
+      <h1>What is on at Eastgate</h1>
+
+      <section aria-labelledby="events-title">
+        <h2 id="events-title">This month</h2>
+        <div class="events">
+          <article class="event">
+            <h3>Story time</h3>
+            <p class="when">Tuesdays, 10:00</p>
+            <p>Picture books read out loud for under-fives, with a song at the end and nobody minding if you wander off.</p>
+            <a href="#story">Book a place</a>
+          </article>
+          <article class="event">
+            <h3>Homework club</h3>
+            <p class="when">Weekdays, 15:30</p>
+            <p>Quiet tables and a librarian who knows the syllabus.</p>
+            <a href="#homework">Book a place</a>
+          </article>
+          <article class="event">
+            <h3>Repair cafe</h3>
+            <p class="when">First Saturday, 11:00</p>
+            <p>Bring a lamp, a toaster or a jacket with a broken zip. Volunteers fix what they can, and show you how, and the coffee is free while you wait.</p>
+            <a href="#repair">Book a place</a>
+          </article>
+          <article class="event">
+            <h3>Local history walk</h3>
+            <p class="when">Sunday 14th, 14:00</p>
+            <p>Ninety minutes along the old mill race.</p>
+            <a href="#walk">Book a place</a>
+          </article>
+          <article class="event">
+            <h3>Poetry evening</h3>
+            <p class="when">Thursday 25th, 19:00</p>
+            <p>Open microphone. Read your own or somebody else's.</p>
+            <a href="#poetry">Book a place</a>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="covers-title">
+        <h2 id="covers-title">New on the shelf</h2>
+        <div class="covers">
+          <figure class="cover">
+            <img src="images/cover-wide.svg" alt="A wide blue cover with a yellow sun" width="600" height="400" />
+            <figcaption>The Mill Race</figcaption>
+          </figure>
+          <figure class="cover">
+            <img src="images/cover-tall.svg" alt="A tall brown cover with a pale mountain" width="400" height="600" />
+            <figcaption>North Face</figcaption>
+          </figure>
+          <figure class="cover">
+            <img src="images/cover-square.svg" alt="A square red cover with a black block" width="500" height="500" />
+            <figcaption>Red Square</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section aria-labelledby="staff-title">
+        <h2 id="staff-title">Your turn: who works here</h2>
+        <div class="staff">
+          <article class="person">
+            <img src="images/staff-1.svg" alt="" width="300" height="400" />
+            <h3>Noa Levin</h3>
+            <p>Children and families</p>
+            <a href="#staff-title">Ask Noa</a>
+          </article>
+          <article class="person">
+            <img src="images/staff-2.svg" alt="" width="400" height="300" />
+            <h3>Omar Haddad</h3>
+            <p>Local history, and the photocopier</p>
+            <a href="#staff-title">Ask Omar</a>
+          </article>
+          <article class="person">
+            <img src="images/staff-3.svg" alt="" width="300" height="300" />
+            <h3>Dana Katz</h3>
+            <p>Homework club</p>
+            <a href="#staff-title">Ask Dana</a>
+          </article>
+          <article class="person">
+            <img src="images/staff-4.svg" alt="" width="300" height="450" />
+            <h3>Eli Ben-Ami</h3>
+            <p>Repair cafe, first Saturdays</p>
+            <a href="#staff-title">Ask Eli</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <p>Riverside Library &middot; 14 Mill Lane &middot; Eastgate</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+/* styles.css — the debate society page. The top half came from a tutorial;
+   the two rules at the bottom are mine. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: system-ui, sans-serif;
+  color: hsl(200 20% 15%);
+  background-color: hsl(170 30% 98%);
+  line-height: 1.6;
+}
+
+/* was #page-title (1,0,0). Lowered to the element (0,0,1): the id stays in
+   the HTML as an anchor, and every class rule below can now override this. */
+h1 {
+  color: grey;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+a {
+  color: hsl(170 70% 28%);
+}
+
+/* ── mine ─────────────────────────────────────────────────────────── */
+
+/* the heading should be the brand colour, like the links */
+.title {
+  color: hsl(170 70% 28%);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: hsl(200 20% 92%);
+    background-color: hsl(170 20% 10%);
+  }
+
+  a,
+  .title {
+    color: hsl(170 60% 70%);
+  }
+}

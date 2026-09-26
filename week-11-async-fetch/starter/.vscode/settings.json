@@ -28,7 +28,7 @@
 
   // ── Live Server ──────────────────────────────────────────────────────────
   // Port pinned so localStorage keys stay on ONE origin all semester. If the port
-  // moves, week 10's saved data appears to vanish — the storage is per-origin, and
+  // moves, week 11's saved data appears to vanish — the storage is per-origin, and
   // http://127.0.0.1:5500 and http://127.0.0.1:5501 are different origins.
   "liveServer.settings.port": 5500,
   "liveServer.settings.host": "127.0.0.1",

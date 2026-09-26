@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+  AI cycle 4 · ANSWER A — chat 1, P1. INTENTIONALLY THROWS.
+
+  The answer as it came back (transcript.md, "## Claude — chat 1"), with the two cards it
+  elided written out in the same classes, and ONE line changed: it loaded Tailwind from
+  https://cdn.tailwindcss.com, and here it loads the copy beside the page, vendor/tailwind.js
+  — how every page in this course runs, and the only way anything runs in week 13 with the
+  network off. That swap is the test.
+
+  What it does then (measured, checkpoint-he.md): the grid still works; the brand colour does
+  not exist — the buttons are white text on nothing (1.00 : 1), no heading is in the brand
+  colour, the focus ring is white on white — and the console says "tailwind is not defined".
+  axe does NOT report it: it files colour-contrast under "needs review" at 1:1, because the
+  text sits on a transparent background. Green is a floor. The marker above is why the
+  course's console gate expects this page to throw. It is this cycle's מכשול.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Film club — highlights</title>
+    <script src="vendor/tailwind.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                500: 'hsl(234 89% 52%)',
+                600: 'hsl(234 80% 45%)',
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-white text-slate-900">
+    <header class="mx-auto max-w-6xl px-4 pt-6">
+      <p class="text-lg font-bold">Film club</p>
+    </header>
+    <main class="mx-auto max-w-6xl px-4 py-12">
+      <h1 class="text-3xl font-bold tracking-tight text-brand-600">This term at the film club</h1>
+
+      <section aria-labelledby="highlights-heading" class="mt-8">
+        <h2 id="highlights-heading" class="sr-only">Highlights</h2>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <article class="rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-brand-600">Twelve films</h3>
+            <p class="mt-2 text-slate-600">One a week, Thursdays at eight, in Hall B.</p>
+            <a
+              href="#programme"
+              class="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              >See the programme</a
+            >
+          </article>
+          <article class="rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-brand-600">Introduced by students</h3>
+            <p class="mt-2 text-slate-600">Three of the films come with a ten-minute introduction.</p>
+            <a
+              href="#introductions"
+              class="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              >Who is speaking</a
+            >
+          </article>
+          <article class="rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-brand-600">84 seats</h3>
+            <p class="mt-2 text-slate-600">Members book first; the rest open on Tuesday.</p>
+            <a
+              href="#seats"
+              class="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              >Book a seat</a
+            >
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

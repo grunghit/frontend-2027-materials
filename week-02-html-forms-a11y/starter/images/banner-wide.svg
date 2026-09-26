@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="120" viewBox="0 0 640 120" role="img" aria-label="Wide banner: a desk with a laptop, a notebook and a cup, under the words Maya Cohen">
+  <rect width="640" height="120" fill="#243b2f"/>
+  <rect x="420" y="40" width="120" height="60" rx="6" fill="#6b9a7c"/>
+  <rect x="560" y="60" width="40" height="40" rx="6" fill="#a7cdb3"/>
+  <text x="24" y="58" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#fff">Maya Cohen</text>
+  <text x="24" y="84" font-family="ui-monospace, monospace" font-size="13" fill="#bfe0c9">WIDE 640x120 - from 700px</text>
+</svg>

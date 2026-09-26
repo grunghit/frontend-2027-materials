@@ -1,0 +1,52 @@
+/* styles.css — four rules in this file do not apply. Find out why, one at a time.
+   Start in the Network tab anyway: ruling out "the file never arrived" costs three
+   seconds, and here it passes, so the four reasons are all in this file. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: system-ui, sans-serif;
+  color: hsl(200 20% 15%);
+  line-height: 1.6;
+}
+
+/* the tagline under the heading should be muted — it is not */
+.tag-line {
+  color: hsl(200 10% 40%);
+}
+
+/* the heading should be the brand colour — but this id rule from a tutorial wins */
+#page-title {
+  color: grey;
+}
+
+.title {
+  color: hsl(170 70% 28%);
+}
+
+/* the nav links should be the brand colour like every other link — this chain beats
+   the flat rule below, and they come out the wrong hue entirely */
+nav ul li a {
+  color: hsl(300 60% 38%);
+}
+
+a {
+  color: hsl(170 70% 28%);
+}
+
+/* hover should darken EVERY link — on Home it does nothing */
+a:hover {
+  color: hsl(170 80% 18%);
+}
+
+a[aria-current="page"] {
+  color: hsl(170 70% 28%);
+  font-weight: 700;
+}

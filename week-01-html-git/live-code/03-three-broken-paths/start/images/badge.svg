@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Seventeen kilometres badge">
+  <circle cx="60" cy="60" r="54" fill="#fef3c7" stroke="#b45309" stroke-width="6"/>
+  <text x="60" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#78350f">17</text>
+  <text x="60" y="82" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" fill="#78350f">km</text>
+</svg>

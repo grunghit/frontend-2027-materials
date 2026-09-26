@@ -1,0 +1,165 @@
+/* ============================================================================
+   Cycle 5 — draw it, then build it from the phone up.
+
+   Cycle 1's page. Its shell is three columns placed by line number, and it is
+   three columns on a phone too. Everything the cycle changes is in the last
+   block: the shell.
+   ============================================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  font: 17px/1.55 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2a24;
+  background: #f3f6f2;
+  /* A word that does not fit its box breaks instead of pushing the page
+     sideways. It does NOT change how wide a column asks to be. */
+  overflow-wrap: break-word;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  background: #e6ede7;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* -- five regions, a surface each ------------------------------------------ */
+
+.top,
+.shelves,
+.reading,
+.hours,
+.bottom {
+  padding: 16px 20px;
+  border: 2px solid #c5d3c8;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.top {
+  border-color: #1f5f4a;
+  background: #1f5f4a;
+  color: #ffffff;
+}
+
+.top p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.shelf-title {
+  font-weight: 700;
+}
+
+.shelves ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shelves a {
+  display: block;
+  padding: 4px 0;
+  color: #1f5f4a;
+}
+
+.hours dl {
+  margin: 0;
+}
+
+.hours dt {
+  font-weight: 700;
+}
+
+.hours dd {
+  margin: 0 0 8px;
+}
+
+.bottom p {
+  margin: 0;
+  color: #4b5b50;
+}
+
+/* -- the shell --------------------------------------------------------------- */
+
+/* The phone is the base: one column, and no query around it. The picture is
+   the layout, and main comes before the shelves on a small screen. */
+.frame {
+  max-width: 72rem;
+  margin-inline: auto;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'top'
+    'reading'
+    'shelves'
+    'hours'
+    'bottom';
+}
+
+/* Every region claims a NAME, never a line number. */
+.top {
+  grid-area: top;
+}
+
+.shelves {
+  grid-area: shelves;
+}
+
+.reading {
+  grid-area: reading;
+}
+
+.hours {
+  grid-area: hours;
+}
+
+.bottom {
+  grid-area: bottom;
+}
+
+/* Each query ADDS to what is above it. Nothing below undoes anything. */
+@media (min-width: 40em) {
+  .frame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-areas:
+      'top     top'
+      'shelves reading'
+      'hours   hours'
+      'bottom  bottom';
+  }
+}
+
+@media (min-width: 64em) {
+  .frame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+    grid-template-areas:
+      'top     top     top'
+      'shelves reading hours'
+      'bottom  bottom  bottom';
+  }
+}

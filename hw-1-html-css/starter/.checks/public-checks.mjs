@@ -191,7 +191,7 @@ export const publicChecks = [
   {
     title:
       'שלושת העמודים מעוצבים מטוקנים, ובתוך המגבלות: בלי Flexbox, בלי Grid, בלי מיקום ובלי `!important`',
-    expected: 'הכול בזרימה רגילה. `display: flex` הוא שבוע 3, `display: grid` הוא שבוע 4.',
+    expected: 'הכול בזרימה רגילה. `display: flex` הוא שבוע 4, `display: grid` הוא שבוע 5.',
     run: async (page, ctx) => {
       for (const rel of PAGES) {
         const ok = await onPage(page, ctx, rel, () =>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Riverside Library - the schedule, rebuilt</title>
+    <style type="text/tailwindcss">
+      @theme static {
+        --color-ground: hsl(40 33% 98%);
+        --color-panel: hsl(40 30% 94%);
+        --color-rule: hsl(35 14% 80%);
+        --color-edge: hsl(35 18% 42%);
+        --color-print: hsl(30 25% 13%);
+        --color-print-soft: hsl(30 12% 33%);
+        --color-accent: hsl(18 70% 34%);
+        --color-seats: hsl(150 60% 24%);
+        --color-seats-bg: hsl(150 45% 93%);
+        --color-wait: hsl(350 65% 38%);
+        --color-wait-bg: hsl(350 80% 96%);
+        --radius-box: 12px;
+        --radius-round: 999px;
+        --container-read: 60ch;
+      }
+    </style>
+    <script src="vendor/tailwind.js"></script>
+  </head>
+  <body class="bg-ground text-print">
+    <main class="mx-auto max-w-4xl px-4 py-10">
+      <h1 class="text-3xl font-bold">Workshops this month</h1>
+      <p class="mt-3 max-w-read text-print-soft">
+        Four workshops this month, for every age, in the reading room on the second floor. Sign up at
+        the desk or by phone; places go in the order people sign up.
+      </p>
+
+      <section class="mt-10" aria-labelledby="schedule-heading">
+        <h2 id="schedule-heading" class="text-xl font-semibold">The schedule</h2>
+        <p role="status" class="mt-2 text-sm text-print-soft">3 of 4 workshops have places left.</p>
+        <ul class="mt-4 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2">
+          <li class="flex flex-col gap-2 rounded-box border border-rule bg-panel p-4">
+            <h3 class="font-semibold">Bookbinding</h3>
+            <dl class="flex flex-col gap-1 text-sm">
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Day</dt><dd>Sunday</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Time</dt><dd>17:00</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Led by</dt><dd>Michal Raz</dd></div>
+            </dl>
+            <p class="w-fit rounded-round bg-seats-bg px-3 py-1 text-sm font-semibold text-seats">Places left</p>
+          </li>
+          <li class="flex flex-col gap-2 rounded-box border border-rule bg-panel p-4">
+            <h3 class="font-semibold">Bedtime stories</h3>
+            <dl class="flex flex-col gap-1 text-sm">
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Day</dt><dd>Monday</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Time</dt><dd>18:30</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Led by</dt><dd>Avi Nahum</dd></div>
+            </dl>
+            <p class="w-fit rounded-round bg-wait-bg px-3 py-1 text-sm font-semibold text-wait">Full · waiting list</p>
+          </li>
+          <li class="flex flex-col gap-2 rounded-box border border-rule bg-panel p-4">
+            <h3 class="font-semibold">Creative writing</h3>
+            <dl class="flex flex-col gap-1 text-sm">
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Day</dt><dd>Wednesday</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Time</dt><dd>19:00</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Led by</dt><dd>Shira Ben David</dd></div>
+            </dl>
+            <p class="w-fit rounded-round bg-seats-bg px-3 py-1 text-sm font-semibold text-seats">Places left</p>
+          </li>
+          <li class="flex flex-col gap-2 rounded-box border border-rule bg-panel p-4">
+            <h3 class="font-semibold">Reading circle</h3>
+            <dl class="flex flex-col gap-1 text-sm">
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Day</dt><dd>Thursday</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Time</dt><dd>20:00</dd></div>
+              <div class="flex gap-4"><dt class="w-16 font-semibold text-print-soft">Led by</dt><dd>Dana Cohen</dd></div>
+            </dl>
+            <p class="w-fit rounded-round bg-seats-bg px-3 py-1 text-sm font-semibold text-seats">Places left</p>
+          </li>
+        </ul>
+        <p class="mt-8">
+          <a href="#sign-up" class="inline-block rounded-box border border-edge px-4 py-2 font-semibold text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">How to sign up</a>
+        </p>
+      </section>
+
+      <section class="mt-12" aria-labelledby="room-heading">
+        <h2 id="room-heading" class="text-xl font-semibold">The reading room</h2>
+        <img src="images/reading-room.svg" alt="" width="320" height="180" class="mt-4 rounded-box border border-rule" />
+        <p class="mt-4 max-w-read text-print-soft">
+          Open Sunday to Thursday, 09:00 to 21:00. Before you borrow, read
+          <a href="#rules" class="font-semibold text-accent underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">the lending rules</a>.
+        </p>
+      </section>
+    </main>
+    <footer class="mx-auto max-w-4xl px-4 pb-10 text-sm text-print-soft">
+      <p>Riverside Library · 4 Pomegranate Street</p>
+    </footer>
+  </body>
+</html>

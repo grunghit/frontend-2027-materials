@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="120" viewBox="0 0 320 120" role="img" aria-label="Narrow banner: the words Maya Cohen next to a small laptop">
+  <rect width="320" height="120" fill="#4a2f24"/>
+  <rect x="240" y="50" width="60" height="40" rx="6" fill="#b5836e"/>
+  <text x="20" y="52" font-family="system-ui, sans-serif" font-size="26" font-weight="700" fill="#fff">Maya Cohen</text>
+  <text x="20" y="80" font-family="ui-monospace, monospace" font-size="12" fill="#e9c9bb">NARROW 320x120 - below 700px</text>
+</svg>

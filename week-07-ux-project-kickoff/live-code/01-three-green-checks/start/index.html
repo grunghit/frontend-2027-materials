@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+  INTENTIONALLY INACCESSIBLE — cycle 1 audits this page; nobody fixes it in this cycle.
+
+  A neighbourhood library's workshop page (fictional). It passes the three checks the
+  room already owns — the validator, the console, and a look at 768 and 1280 — and axe
+  at the AA tags reports one rule. It still has eight faults. The cycle writes down what
+  the tools said in checks.txt, then what they did not see, in the student's own
+  audit-he.md. The class assignment does the same to a different page, with sixteen.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Riverside Library - workshops this month</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Main">
+        <a href="#workshops" tabindex="2">Workshops</a>
+        <a href="#hours" tabindex="3">Opening hours</a>
+        <a href="#top" tabindex="1">Home</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <h1>Workshops this month</h1>
+      <p class="intro">
+        Four workshops this month, for every age, in the reading room on the second floor. Sign up at
+        the desk or by phone; places go in the order people sign up. A full workshop opens a waiting
+        list, and we call people in order when a place comes free.
+      </p>
+
+      <section id="workshops" aria-labelledby="workshops-heading">
+        <h2 id="workshops-heading">The schedule</h2>
+        <table class="schedule">
+          <caption>Four workshops, by day</caption>
+          <thead>
+            <tr>
+              <th scope="col">Workshop</th>
+              <th scope="col">Day</th>
+              <th scope="col">Time</th>
+              <th scope="col">Led by</th>
+              <th scope="col">Places</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Bookbinding</th>
+              <td>Sunday</td>
+              <td>17:00</td>
+              <td>Michal Raz</td>
+              <td><span class="dot dot--open"></span></td>
+            </tr>
+            <tr>
+              <th scope="row">Bedtime stories</th>
+              <td>Monday</td>
+              <td>18:30</td>
+              <td>Avi Nahum</td>
+              <td><span class="dot dot--full"></span></td>
+            </tr>
+            <tr>
+              <th scope="row">Creative writing</th>
+              <td>Wednesday</td>
+              <td>19:00</td>
+              <td>Shira Ben David</td>
+              <td><span class="dot dot--open"></span></td>
+            </tr>
+            <tr>
+              <th scope="row">Reading circle</th>
+              <td>Thursday</td>
+              <td>20:00</td>
+              <td>Dana Cohen</td>
+              <td><span class="dot dot--open"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="hours" aria-labelledby="hours-heading">
+        <h2 id="hours-heading">The reading room</h2>
+        <img src="images/reading-room.svg" alt="image" width="320" height="180" />
+        <p>Open Sunday to Thursday, 09:00 to 21:00. For the lending rules <a href="#rules">click here</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Riverside Library · 4 Pomegranate Street</p>
+    </footer>
+  </body>
+</html>

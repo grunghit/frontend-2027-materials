@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Film club — members</title>
+    <!-- Tailwind, from the copy beside this page — not a CDN: week 13 has no network. -->
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-page: hsl(0 0% 100%);
+        --color-surface: hsl(222 44% 98%);
+        --color-edge: hsl(222 22% 82%);
+        --color-ink: hsl(222 47% 11%);
+        --color-ink-muted: hsl(222 20% 34%);
+        --color-brand-500: hsl(234 89% 52%);
+      }
+    </style>
+  </head>
+  <body class="bg-page text-ink">
+    <!--
+      Five regions, given finished on the inside. The cycle writes only the SHELL: the
+      classes on div.frame, and the span and order of each region. The first class on every
+      region (masthead, menu, content, reviews, credits) is a name, not a utility — it does
+      nothing, and it is there so you can find the region.
+    -->
+    <div class="frame mx-auto grid max-w-6xl grid-cols-1 gap-4 p-4 md:grid-cols-12">
+      <header class="masthead order-first md:order-none md:col-span-12 rounded-xl border border-edge bg-surface px-5 py-4">
+        <p class="m-0 text-lg font-bold text-brand-500">Film club</p>
+      </header>
+
+      <nav class="menu md:col-span-4 xl:col-span-2 rounded-xl border border-edge bg-surface p-4" aria-label="Members">
+        <ul class="m-0 flex list-none flex-col gap-1 p-0">
+          <li><a class="text-brand-500" href="#programme">Programme</a></li>
+          <li><a class="text-brand-500" href="#seats">My seats</a></li>
+          <li><a class="text-brand-500" href="#reviews">Reviews</a></li>
+        </ul>
+      </nav>
+
+      <main class="content order-first md:order-none md:col-span-8 xl:col-span-7 flex min-w-0 flex-col gap-4" id="programme">
+        <h1 class="m-0 text-2xl font-bold">This term</h1>
+        <p class="m-0 max-w-prose text-ink-muted">
+          Twelve films, one a week, Thursdays at eight.
+          <a class="text-brand-500 underline" href="#seats">Book early</a> for the ones in Hall B.
+        </p>
+        <section class="stats flex flex-col gap-4 sm:flex-row" aria-label="The term in numbers" id="seats">
+          <p class="stat m-0 sm:flex-1 rounded-xl border border-edge bg-surface p-4">
+            <b class="block text-2xl">12</b> films
+          </p>
+          <p class="stat m-0 sm:flex-1 rounded-xl border border-edge bg-surface p-4">
+            <b class="block text-2xl">3</b> of them introduced by the directors' own students, which is the part people remember
+          </p>
+          <p class="stat m-0 sm:flex-1 rounded-xl border border-edge bg-surface p-4">
+            <b class="block text-2xl">84</b> seats
+          </p>
+        </section>
+      </main>
+
+      <aside class="reviews md:col-span-12 xl:col-span-3 rounded-xl border border-edge bg-surface p-4" id="reviews" aria-label="Latest reviews">
+        <h2 class="m-0 mb-2 text-lg font-semibold">Latest reviews</h2>
+        <p class="m-0 text-sm text-ink-muted">"Paris, Texas" — five stars, and one complaint about the chairs.</p>
+      </aside>
+
+      <footer class="credits md:col-span-12 rounded-xl border border-edge bg-surface px-5 py-4 text-sm text-ink-muted">
+        Film club · Ruppin · members' area
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  Cycle 5 — start. Cycle 3's end: skip link, aria-current, the table, the form. Two
+  banners are ready in images/ (a wide one and a narrow one, each saying which it is)
+  and nothing uses them yet. This cycle adds behaviour without a line of JavaScript:
+  details/summary that opens and closes, and a picture that picks its own source. No CSS.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruppin Film Club</title>
+  </head>
+
+  <body>
+    <a href="#main">Skip to content</a>
+
+    <header>
+      <h1>Ruppin Film Club</h1>
+      <p>One film a week, in the small hall, for anyone on campus.</p>
+    </header>
+
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="#screenings">Screenings</a></li>
+        <li><a href="#join">Join the club</a></li>
+        <li><a href="#about">About the club</a></li>
+      </ul>
+    </nav>
+
+    <main id="main" tabindex="-1">
+      <section id="screenings">
+        <h2>Screenings this month</h2>
+        <table>
+          <caption>Screenings this month</caption>
+          <thead>
+            <tr>
+              <th scope="col">Film</th>
+              <th scope="col">Date</th>
+              <th scope="col">Room</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Alien</th>
+              <td><time datetime="2027-11-02T19:30">Tuesday 2 November, 19:30</time></td>
+              <td>204</td>
+            </tr>
+            <tr>
+              <th scope="row">The Apartment</th>
+              <td><time datetime="2027-11-09T19:30">Tuesday 9 November, 19:30</time></td>
+              <td>204</td>
+            </tr>
+            <tr>
+              <th scope="row">Spirited Away</th>
+              <td><time datetime="2027-11-16T19:30">Tuesday 16 November, 19:30</time></td>
+              <td>Auditorium</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="join">
+        <h2>Join the club</h2>
+        <p>Membership is free. Fill in the form and we add you to the list for the next screening.</p>
+
+        <form method="get">
+          <fieldset>
+            <legend>Your details</legend>
+            <p><label for="full-name">Full name</label> <input type="text" id="full-name" name="full-name" required /></p>
+            <p>
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="name@example.com" required aria-describedby="email-hint" />
+            </p>
+            <p id="email-hint">Only for a reminder before each screening. No newsletter.</p>
+            <p><label for="phone">Phone</label> <input type="tel" id="phone" name="phone" /></p>
+          </fieldset>
+          <fieldset>
+            <legend>Membership</legend>
+            <p><input type="radio" id="member-student" name="membership" value="student" checked /> <label for="member-student">Student</label></p>
+            <p><input type="radio" id="member-staff" name="membership" value="staff" /> <label for="member-staff">Staff</label></p>
+          </fieldset>
+          <p><label for="message">Message</label> <textarea id="message" name="message" rows="3"></textarea></p>
+          <button type="submit">Send</button>
+        </form>
+      </section>
+
+      <section id="about">
+        <h2>About the club</h2>
+        <p>
+          Started in <time datetime="2019">2019</time> by three students who wanted a bigger screen than a laptop. We show one
+          film a week during the semester, vote on next month's list at the end of each screening,
+          and argue about it afterwards in the cafeteria.
+        </p>
+        <h3>Where we meet</h3>
+        <p>Room 204 in the main building, except when the poster says otherwise. Doors open at 19:15.</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Ruppin Film Club. Built by members, in plain HTML.</p>
+    </footer>
+  </body>
+</html>

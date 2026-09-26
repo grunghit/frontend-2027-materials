@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600" role="img" aria-label="A tall brown cover with a pale mountain">
+  <rect width="400" height="600" fill="#7a5a3a"/>
+  <rect x="40" y="40" width="320" height="520" fill="none" stroke="#efe4cc" stroke-width="6"/>
+  <polygon points="200,120 300,320 100,320" fill="#efe4cc"/>
+  <rect x="90" y="420" width="220" height="24" fill="#efe4cc"/>
+  <rect x="90" y="460" width="150" height="16" fill="#efe4cc"/>
+</svg>

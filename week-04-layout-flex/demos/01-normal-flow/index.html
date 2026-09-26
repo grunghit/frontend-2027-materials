@@ -1,0 +1,335 @@
+<!doctype html>
+<!--
+  Normal flow, made visible. Embedded in the week-4 deck (act 1) and runnable on its own.
+
+  The page below has NO layout CSS. Not one line. Everything you see is the browser's
+  default behaviour, which is the thing week 4 is actually about: before you position
+  anything, the browser has already laid the whole page out, and it did it by a rule you
+  can state in one sentence.
+
+  The three toggles paint that rule onto the page:
+
+    · outline every box     — so "block" and "inline" stop being words
+    · show the line boxes   — the horizontal strips inline content is poured into
+    · show the containing block of the highlighted element
+
+  NOTHING HERE IS SIMULATED. Every measurement in the readout comes from
+  getBoundingClientRect() and getComputedStyle() on the real elements.
+
+  DEMO MOVE: turn on outlines and ask "why is the <strong> box exactly as wide as the
+  word, but the <p> box the full width of the page?" — then turn on line boxes and let
+  them see that inline content is poured into strips, not stacked. The sentence to land:
+  a block box takes the full width it is offered and stacks; an inline box takes the
+  width of its content and flows.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Normal flow, made visible</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --block: #2563eb;
+        --inline: #b45309;
+        --linebox: #86efac;
+        --cb: #a855f7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line);
+      }
+      .bar label {
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .bar input {
+        accent-color: #1d4ed8;
+        margin-right: 4px;
+      }
+      input:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+      }
+
+      .key span {
+        display: inline-block;
+        margin-right: 12px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .key i {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        margin-right: 4px;
+        border-radius: 2px;
+        vertical-align: -1px;
+      }
+
+      /* ── The specimen. Deliberately plain: no layout properties anywhere. ────── */
+      .page {
+        max-width: 44rem;
+        padding: 10px 14px;
+        border: 2px dashed #94a3b8;
+        border-radius: 8px;
+      }
+      .page h1 {
+        font-size: 1.5rem;
+      }
+      .page h2 {
+        font-size: 1.15rem;
+      }
+      .page img {
+        width: 90px;
+        height: 60px;
+      }
+
+      /* ── The instrumentation. Outlines only — they take no space, so switching
+           them on cannot move anything. That is the whole reason for outline
+           rather than border here. ─────────────────────────────────────────── */
+      .show-boxes .page :is(p, h1, h2, ul, li, blockquote, div) {
+        outline: 1px solid var(--block);
+        outline-offset: -1px;
+        background: rgb(37 99 235 / 5%);
+      }
+      .show-boxes .page :is(a, strong, em, code, span, img) {
+        outline: 1px solid var(--inline);
+        outline-offset: -1px;
+        background: rgb(180 83 9 / 10%);
+      }
+
+      .lb {
+        position: absolute;
+        z-index: 0;
+        background: rgb(134 239 172 / 45%);
+        border-block: 1px solid #16a34a;
+        pointer-events: none;
+      }
+      .cbbox {
+        position: absolute;
+        z-index: 0;
+        border: 2px solid var(--cb);
+        background: rgb(168 85 247 / 8%);
+        pointer-events: none;
+      }
+      #layer {
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .readout {
+        margin: 12px 0 0;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f1f5f9;
+        font: 13px/1.7 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        white-space: pre-wrap;
+      }
+      .hint {
+        margin: 8px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="bar">
+      <label><input type="checkbox" id="boxes" checked />outline every box</label>
+      <label><input type="checkbox" id="lines" />show the line boxes</label>
+      <label><input type="checkbox" id="cb" />show the containing block</label>
+    </div>
+
+    <p class="key">
+      <span><i style="background: #2563eb"></i>block box</span>
+      <span><i style="background: #b45309"></i>inline box</span>
+      <span><i style="background: #86efac"></i>line box</span>
+      <span><i style="background: #a855f7"></i>containing block</span>
+    </p>
+
+    <div id="layer"></div>
+
+    <div class="page" id="page">
+      <h1>Normal flow</h1>
+      <p>
+        This paragraph is a <strong>block box</strong>. It takes the whole width it is
+        offered, and the next block box starts underneath it. Nobody asked for that: it is
+        what the browser does when you say <code>nothing</code>.
+      </p>
+      <h2>Inline content flows</h2>
+      <p>
+        Inside a block box, text and <em>inline boxes</em> are poured into
+        <strong>line boxes</strong> — horizontal strips as wide as the block, filled one
+        after another until the words run out. An <a href="#top">inline box</a> is exactly
+        as wide as its content, and an <img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2090%2060%22%3E%3Crect%20width%3D%2290%22%20height%3D%2260%22%20fill%3D%22%23cbd5e1%22%2F%3E%3Ctext%20x%3D%2245%22%20y%3D%2235%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20fill%3D%22%23475569%22%3Eimg%3C%2Ftext%3E%3C%2Fsvg%3E" alt="A grey placeholder rectangle labelled img" />
+        sits on the text baseline like a very large letter.
+      </p>
+      <ul>
+        <li>A list item is a block box too.</li>
+        <li>So they stack.</li>
+      </ul>
+      <blockquote>
+        Everything on this page was laid out before you wrote a single layout rule.
+      </blockquote>
+    </div>
+
+    <p class="readout" id="out" aria-live="polite"></p>
+    <p class="hint">
+      Hover any element in the page above to measure it. Nothing here is drawn by hand —
+      the strips and the frame are positioned from <code>getClientRects()</code>.
+    </p>
+
+    <script>
+      const page = document.getElementById('page');
+      const layer = document.getElementById('layer');
+      const out = document.getElementById('out');
+      const boxes = document.getElementById('boxes');
+      const lines = document.getElementById('lines');
+      const cb = document.getElementById('cb');
+
+      let hovered = null;
+
+      const pad = (v, n) => String(v).padStart(n, ' ');
+
+      /* The containing block of an in-flow element is its nearest BLOCK-LEVEL ancestor's
+         content box. (Absolute and fixed elements answer differently — that is act 3.) */
+      function containingBlock(el) {
+        let parent = el.parentElement;
+        while (parent && getComputedStyle(parent).display.startsWith('inline')) {
+          parent = parent.parentElement;
+        }
+        return parent;
+      }
+
+      function clear() {
+        layer.textContent = '';
+      }
+
+      function place(node, rect) {
+        node.style.left = rect.left + window.scrollX + 'px';
+        node.style.top = rect.top + window.scrollY + 'px';
+        node.style.width = rect.width + 'px';
+        node.style.height = rect.height + 'px';
+      }
+
+      function draw() {
+        clear();
+
+        if (lines.checked) {
+          /* One line box per client rect of each block's text. getClientRects() on a
+             Range gives exactly the strips the browser poured the text into — this is
+             the browser's own answer, not a guess at where the lines broke. */
+          for (const block of page.querySelectorAll('p, li, blockquote, h1, h2')) {
+            const range = document.createRange();
+            range.selectNodeContents(block);
+            for (const rect of range.getClientRects()) {
+              if (rect.width < 1 || rect.height < 1) continue;
+              const strip = document.createElement('div');
+              strip.className = 'lb';
+              place(strip, rect);
+              layer.append(strip);
+            }
+          }
+        }
+
+        if (cb.checked && hovered) {
+          const parent = containingBlock(hovered);
+          if (parent) {
+            const frame = document.createElement('div');
+            frame.className = 'cbbox';
+            place(frame, parent.getBoundingClientRect());
+            layer.append(frame);
+          }
+        }
+      }
+
+      function measure(el) {
+        if (!el) {
+          out.textContent = 'Hover an element in the page above.';
+          return;
+        }
+        const style = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        const parent = containingBlock(el);
+        const available = parent ? parent.getBoundingClientRect().width : 0;
+        const rects = (() => {
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          return range.getClientRects().length;
+        })();
+
+        out.textContent =
+          '<' +
+          el.tagName.toLowerCase() +
+          '>\n' +
+          '  display          ' +
+          style.display +
+          '\n' +
+          '  box width        ' +
+          pad(Math.round(rect.width), 5) +
+          'px\n' +
+          '  width offered    ' +
+          pad(Math.round(available), 5) +
+          'px   (its containing block)\n' +
+          '  line boxes       ' +
+          pad(rects, 5) +
+          '\n\n' +
+          (style.display === 'block' || style.display === 'list-item'
+            ? '  a BLOCK box takes the whole width it is offered,\n' +
+              '  and the next block starts underneath it.'
+            : '  an INLINE box is only as wide as its content,\n' +
+              '  and the next inline box continues on the same line.');
+      }
+
+      page.addEventListener('pointerover', (event) => {
+        const el = event.target.closest('.page *');
+        if (!el || el === hovered) return;
+        hovered = el;
+        measure(el);
+        draw();
+      });
+      page.addEventListener('pointerleave', () => {
+        hovered = null;
+        measure(null);
+        draw();
+      });
+
+      function sync() {
+        document.body.classList.toggle('show-boxes', boxes.checked);
+        draw();
+      }
+
+      for (const control of [boxes, lines, cb]) control.addEventListener('change', sync);
+      addEventListener('resize', draw);
+      addEventListener('scroll', draw, { passive: true });
+
+      measure(null);
+      sync();
+    </script>
+  </body>
+</html>
