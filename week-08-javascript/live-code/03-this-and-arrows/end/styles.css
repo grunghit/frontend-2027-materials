@@ -1,0 +1,77 @@
+/* GIVEN. A plain page for printed values; nothing here is part of the cycle. */
+:root {
+  color-scheme: light;
+  --ink: #1d2330;
+  --soft: #4a5263;
+  --line: #cfd6e2;
+  --ground: #f7f8fb;
+  --panel: #ffffff;
+  --threw: #a3212a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--ground);
+}
+
+header,
+main {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+header p {
+  margin: 0;
+  color: var(--soft);
+}
+
+h1 {
+  margin: 0.25rem 0 0;
+  font-size: 1.6rem;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: var(--panel);
+}
+
+caption {
+  padding: 0 0 0.5rem;
+  text-align: start;
+  color: var(--soft);
+}
+
+th,
+td {
+  padding: 0.45rem 0.75rem;
+  border-top: 1px solid var(--line);
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.95rem;
+}
+
+th {
+  width: 50%;
+  font-weight: 500;
+}
+
+thead th {
+  border-top: 0;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+td.threw {
+  color: var(--threw);
+}

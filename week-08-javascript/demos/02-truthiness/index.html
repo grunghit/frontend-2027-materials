@@ -1,0 +1,322 @@
+<!doctype html>
+<!--
+  The falsy list, sorted by the browser. Week-8 reference deck (depth for cycle 1).
+
+  Sixteen values. Each one is dropped into the truthy bin or the falsy bin by an actual
+  `if (value)`, and the count is printed. The list of eight falsy values is not given —
+  it is what is left in the left-hand bin when the page has finished sorting.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. THE LIST IS DERIVED, NOT RECITED. Students have all seen "the eight falsy values"
+     on a slide and none of them remember it, because a list you are handed is a list you
+     forget. Here the bin fills up in front of them and the caption counts it: eight, out
+     of sixteen, and they can see which eight.
+  2. IT SEPARATES THE TWO QUESTIONS THAT GET CONFUSED. The second column asks
+     `value == false` instead. `[]` is TRUTHY and `[] == false` is TRUE — the same value
+     in different bins in the two columns. That single row kills "falsy means equal to
+     false" better than any sentence, and it is the bridge back to demo 01.
+  3. IT NAMES THE THREE THAT ACTUALLY COST MONEY. `'0'`, `[]` and `'false'` are marked.
+     Every one of them is a string or an object that arrived from a form field or from
+     JSON, which is exactly where a student meets them for real in week 9 and week 11.
+
+  DEMO MOVE: cover the screen, ask the room to write down how many of the sixteen are
+  falsy, then reveal. Then point at `[]` in both columns and say nothing for a moment.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Truthiness, sorted by evaluation</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --true: #0f766e;
+        --false: #b91c1c;
+        --true-bg: #ecfdf5;
+        --false-bg: #fef2f2;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 12px;
+      }
+      .bar label {
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      input[type='checkbox'] {
+        accent-color: var(--accent);
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+        gap: 14px;
+      }
+      .test {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .test > h3 {
+        margin: 0;
+        padding: 8px 11px;
+        background: #f1f5f9;
+        border-bottom: 1px solid var(--line);
+        font:
+          600 13px/1.3 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        color: var(--ink);
+      }
+      .bins {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .bin {
+        padding: 9px;
+        min-height: 220px;
+      }
+      .bin + .bin {
+        border-inline-start: 1px solid var(--line);
+      }
+      .bin h4 {
+        margin: 0 0 7px;
+        font-size: 12px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      .bin.f h4 {
+        color: var(--false);
+      }
+      .bin.t h4 {
+        color: var(--true);
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      li {
+        font:
+          13px/1.3 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        border-radius: 5px;
+        padding: 4px 7px;
+      }
+      .bin.f li {
+        background: var(--false-bg);
+        color: var(--false);
+      }
+      .bin.t li {
+        background: var(--true-bg);
+        color: var(--true);
+      }
+      li.costly {
+        box-shadow: inset 0 0 0 2px #f59e0b;
+        font-weight: 700;
+      }
+      .count {
+        font-size: 12px;
+        color: var(--muted);
+        font-family: system-ui, sans-serif;
+        margin-top: 8px;
+      }
+      .note {
+        margin: 12px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+        max-width: 66ch;
+      }
+      .split-warn {
+        margin-top: 10px;
+        border: 1px solid #f59e0b;
+        background: #fffbeb;
+        border-radius: 9px;
+        padding: 9px 11px;
+        font-size: 13px;
+      }
+      .split-warn code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Two different questions about the same sixteen values</h2>
+
+    <div class="bar">
+      <label><input type="checkbox" id="costly" checked /> mark the three that arrive from a form or from JSON</label>
+    </div>
+
+    <div class="cols">
+      <div class="test">
+        <h3>if (value) &mdash; "is it truthy?"</h3>
+        <div class="bins">
+          <div class="bin f">
+            <h4>falsy</h4>
+            <ul id="truthy-f"></ul>
+            <p class="count" id="count-f"></p>
+          </div>
+          <div class="bin t">
+            <h4>truthy</h4>
+            <ul id="truthy-t"></ul>
+            <p class="count" id="count-t"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="test">
+        <h3>value == false &mdash; "is it equal to false?"</h3>
+        <div class="bins">
+          <div class="bin t">
+            <h4>equal to false</h4>
+            <ul id="eq-t"></ul>
+            <p class="count" id="count-eqt"></p>
+          </div>
+          <div class="bin f">
+            <h4>not equal to false</h4>
+            <ul id="eq-f"></ul>
+            <p class="count" id="count-eqf"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split-warn" id="disagree"></div>
+
+    <p class="note">
+      Falsy is not a value and it is not a comparison. It is what the language does when it needs a
+      yes or a no and you handed it something else &mdash; in an <code>if</code>, in <code>&amp;&amp;</code>,
+      in <code>||</code>, in a ternary. That is a different question from <code>== false</code>,
+      and the two columns above disagree about real values you will actually be holding.
+    </p>
+
+    <script>
+      /*
+       * `make` returns the value, so the two empty-collection entries are fresh objects
+       * rather than one shared object referenced twice. `costly` marks the three that
+       * turn up in real code because a form field is always a string and JSON has no
+       * undefined — those are the ones worth a sentence out loud.
+       */
+      const VALUES = [
+        { label: 'false', make: () => false },
+        { label: '0', make: () => 0 },
+        { label: '-0', make: () => -0 },
+        { label: '0n', make: () => 0n },
+        { label: "''", make: () => '' },
+        { label: 'null', make: () => null },
+        { label: 'undefined', make: () => undefined },
+        { label: 'NaN', make: () => NaN },
+        { label: 'true', make: () => true },
+        { label: '1', make: () => 1 },
+        { label: '-1', make: () => -1 },
+        { label: "'0'", make: () => '0', costly: true },
+        { label: "'false'", make: () => 'false', costly: true },
+        { label: "' '", make: () => ' ' },
+        { label: '[]', make: () => [], costly: true },
+        { label: '{}', make: () => ({}) },
+      ];
+
+      const el = (id) => document.getElementById(id);
+      const lists = {
+        tf: el('truthy-f'),
+        tt: el('truthy-t'),
+        et: el('eq-t'),
+        ef: el('eq-f'),
+      };
+
+      function paint() {
+        const markCostly = el('costly').checked;
+        for (const ul of Object.values(lists)) ul.textContent = '';
+
+        let falsyCount = 0;
+        let eqFalseCount = 0;
+        const disagree = [];
+
+        for (const v of VALUES) {
+          const value = v.make();
+
+          /* The real test the language performs, not a lookup table. */
+          const truthy = value ? true : false;
+          /* The other question entirely. */
+          const equalsFalse = value == false;
+
+          if (!truthy) falsyCount += 1;
+          if (equalsFalse) eqFalseCount += 1;
+          if (!truthy !== equalsFalse) disagree.push(v.label);
+
+          for (const [bucket, cond] of [
+            [truthy ? lists.tt : lists.tf, true],
+            [equalsFalse ? lists.et : lists.ef, true],
+          ]) {
+            if (!cond) continue;
+            const li = document.createElement('li');
+            li.textContent = v.label;
+            if (markCostly && v.costly) li.classList.add('costly');
+            bucket.append(li);
+          }
+        }
+
+        el('count-f').textContent = `${falsyCount} of ${VALUES.length}`;
+        el('count-t').textContent = `${VALUES.length - falsyCount} of ${VALUES.length}`;
+        el('count-eqt').textContent = `${eqFalseCount} of ${VALUES.length}`;
+        el('count-eqf').textContent = `${VALUES.length - eqFalseCount} of ${VALUES.length}`;
+
+        /*
+         * The rows where the two columns disagree ARE the lesson, so they are counted
+         * and named rather than left for somebody to spot.
+         */
+        const box = el('disagree');
+        box.textContent = '';
+        const strong = document.createElement('b');
+        strong.textContent = `${disagree.length} values land in opposite bins in the two columns: `;
+        const code = document.createElement('code');
+        code.textContent = disagree.join('  ·  ');
+        const tail = document.createElement('span');
+        tail.textContent =
+          '. "Falsy" and "equal to false" are not the same question, and every value above is a value you can actually be holding.';
+        box.append(strong, code, tail);
+      }
+
+      el('costly').addEventListener('change', paint);
+      paint();
+    </script>
+  </body>
+</html>

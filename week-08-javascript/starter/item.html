@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  ============================================================================
+  item.html — PART ד. The detail page.
+
+  ── WHAT THIS IS
+  One item, in full. Today it shows ONE invented item, hard-coded. In week 10 it
+  reads `?id=` from the URL and draws whichever item that is.
+
+  ── THE STATE THAT IS EASY TO FORGET
+  This page has an empty state and most people miss it: `item.html?id=nothing`.
+  A link that has gone stale, or a bookmark to something deleted. It must say so
+  and offer a way back — not a blank page, and not a crash. Write those words now,
+  in the markup, so that week 10 has somewhere to put them.
+
+  ── WHY NO JAVASCRIPT
+  Because you would write it twice. In week 9 these pages get behaviour, and in
+  week 10 the list stops being markup and starts being drawn from `state`. Anything
+  you write today in a `<script>` tag is something you delete in week 10. The markup
+  is not wasted: `render()` produces exactly this HTML.
+
+  ── THE ONE RULE THAT MATTERS TODAY
+  Decide which parts are STATIC and which are a MOUNT.
+      STATIC   the header, the nav, the toolbar, the labels, the empty state.
+               Written once, never rebuilt.
+      MOUNT    the <ul> of items. In week 10 this is emptied and refilled on every
+               state change, so nothing the user operates may live inside it.
+  Getting this boundary right today is what makes week 10 a refactor rather than a
+  rewrite. It is marked.
+
+  Every `class="CODE-HERE"` is a place you write. DELETE THE MARKER when you are
+  done with that element — the grader checks that none are left.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>CODE-HERE — שם היישום שלך</title>
+
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      /*
+       * GIVEN, AND IT WORKS AS IT IS. This is the token layer from week 6. Change
+       * `--color-brand` to make the page yours; change a lightness only if you
+       * re-measure the contrast afterwards.
+       */
+      @theme static {
+        --color-ink: oklch(0.22 0.02 260);
+        --color-muted: oklch(0.48 0.02 260);
+        --color-line: oklch(0.88 0.01 260);
+        --color-page: oklch(0.99 0 0);
+        --color-panel: oklch(0.97 0.005 260);
+        --color-brand: oklch(0.45 0.17 275);
+        --color-brand-ink: oklch(0.98 0 0);
+      }
+    </style>
+  </head>
+
+  <body class="bg-page text-ink font-sans">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:right-2 focus:z-10 focus:rounded-md focus:bg-brand focus:px-4 focus:py-2 focus:text-brand-ink"
+      >דלג לתוכן</a
+    >
+
+    <!-- STATIC. The nav is on all three pages, and `aria-current` moves. -->
+    <header class="border-b border-line">
+      <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-6 px-4 py-4" aria-label="ראשי">
+        <span class="CODE-HERE font-bold">שם היישום</span>
+        <a href="index.html" class="hover:text-brand">הרשימה</a>
+        <a href="item.html" aria-current="page" class="text-brand underline underline-offset-4">פריט</a>
+        <a href="summary.html" class="hover:text-brand">סיכום</a>
+      </nav>
+    </header>
+
+    <main id="main" tabindex="-1" class="mx-auto max-w-3xl px-4 py-8">
+      <p class="text-sm"><a href="index.html" class="text-brand hover:underline">חזרה לרשימה</a></p>
+
+      <article class="mt-4">
+        <h1 class="CODE-HERE text-2xl font-bold">שם הפריט</h1>
+        <p class="CODE-HERE mt-2 text-muted">שורת משנה — שדה או שניים.</p>
+
+        <!--
+          The fields of ONE item. Same field names as the list page uses, because
+          in week 10 both are drawn from the same object.
+        -->
+        <dl class="CODE-HERE mt-6 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2">
+          <dt class="text-muted">שדה</dt>
+          <dd>ערך</dd>
+          <!-- CODE HERE — the rest of your fields -->
+        </dl>
+      </article>
+
+      <!--
+        The empty state for "no such item". Hidden today; week 10 shows it when the
+        id in the URL matches nothing.
+      -->
+      <p id="missing" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6">
+        <!-- CODE HERE — what a reader sees when the link has gone stale, and the way back -->
+      </p>
+    </main>
+  </body>
+</html>

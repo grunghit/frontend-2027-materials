@@ -1,0 +1,521 @@
+<!doctype html>
+<!--
+  What a variable actually holds. Week-8 deck, cycle 2 (the opener, program 4).
+
+  Six programs, run for real, one step at a time. After every step the page prints the
+  bindings, and — this is the part that matters — it asks the engine `a === b` and prints
+  the answer. Nothing here is drawn from a diagram I made up; the arrows are identity
+  checks the browser performed a moment ago.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. IT ANSWERS THE C# QUESTION THE ROOM IS ACTUALLY ASKING. Students arriving from C#
+     have `struct` versus `class` in their heads and want to know which one an object is.
+     Program 1 and 2 put a number and an object through the identical steps, so the
+     difference is isolated to one thing and is visible in one line.
+  2. PROGRAM 4 IS THE MISCONCEPTION, AND IT RUNS. `addTax(prices)` "returns" a new array
+     and also quietly rewrites the caller's. The caller's array is printed before and
+     after, side by side. Nobody argues with their own data changing.
+  3. IT SHOWS THAT `const` IS ABOUT THE BINDING. Program 5 pushes into a `const` array
+     and it works; then it reassigns and the page prints the real TypeError. Two lines,
+     one keyword, two completely different outcomes.
+  4. THE FIX IS MEASURED TOO. Program 6 is program 4 with a spread, and the identity
+     line flips from true to false. That flip is the whole of the fix.
+
+  DEMO MOVE: run program 4 and stop on the last step. Ask "who thinks `prices` still has
+  the original numbers in it". Count hands. Then press step once more.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Value and reference, stepped</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --true: #0f766e;
+        --false: #b91c1c;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      select,
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 5px 11px;
+        cursor: pointer;
+        color: inherit;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      button:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 14px;
+        align-items: start;
+      }
+      @media (max-width: 780px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      pre {
+        margin: 0;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        border-radius: 10px;
+        padding: 11px 13px;
+        overflow-x: auto;
+        font:
+          13px/1.65 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      pre .on {
+        display: block;
+        background: #1e3a8a;
+        margin: 0 -13px;
+        padding: 0 13px;
+        border-inline-start: 3px solid #f59e0b;
+      }
+      pre .done {
+        opacity: 0.5;
+      }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 11px 12px;
+        background: #f8fafc;
+      }
+      .panel h3 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font:
+          13px/1.4 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      th,
+      td {
+        text-align: start;
+        padding: 4px 7px;
+        border-bottom: 1px solid var(--line);
+      }
+      /*
+       * Scoped to `thead` deliberately. The row headers are IDENTIFIERS, and `a` and `A`
+       * are two different variables in JavaScript — uppercasing them in a demo about what
+       * a variable holds would print a name that is not the name in the code.
+       */
+      thead th {
+        color: var(--muted);
+        font-family: system-ui, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      tbody th {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      td.changed {
+        background: #fef3c7;
+      }
+      .identity {
+        margin-top: 11px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        font:
+          13px/1.5 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .identity div {
+        margin-bottom: 3px;
+      }
+      .identity b.t {
+        color: var(--true);
+      }
+      .identity b.f {
+        color: var(--false);
+      }
+      .say {
+        margin: 11px 0 0;
+        padding: 9px 11px;
+        border-radius: 9px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        font-size: 13px;
+        min-height: 3.4em;
+      }
+      .say.err {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #7f1d1d;
+      }
+      .say code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Six programs, stepped, with the engine answering</h2>
+
+    <div class="bar">
+      <label for="prog">Program</label>
+      <select id="prog"></select>
+      <button type="button" id="step" class="primary">Step</button>
+      <button type="button" id="reset">Reset</button>
+      <span id="pos" style="font-size: 13px; color: var(--muted)"></span>
+    </div>
+
+    <div class="layout">
+      <div>
+        <pre id="code"></pre>
+        <p class="say" id="say"></p>
+      </div>
+
+      <div class="panel">
+        <h3>Bindings, after this step</h3>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">name</th>
+              <th scope="col">value</th>
+            </tr>
+          </thead>
+          <tbody id="vars"></tbody>
+        </table>
+        <div class="identity" id="ident"></div>
+      </div>
+    </div>
+
+    <script>
+      /*
+       * Each program is a list of steps. A step carries the source line, a function that
+       * performs it against a live scope object, and the sentence to say. `identity` is a
+       * list of expressions the page evaluates AFTER the step and prints — those are the
+       * arrows, and they are real `===` results rather than a drawing.
+       */
+      const PROGRAMS = [
+        {
+          name: '1 · a number is copied',
+          lines: ['let a = 10;', 'let b = a;', 'b = 99;'],
+          run: [
+            (s) => { s.a = 10; },
+            (s) => { s.b = s.a; },
+            (s) => { s.b = 99; },
+          ],
+          say: [
+            'A number goes into <code>a</code>.',
+            '<code>b = a</code> copies the value. There is now a second 10.',
+            'Changing <code>b</code> cannot reach <code>a</code>. Nothing surprising — this is what everyone expects.',
+          ],
+          show: ['a', 'b'],
+          identity: [],
+        },
+        {
+          name: '2 · an object is shared',
+          lines: ['let a = { n: 10 };', 'let b = a;', 'b.n = 99;'],
+          run: [
+            (s) => { s.a = { n: 10 }; },
+            (s) => { s.b = s.a; },
+            (s) => { s.b.n = 99; },
+          ],
+          say: [
+            'An object is created, and <code>a</code> holds a reference to it.',
+            '<code>b = a</code> copies the <em>reference</em>, not the object. There is still exactly one object.',
+            'Writing through <code>b</code> is writing to the one object — so <code>a.n</code> is 99 as well. Identical steps to program 1, opposite result.',
+          ],
+          show: ['a', 'b'],
+          identity: ['a === b'],
+        },
+        {
+          name: '3 · reassigning is not mutating',
+          lines: ['let a = { n: 10 };', 'let b = a;', 'b = { n: 99 };'],
+          run: [
+            (s) => { s.a = { n: 10 }; },
+            (s) => { s.b = s.a; },
+            (s) => { s.b = { n: 99 }; },
+          ],
+          say: [
+            'One object, one reference.',
+            'Two references, one object. <code>a === b</code> is true.',
+            '<code>b = {…}</code> points <code>b</code> at a <em>new</em> object. It does not touch the old one, so <code>a</code> is untouched — and the identity line has flipped to false.',
+          ],
+          show: ['a', 'b'],
+          identity: ['a === b'],
+        },
+        {
+          name: '4 · the function that lied',
+          lines: [
+            'const prices = [30, 20, 10];',
+            'function addTax(list) {',
+            '  list.sort((x, y) => x - y);',
+            '  return list.map((p) => p * 1.17);',
+            '}',
+            'const withTax = addTax(prices);',
+          ],
+          run: [
+            (s) => { s.prices = [30, 20, 10]; s.before = '[30, 20, 10]'; },
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (s) => {
+              s.prices.sort((x, y) => x - y);
+              s.withTax = s.prices.map((p) => Math.round(p * 1.17 * 100) / 100);
+            },
+          ],
+          say: [
+            'The caller has its prices, in the order the caller wanted them.',
+            'A function that takes the list.',
+            '<code>sort</code> is the trap. It sorts <em>in place</em> and returns the same array — the caller’s array.',
+            '<code>map</code> is fine: it builds a new array and leaves the original alone.',
+            '',
+            'It returned what it promised. It also reordered the caller’s array on the way, and nothing in the signature said so. <code>prices</code> started as [30, 20, 10].',
+          ],
+          show: ['prices', 'withTax'],
+          identity: [],
+        },
+        {
+          name: '5 · const binds, it does not freeze',
+          lines: ['const list = [1, 2];', 'list.push(3);', 'list = [9];'],
+          run: [
+            (s) => { s.list = [1, 2]; },
+            (s) => { s.list.push(3); },
+            (s) => {
+              /*
+               * Performed for real. Assignment to a `const` binding is a RUNTIME
+               * TypeError, not a parse error, so this genuinely runs and genuinely
+               * throws — and the message printed below is the engine's own wording
+               * rather than a string I typed to look like one.
+               */
+              try {
+                reassignAConst();
+              } catch (err) {
+                s.__error = `${err.name}: ${err.message}`;
+              }
+            },
+          ],
+          say: [
+            'A <code>const</code> array.',
+            '<code>push</code> works. <code>const</code> never said the array was immutable — it said the <em>name</em> cannot be pointed somewhere else.',
+            'And here is what it did say. The error below is the browser’s, not mine.',
+          ],
+          show: ['list'],
+          identity: [],
+        },
+        {
+          name: '6 · the fix, measured',
+          lines: [
+            'const prices = [30, 20, 10];',
+            'function addTax(list) {',
+            '  const copy = [...list];',
+            '  copy.sort((x, y) => x - y);',
+            '  return copy.map((p) => p * 1.17);',
+            '}',
+            'const withTax = addTax(prices);',
+          ],
+          run: [
+            (s) => { s.prices = [30, 20, 10]; },
+            () => {},
+            (s) => { s.copy = [...s.prices]; },
+            (s) => { s.copy.sort((x, y) => x - y); },
+            () => {},
+            () => {},
+            (s) => { s.withTax = s.copy.map((p) => Math.round(p * 1.17 * 100) / 100); },
+          ],
+          say: [
+            'Same starting point as program 4.',
+            'Same function name, same job.',
+            'One line added. <code>[...list]</code> makes a new array with the same contents — and the identity line below says so.',
+            'Now <code>sort</code> reorders the copy. The caller’s array is not involved.',
+            '',
+            '',
+            'Same return value as program 4, and <code>prices</code> is still [30, 20, 10]. One line.',
+          ],
+          show: ['prices', 'copy', 'withTax'],
+          identity: ['prices === copy'],
+        },
+      ];
+
+      /*
+       * Kept as a named function rather than inlined, so that what throws is ordinary
+       * code in an ordinary scope. `eval` would have worked and is banned in this course
+       * from week 8 on; demonstrating a rule with the thing the rule forbids is a poor
+       * trade for two saved lines.
+       */
+      function reassignAConst() {
+        const frozen = [1, 2, 3];
+        frozen = [9];
+        return frozen;
+      }
+
+      const el = (id) => document.getElementById(id);
+      const fmt = (v) => {
+        if (v === undefined) return 'undefined';
+        if (Array.isArray(v)) return `[${v.join(', ')}]`;
+        if (v && typeof v === 'object') return `{ ${Object.entries(v).map(([k, x]) => `${k}: ${x}`).join(', ')} }`;
+        return String(v);
+      };
+
+      let program = PROGRAMS[0];
+      let at = 0;
+      let scope = {};
+      let previous = {};
+
+      function reset() {
+        at = 0;
+        scope = {};
+        previous = {};
+        paint();
+      }
+
+      function step() {
+        if (at >= program.run.length) return;
+        previous = {};
+        for (const name of program.show) previous[name] = fmt(scope[name]);
+        program.run[at](scope);
+        at += 1;
+        /* Skip steps that are pure syntax (a function header has nothing to execute). */
+        while (at < program.run.length && program.say[at] === '') {
+          program.run[at](scope);
+          at += 1;
+        }
+        paint();
+      }
+
+      function paint() {
+        /* Code, with the line that just ran lit. */
+        el('code').textContent = '';
+        program.lines.forEach((line, i) => {
+          const span = document.createElement('span');
+          span.textContent = line || ' ';
+          if (i === at - 1) span.className = 'on';
+          else if (i < at) span.className = 'done';
+          el('code').append(span, document.createTextNode('\n'));
+        });
+
+        /* Bindings. */
+        const tbody = el('vars');
+        tbody.textContent = '';
+        for (const name of program.show) {
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          th.scope = 'row';
+          th.textContent = name;
+          const td = document.createElement('td');
+          const now = fmt(scope[name]);
+          td.textContent = now;
+          if (at > 0 && previous[name] !== undefined && previous[name] !== now) td.className = 'changed';
+          tr.append(th, td);
+          tbody.append(tr);
+        }
+
+        /* The arrows, asked of the engine. */
+        const identity = el('ident');
+        identity.textContent = '';
+        for (const expr of program.identity) {
+          const [left, right] = expr.split(' === ');
+          const answer = scope[left] === scope[right] && scope[left] !== undefined;
+          const row = document.createElement('div');
+          const label = document.createElement('span');
+          label.textContent = `${expr}  `;
+          const value = document.createElement('b');
+          value.textContent = String(answer);
+          value.className = answer ? 't' : 'f';
+          row.append(label, value);
+          identity.append(row);
+        }
+
+        /* The sentence, or the engine's error. */
+        const say = el('say');
+        say.className = 'say';
+        if (scope.__error && at === program.run.length) {
+          say.className = 'say err';
+          say.textContent = scope.__error;
+        } else {
+          say.innerHTML = at === 0 ? 'Press <b>Step</b>.' : program.say[at - 1] || '&nbsp;';
+        }
+
+        el('pos').textContent = `step ${at} of ${program.run.length}`;
+        el('step').disabled = at >= program.run.length;
+      }
+
+      /* Build the picker. */
+      PROGRAMS.forEach((p, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = p.name;
+        el('prog').append(opt);
+      });
+
+      el('prog').addEventListener('change', (e) => {
+        program = PROGRAMS[Number(e.target.value)];
+        reset();
+      });
+      el('step').addEventListener('click', step);
+      el('reset').addEventListener('click', reset);
+      reset();
+    </script>
+  </body>
+</html>

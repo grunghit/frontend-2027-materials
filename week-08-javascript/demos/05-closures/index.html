@@ -1,0 +1,355 @@
+<!doctype html>
+<!--
+  Closures, from the thing you are about to build. Week-8 reference deck — week 10 builds its state.js from this.
+
+  Three panels, in this order deliberately: the famous broken loop, the fix, and then the
+  reason anybody would care — a module that keeps its own state and hands out functions,
+  which is `project/starter-repo/js/state.js` with the names changed.
+
+  What makes it teach rather than merely demonstrate:
+
+  1. IT COUNTS THE BINDINGS. The `var` loop and the `let` loop each report how many
+     separate `i` bindings the loop created: one, and three. Every explanation of this
+     bug is really that one number, and stating it as a number ends the argument faster
+     than any diagram of scope chains.
+  2. PANEL 3 IS THEIR OWN PROJECT. `createStore` below has `getState`, `setState` and
+     `subscribe`, because that is what the file they are shipping in week 10 has. The
+     closure is not a puzzle about loops; it is the reason nothing outside that file can
+     corrupt the state. Press the buttons and the private counter changes with no
+     variable anywhere on the page holding it.
+  3. IT PROVES THE STATE IS ACTUALLY PRIVATE. The "try to reach in" button runs
+     `store.state = 999` and then prints what `getState()` returns. The assignment
+     succeeds — it puts a useless property on the object — and the real state is
+     untouched. That is a stronger claim than "closures give you privacy" and it is
+     measured rather than asserted.
+
+  DEMO MOVE: run panel 1, let the room predict 0 1 2, show 3 3 3. Fix it with one keyword
+  in panel 2. Then say "that was the puzzle version" and move to panel 3, which is the
+  version they are graded on.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Closures: the loop, the fix, and the reason</title>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --bad: #b91c1c;
+        --good: #0f766e;
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .panels {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+        gap: 13px;
+        align-items: start;
+      }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .panel > h3 {
+        margin: 0;
+        padding: 8px 11px;
+        background: #f1f5f9;
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .panel.bad > h3 {
+        background: #fef2f2;
+        color: var(--bad);
+      }
+      .panel.good > h3 {
+        background: #ecfdf5;
+        color: var(--good);
+      }
+      pre {
+        margin: 0;
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 10px 12px;
+        overflow-x: auto;
+        font:
+          12.5px/1.6 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .body {
+        padding: 10px 12px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 9px;
+      }
+      button {
+        font: inherit;
+        font-size: 13px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 4px 11px;
+        cursor: pointer;
+        color: inherit;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      .out {
+        font:
+          13px/1.6 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 8px 10px;
+        min-height: 5.4em;
+        white-space: pre-wrap;
+      }
+      .bindings {
+        margin: 9px 0 0;
+        font-size: 13px;
+      }
+      .bindings b {
+        font-size: 17px;
+      }
+      .panel.bad .bindings b {
+        color: var(--bad);
+      }
+      .panel.good .bindings b {
+        color: var(--good);
+      }
+      .note {
+        margin: 8px 0 0;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .verdict {
+        margin: 9px 0 0;
+        font-size: 13px;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>The loop everybody has seen, and the pattern you are about to ship</h2>
+
+    <div class="panels">
+      <div class="panel bad">
+        <h3>1 &mdash; three functions, one variable</h3>
+        <pre>
+for (var i = 0; i &lt; 3; i++) {
+  jobs.push(() =&gt; i);
+}
+jobs.map((j) =&gt; j());</pre>
+        <div class="body">
+          <div class="row"><button type="button" class="primary" id="run-var">Run</button></div>
+          <p class="out" id="out-var">&nbsp;</p>
+          <p class="bindings" id="bind-var"></p>
+          <p class="note">
+            The functions are fine. They all close over the same <code>i</code>, and by the time any
+            of them runs, the loop has finished and that one <code>i</code> is 3.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel good">
+        <h3>2 &mdash; three functions, three variables</h3>
+        <pre>
+for (let i = 0; i &lt; 3; i++) {
+  jobs.push(() =&gt; i);
+}
+jobs.map((j) =&gt; j());</pre>
+        <div class="body">
+          <div class="row"><button type="button" class="primary" id="run-let">Run</button></div>
+          <p class="out" id="out-let">&nbsp;</p>
+          <p class="bindings" id="bind-let"></p>
+          <p class="note">
+            One keyword. <code>let</code> creates a fresh binding per iteration, so each function
+            closes over a different one. Nothing about the functions changed.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>3 &mdash; the reason anyone cares</h3>
+        <pre>
+function createStore() {
+  let state = { count: 0 };
+  const listeners = new Set();
+  return {
+    getState: () =&gt; state,
+    setState(patch) { … },
+    subscribe(fn) { … },
+  };
+}</pre>
+        <div class="body">
+          <div class="row">
+            <button type="button" class="primary" id="inc">setState count + 1</button>
+            <button type="button" id="sub">subscribe</button>
+            <button type="button" id="unsub">unsubscribe</button>
+            <button type="button" id="reach">try to reach in</button>
+          </div>
+          <p class="out" id="out-store">&nbsp;</p>
+          <p class="verdict" id="verdict-store">
+            <code>state</code> is a plain <code>let</code> inside a function that has already
+            returned. Nothing on this page can name it. That is the same closure as panel 1 &mdash;
+            and here it is the reason your state cannot be corrupted from outside its file.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+
+      /*
+       * Panels 1 and 2 are run for real. The binding count is not asserted either — it is
+       * derived by asking each closure for its value and counting how many DISTINCT
+       * values came back, which is exactly what "how many bindings were there" means.
+       */
+      function runVar() {
+        const jobs = [];
+        for (var i = 0; i < 3; i++) {
+          jobs.push(() => i);
+        }
+        return jobs.map((j) => j());
+      }
+
+      function runLet() {
+        const jobs = [];
+        for (let i = 0; i < 3; i++) {
+          jobs.push(() => i);
+        }
+        return jobs.map((j) => j());
+      }
+
+      function report(outId, bindId, values) {
+        el(outId).textContent = `[${values.join(', ')}]`;
+        const distinct = new Set(values).size;
+        el(bindId).textContent = '';
+        const lead = document.createTextNode('separate bindings of i that existed: ');
+        const b = document.createElement('b');
+        b.textContent = String(distinct);
+        el(bindId).append(lead, b);
+      }
+
+      el('run-var').addEventListener('click', () => report('out-var', 'bind-var', runVar()));
+      el('run-let').addEventListener('click', () => report('out-let', 'bind-let', runLet()));
+
+      /*
+       * Panel 3. This is `project/starter-repo/js/state.js` reduced to its skeleton: one
+       * private binding, one door in (`setState`), one way to be told (`subscribe`).
+       */
+      function createStore() {
+        let state = { count: 0 };
+        const listeners = new Set();
+        return {
+          getState: () => state,
+          setState(patch) {
+            state = { ...state, ...patch };
+            for (const fn of listeners) fn(state);
+          },
+          subscribe(fn) {
+            listeners.add(fn);
+            return () => listeners.delete(fn);
+          },
+          listenerCount: () => listeners.size,
+        };
+      }
+
+      const store = createStore();
+      let unsubscribe = null;
+      const log = [];
+
+      function say(line) {
+        log.push(line);
+        while (log.length > 5) log.shift();
+        el('out-store').textContent = log.join('\n');
+      }
+
+      el('inc').addEventListener('click', () => {
+        store.setState({ count: store.getState().count + 1 });
+        if (!unsubscribe) say(`count is now ${store.getState().count} — nobody is listening`);
+      });
+
+      el('sub').addEventListener('click', () => {
+        if (unsubscribe) {
+          say('already subscribed');
+          return;
+        }
+        unsubscribe = store.subscribe((s) => say(`listener heard: count = ${s.count}`));
+        say(`subscribed. listeners: ${store.listenerCount()}`);
+      });
+
+      el('unsub').addEventListener('click', () => {
+        if (!unsubscribe) {
+          say('not subscribed');
+          return;
+        }
+        unsubscribe();
+        unsubscribe = null;
+        say(`unsubscribed. listeners: ${store.listenerCount()}`);
+      });
+
+      el('reach').addEventListener('click', () => {
+        /*
+         * The assignment SUCCEEDS — it adds a property called `state` to the returned
+         * object — and it changes nothing, because the real binding is not a property of
+         * anything. Printing both is the point.
+         */
+        store.state = 999;
+        say(`store.state = 999  ->  store.state is ${store.state}, getState().count is still ${store.getState().count}`);
+      });
+    </script>
+  </body>
+</html>

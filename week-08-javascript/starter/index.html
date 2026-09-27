@@ -1,0 +1,124 @@
+<!doctype html>
+<!--
+  ============================================================================
+  index.html — PART ד. The list page.
+
+  ── WHAT THIS IS
+  The first of the three pages your project needs. Today it is STATIC: the items
+  below are written into the markup by hand, invented by you, and there is no
+  JavaScript on this page at all. That is deliberate and it is the milestone —
+  `PROJECT_BRIEF` week 8: "three pages as HTML + Tailwind, with invented data in
+  the markup, and navigation between them."
+
+  ── WHY NO JAVASCRIPT
+  Because you would write it twice. In week 9 these pages get behaviour, and in
+  week 10 the list stops being markup and starts being drawn from `state`. Anything
+  you write today in a `<script>` tag is something you delete in week 10. The markup
+  is not wasted: `render()` produces exactly this HTML.
+
+  ── THE ONE RULE THAT MATTERS TODAY
+  Decide which parts are STATIC and which are a MOUNT.
+      STATIC   the header, the nav, the toolbar, the labels, the empty state.
+               Written once, never rebuilt.
+      MOUNT    the <ul> of items. In week 10 this is emptied and refilled on every
+               state change, so nothing the user operates may live inside it.
+  Getting this boundary right today is what makes week 10 a refactor rather than a
+  rewrite. It is marked.
+
+  Every `class="CODE-HERE"` is a place you write. DELETE THE MARKER when you are
+  done with that element — the grader checks that none are left.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>CODE-HERE — שם היישום שלך</title>
+
+    <script src="vendor/tailwind.js"></script>
+    <style type="text/tailwindcss">
+      /*
+       * GIVEN, AND IT WORKS AS IT IS. This is the token layer from week 6. Change
+       * `--color-brand` to make the page yours; change a lightness only if you
+       * re-measure the contrast afterwards.
+       */
+      @theme static {
+        --color-ink: oklch(0.22 0.02 260);
+        --color-muted: oklch(0.48 0.02 260);
+        --color-line: oklch(0.88 0.01 260);
+        --color-page: oklch(0.99 0 0);
+        --color-panel: oklch(0.97 0.005 260);
+        --color-brand: oklch(0.45 0.17 275);
+        --color-brand-ink: oklch(0.98 0 0);
+      }
+    </style>
+  </head>
+
+  <body class="bg-page text-ink font-sans">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:right-2 focus:z-10 focus:rounded-md focus:bg-brand focus:px-4 focus:py-2 focus:text-brand-ink"
+      >דלג לתוכן</a
+    >
+
+    <!-- STATIC. The nav is on all three pages, and `aria-current` moves. -->
+    <header class="border-b border-line">
+      <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-6 px-4 py-4" aria-label="ראשי">
+        <span class="CODE-HERE font-bold">שם היישום</span>
+        <a href="index.html" aria-current="page" class="text-brand underline underline-offset-4">הרשימה</a>
+        <a href="item.html" class="hover:text-brand">פריט</a>
+        <a href="summary.html" class="hover:text-brand">סיכום</a>
+      </nav>
+    </header>
+
+    <main id="main" tabindex="-1" class="mx-auto max-w-5xl px-4 py-8">
+      <h1 class="CODE-HERE text-2xl font-bold">כותרת העמוד</h1>
+      <p class="CODE-HERE mt-2 text-muted">משפט אחד שאומר מה יש כאן.</p>
+
+      <!--
+        STATIC. The toolbar is not rebuilt on render — a control that is destroyed
+        while the user is typing in it loses their text and their focus. This is a
+        requirement of the architecture, not a style preference.
+      -->
+      <div class="mt-6 flex flex-wrap items-end gap-4 rounded-lg border border-line bg-panel p-4">
+        <div>
+          <label for="query" class="block text-sm text-muted">חיפוש</label>
+          <input
+            id="query"
+            type="search"
+            class="CODE-HERE mt-1 rounded-md border border-line bg-page px-3 py-2"
+          />
+        </div>
+        <div>
+          <label for="sort" class="block text-sm text-muted">מיון</label>
+          <select id="sort" class="CODE-HERE mt-1 rounded-md border border-line bg-page px-3 py-2">
+            <!-- CODE HERE — the sort options your topic needs -->
+          </select>
+        </div>
+      </div>
+
+      <!--
+        THE MOUNT. In week 10 this <ul> is emptied and refilled by `render(state)`.
+        Today: write three or four items by hand, all with the same shape.
+      -->
+      <ul id="list" class="CODE-HERE mt-6 grid gap-4">
+        <li class="rounded-lg border border-line p-4">
+          <h2 class="CODE-HERE font-semibold">
+            <a href="item.html" class="hover:text-brand">שם הפריט</a>
+          </h2>
+          <p class="CODE-HERE text-sm text-muted">שדה שני · שדה שלישי</p>
+        </li>
+        <!-- CODE HERE — at least two more items, same shape -->
+      </ul>
+
+      <!--
+        The empty state. Week 7 required it, and it is markup rather than a plan:
+        write the words that will actually be on screen.
+      -->
+      <p id="empty" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6 text-muted">
+        אין פריטים להצגה.
+      </p>
+    </main>
+  </body>
+</html>

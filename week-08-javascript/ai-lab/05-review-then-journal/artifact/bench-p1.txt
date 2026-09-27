@@ -1,0 +1,50 @@
+File under test: claude-p1/filter-and-sort.js
+7 of 9 cases pass.
+
+a search
+  filterAndSort(books, "the", "none")
+  returned: [The Hobbit] — as the spec says
+  your list afterwards: in the order it came
+  PASS
+the empty query
+  filterAndSort(books, "", "none")
+  returned: [The Hobbit, מיכאל שלי, dune, Field notes, Emma] — as the spec says
+  your list afterwards: in the order it came
+  PASS
+only spaces
+  filterAndSort(books, "   ", "none")
+  returned: [The Hobbit, מיכאל שלי, dune, Field notes, Emma] — as the spec says
+  your list afterwards: in the order it came
+  PASS
+capitals and spaces
+  filterAndSort(books, " DUNE ", "none")
+  returned: [dune] — as the spec says
+  your list afterwards: in the order it came
+  PASS
+a book with no title
+  filterAndSort(books, "e", "none")
+  returned: [The Hobbit, dune, Field notes, Emma] — as the spec says
+  your list afterwards: in the order it came
+  PASS
+no query, sorted by year
+  filterAndSort(books, "", "year")
+  returned: [Emma, The Hobbit, dune, מיכאל שלי, Field notes] — as the spec says
+  your list afterwards: REORDERED to [Emma, The Hobbit, dune, מיכאל שלי, Field notes]
+  FAIL
+  §2 — books לעולם לא מסודר מחדש: הפונקציה קוראת אותו ומחזירה מערך חדש, בכל מסלול
+no query, sorted by title
+  filterAndSort(books, "", "title")
+  returned: [מיכאל שלי, dune, Emma, Field notes, The Hobbit] — as the spec says
+  your list afterwards: REORDERED to [מיכאל שלי, dune, Emma, Field notes, The Hobbit]
+  FAIL
+  §2 — books לעולם לא מסודר מחדש: הפונקציה קוראת אותו ומחזירה מערך חדש, בכל מסלול
+a search, sorted by year
+  filterAndSort(books, "e", "year")
+  returned: [Emma, The Hobbit, dune, Field notes] — as the spec says
+  your list afterwards: in the order it came
+  PASS
+an unknown sort key
+  filterAndSort(books, "o", "rating")
+  returned: [The Hobbit, Field notes] — as the spec says
+  your list afterwards: in the order it came
+  PASS

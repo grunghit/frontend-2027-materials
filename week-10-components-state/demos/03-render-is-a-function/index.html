@@ -1,0 +1,432 @@
+<!doctype html>
+<!--
+  render(state) is a function, and this page proves all three halves of that. Week-10
+  lecture deck, act 3 (now the reference deck).
+
+  The state object is on the left, EDITABLE, as JSON. The screen is on the right. There
+  are no other controls that change anything — which is the claim being made visible:
+  the only input to the picture is the object.
+
+  Three buttons, and each one answers a different objection:
+
+  1. DRAW — parse the object, call render, look. Change a number in the textarea and the
+     screen changes. Change nothing and press it: the screen does not change either.
+  2. DRAW TWICE — render is called twice on the same object and the two results are
+     compared as HTML strings. Equal means the function has no memory. A render that
+     appends instead of replacing fails this on its first press, and appending is what
+     everybody writes first.
+  3. VANDALISE — a row is deleted straight out of the DOM, by hand, without touching the
+     object. Then draw. The row comes back, because the screen was never the record.
+
+  A fourth button, SUBSCRIBE ONLY, is the bug that looks most like a broken render: it
+  registers the subscription and does NOT call render, so the page stays blank until
+  something changes. The counter beside it shows how many times render has actually run.
+
+  DEMO MOVE: press "vandalise" and ask whether the item is gone. Almost everyone says
+  yes. Then press draw.
+
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>render(state) is a function</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --true: #0f766e;
+        --false: #b91c1c;
+        --warn: #b45309;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 13.5px;
+      }
+      .bar .sep {
+        width: 1px;
+        align-self: stretch;
+        background: var(--line);
+      }
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 5px 11px;
+        cursor: pointer;
+        color: inherit;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      input,
+      select,
+      textarea {
+        font: inherit;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 4px 8px;
+        color: inherit;
+        background: #fff;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 11px 12px;
+        min-width: 0;
+      }
+      .panel h3 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .panel.good {
+        border-color: #99f6e4;
+        background: #f0fdfa;
+      }
+      .panel.bad {
+        border-color: #fecaca;
+        background: #fef2f2;
+      }
+      ul.rows {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 5px;
+      }
+      ul.rows li {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        padding: 5px 8px;
+        font-size: 13.5px;
+      }
+      ul.rows .name {
+        flex: 1;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      ul.rows .qty {
+        font:
+          600 12.5px/1 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        color: var(--muted);
+      }
+      code,
+      .mono {
+        font:
+          12.5px/1.5 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      pre {
+        margin: 0;
+        overflow-x: auto;
+        font:
+          12.5px/1.6 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: start;
+        padding: 4px 7px;
+        border-bottom: 1px solid var(--line);
+      }
+      thead th {
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .verdict {
+        border-radius: 8px;
+        padding: 8px 11px;
+        font-weight: 600;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      .verdict.ok {
+        border-color: #99f6e4;
+        background: #f0fdfa;
+        color: var(--true);
+      }
+      .verdict.no {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: var(--false);
+      }
+      .note {
+        margin: 10px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .yes {
+        color: var(--true);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--false);
+        font-weight: 700;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .flash {
+          animation: flash 0.5s ease-out;
+        }
+        @keyframes flash {
+          from {
+            background: #fef3c7;
+          }
+        }
+      }
+      textarea {
+        width: 100%;
+        min-height: 230px;
+        resize: vertical;
+      }
+      .runs {
+        font:
+          700 22px/1 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>The screen is a function of this object, and of nothing else</h2>
+
+    <div class="bar">
+      <button id="draw" type="button" class="primary">render(state)</button>
+      <button id="twice" type="button">render twice, compare the two</button>
+      <button id="vandalise" type="button">delete a row straight from the DOM</button>
+      <span class="sep"></span>
+      <button id="subscribe-only" type="button">subscribe without the first draw</button>
+      <button id="reset" type="button">reset</button>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <h3>state — edit it</h3>
+        <label class="mono" for="state-json">the whole application, as one object</label>
+        <textarea id="state-json" spellcheck="false"></textarea>
+        <p class="note" id="parse">valid JSON</p>
+      </div>
+
+      <div class="panel">
+        <h3>the screen — <code>render(state)</code></h3>
+        <p class="mono">
+          showing <span id="count">0</span> of <span id="total">0</span> · renders so far:
+          <span class="runs" id="runs">0</span>
+        </p>
+        <ul class="rows" id="list"></ul>
+        <p id="empty" hidden class="note"></p>
+        <p class="verdict ok" id="verdict">nothing measured yet</p>
+      </div>
+    </div>
+
+    <p class="note">
+      There is no button here that changes the screen without changing the object. That is not a
+      limitation of the demo — it is the whole rule, and everything else this week follows from it.
+    </p>
+
+    <script>
+      const START = {
+        items: [
+          { id: 'a1', name: 'flour', qty: 2 },
+          { id: 'a2', name: 'olive oil', qty: 1 },
+          { id: 'a3', name: 'almond milk', qty: 4 },
+        ],
+        query: '',
+        sort: 'name',
+      };
+
+      const json = document.querySelector('#state-json');
+      const list = document.querySelector('#list');
+      const empty = document.querySelector('#empty');
+      const verdict = document.querySelector('#verdict');
+      const runsEl = document.querySelector('#runs');
+      let runs = 0;
+
+      /* A derivation. Not stored anywhere, computed on every draw from the object. */
+      const visible = (state) =>
+        state.items
+          .filter((item) => item.name.includes(state.query ?? ''))
+          .sort((a, b) => (state.sort === 'qty' ? a.qty - b.qty : a.name.localeCompare(b.name)));
+
+      function rowFor(item) {
+        const li = document.createElement('li');
+        li.dataset.id = item.id;
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = item.name;
+        const qty = document.createElement('span');
+        qty.className = 'qty';
+        qty.textContent = item.qty;
+        li.append(name, qty);
+        return li;
+      }
+
+      /*
+       * THE function. State in, screen out. It reads nothing else — no globals, no
+       * `list.children`, no memory of what it drew last time — and it writes nothing
+       * back into the object it was given.
+       */
+      function render(state) {
+        const shown = visible(state);
+        list.replaceChildren(...shown.map(rowFor));
+        document.querySelector('#count').textContent = shown.length;
+        document.querySelector('#total').textContent = state.items.length;
+        empty.hidden = shown.length > 0;
+        empty.textContent =
+          state.items.length === 0 ? 'the collection is empty' : 'nothing matches the query';
+        runs += 1;
+        runsEl.textContent = runs;
+      }
+
+      function readState() {
+        try {
+          const state = JSON.parse(json.value);
+          document.querySelector('#parse').textContent = 'valid JSON';
+          document.querySelector('#parse').className = 'note';
+          return state;
+        } catch (err) {
+          document.querySelector('#parse').textContent = 'not JSON: ' + err.message;
+          document.querySelector('#parse').className = 'note no';
+          return null;
+        }
+      }
+
+      const say = (text, ok) => {
+        verdict.textContent = text;
+        verdict.className = 'verdict ' + (ok ? 'ok' : 'no');
+      };
+
+      document.querySelector('#draw').addEventListener('click', () => {
+        const state = readState();
+        if (!state) return;
+        render(state);
+        say('drawn from the object above', true);
+      });
+
+      document.querySelector('#twice').addEventListener('click', () => {
+        const state = readState();
+        if (!state) return;
+        render(state);
+        const first = list.innerHTML;
+        render(state);
+        const second = list.innerHTML;
+        say(
+          first === second
+            ? 'two renders of the same object produced identical markup — the function has no memory'
+            : 'the second render differed from the first: this function remembers something',
+          first === second,
+        );
+      });
+
+      document.querySelector('#vandalise').addEventListener('click', () => {
+        const victim = list.firstElementChild;
+        if (!victim) {
+          say('there is nothing on screen to delete', false);
+          return;
+        }
+        const name = victim.querySelector('.name').textContent;
+        victim.remove();
+        say('"' + name + '" is gone from the screen and still in the object. Press render.', false);
+      });
+
+      /*
+       * The commonest wiring bug in the week, in one button. `subscribe` registers a
+       * listener for FUTURE changes; nothing has changed yet, so the screen stays as it
+       * was — which looks exactly like a render function that does not work.
+       */
+      document.querySelector('#subscribe-only').addEventListener('click', () => {
+        const listeners = new Set();
+        listeners.add(render);
+        list.replaceChildren();
+        document.querySelector('#count').textContent = 0;
+        empty.hidden = false;
+        empty.textContent = 'subscribed, and never drawn';
+        say(
+          listeners.size +
+            ' listener registered, 0 renders since. subscribe() does not fire — the fourth line of app.js is the one that draws.',
+          false,
+        );
+      });
+
+      document.querySelector('#reset').addEventListener('click', () => {
+        json.value = JSON.stringify(START, null, 2);
+        runs = 0;
+        runsEl.textContent = runs;
+        render(START);
+        say('nothing measured yet', true);
+      });
+
+      json.value = JSON.stringify(START, null, 2);
+      render(START);
+    </script>
+  </body>
+</html>

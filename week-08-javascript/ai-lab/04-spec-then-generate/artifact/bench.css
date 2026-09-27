@@ -1,0 +1,98 @@
+:root {
+  color-scheme: light;
+  --ink: #1d2330;
+  --soft: #4a5263;
+  --line: #cfd6e2;
+  --ground: #f7f8fb;
+  --panel: #ffffff;
+  --pass: #0b6b43;
+  --fail: #a3212a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--ground);
+}
+
+header,
+main {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+header p {
+  margin: 0;
+  color: var(--soft);
+}
+
+h1 {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1.4rem;
+  overflow-wrap: anywhere;
+}
+
+code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.score {
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+.cases {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line);
+  border-inline-start: 6px solid var(--pass);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.case.fail {
+  border-inline-start-color: var(--fail);
+}
+
+.case h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.case p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.verdict {
+  font-weight: 700;
+}
+
+.case .verdict {
+  color: var(--pass);
+}
+
+.case.fail .verdict,
+.bad {
+  color: var(--fail);
+}
+
+.spec {
+  color: var(--soft);
+}

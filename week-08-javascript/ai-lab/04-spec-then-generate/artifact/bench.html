@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+  The bench for ai-lab/04-spec-then-generate — the spec's cases, run against the file
+  Claude returned. Derived from demos/09-spec-bench: there, two fixed implementations; here,
+  YOUR file. Save what came back as filter-and-sort.js next to this page and reload.
+
+  Every row checks two things: what the function RETURNED, and whether the array it was
+  HANDED is still in the order it came (spec §2 and the last line of §6). A red row names
+  the line of the spec it breaks.
+
+  ?impl=claude-p1 and ?impl=claude-p2 run the two answers in transcript.md instead.
+  Open it with Live Server — it is a module.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>The bench - filter and sort, against the spec</title>
+    <link rel="stylesheet" href="bench.css" />
+    <script type="module" src="bench.js"></script>
+  </head>
+  <body>
+    <header>
+      <p>Week 8 · AI cycle 4 · spec, then generate</p>
+      <h1>The bench: <code>filterAndSort</code> against <code>specs/filter-and-sort.md</code></h1>
+      <p id="which">Loading the file under test…</p>
+    </header>
+    <main>
+      <p id="score" class="score" role="status"></p>
+      <ol id="cases" class="cases"></ol>
+    </main>
+  </body>
+</html>

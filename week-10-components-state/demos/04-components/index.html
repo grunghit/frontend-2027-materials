@@ -1,0 +1,524 @@
+<!doctype html>
+<!--
+  Template literals as components — and the one thing they cost. week-10 lecture deck (act 4; now the reference deck).
+
+  A component here is a function: data in, markup out, no side effects and no knowledge
+  of where the result will be put. This page builds the SAME row four ways and measures
+  three things about each: how long the source is, whether the output is identical, and
+  whether a hostile item name executes.
+
+  What makes it teach rather than merely list options:
+
+  1. THE FOUR OUTPUTS ARE COMPARED AS STRINGS. Identical markup from four different
+     techniques is the point of the first half: the choice is about reading and about
+     safety, not about what appears.
+  2. THE ESCAPING TEST IS RUN, NOT ASSERTED. One item is called
+     `<img src="data:," onerror="...">`, which is a name a user could type into the add
+     form. A counter is incremented from inside that payload, so "did it execute" is a
+     number on the page rather than a claim in a comment.
+     `<script>` is deliberately NOT used as the payload: markup inserted this way does
+     not run scripts, and a demo that used one would prove innerHTML is safe.
+  3. COMPOSITION IS SHOWN AT THE END. `list(items)` calls `row(item)` calls `badge(...)`,
+     all three of them template literals, which is what "components" means before any
+     framework is involved.
+  4. `esc()` IS SIX LINES AND IT IS THE PRICE. A template literal without it is the
+     shortest wrong answer in the week.
+
+  DEMO MOVE: run the safety test before explaining anything. The counter moves for two of
+  the four. Ask which two, then reveal.
+
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Template literals as components</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #14181f;
+        --muted: #5c6675;
+        --line: #cbd5e1;
+        --accent: #4338ca;
+        --true: #0f766e;
+        --false: #b91c1c;
+        --warn: #b45309;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: var(--ink);
+        background: #fff;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 13.5px;
+      }
+      .bar .sep {
+        width: 1px;
+        align-self: stretch;
+        background: var(--line);
+      }
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 7px;
+        padding: 5px 11px;
+        cursor: pointer;
+        color: inherit;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid #f59e0b;
+        outline-offset: 2px;
+      }
+      input,
+      select,
+      textarea {
+        font: inherit;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 4px 8px;
+        color: inherit;
+        background: #fff;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #f8fafc;
+        padding: 11px 12px;
+        min-width: 0;
+      }
+      .panel h3 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .panel.good {
+        border-color: #99f6e4;
+        background: #f0fdfa;
+      }
+      .panel.bad {
+        border-color: #fecaca;
+        background: #fef2f2;
+      }
+      ul.rows {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 5px;
+      }
+      ul.rows li {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        padding: 5px 8px;
+        font-size: 13.5px;
+      }
+      ul.rows .name {
+        flex: 1;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      ul.rows .qty {
+        font:
+          600 12.5px/1 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        color: var(--muted);
+      }
+      code,
+      .mono {
+        font:
+          12.5px/1.5 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      pre {
+        margin: 0;
+        overflow-x: auto;
+        font:
+          12.5px/1.6 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: start;
+        padding: 4px 7px;
+        border-bottom: 1px solid var(--line);
+      }
+      thead th {
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .verdict {
+        border-radius: 8px;
+        padding: 8px 11px;
+        font-weight: 600;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      .verdict.ok {
+        border-color: #99f6e4;
+        background: #f0fdfa;
+        color: var(--true);
+      }
+      .verdict.no {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: var(--false);
+      }
+      .note {
+        margin: 10px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .yes {
+        color: var(--true);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--false);
+        font-weight: 700;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .flash {
+          animation: flash 0.5s ease-out;
+        }
+        @keyframes flash {
+          from {
+            background: #fef3c7;
+          }
+        }
+      }
+      .code {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px 10px;
+        white-space: pre;
+        overflow-x: auto;
+        font:
+          12px/1.55 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .ran {
+        font:
+          700 30px/1 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .grid4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>A component is a function: item in, markup out</h2>
+
+    <div class="bar">
+      <button id="build" type="button" class="primary">build the same row four ways</button>
+      <button id="compose" type="button">compose: list calls row calls badge</button>
+      <span class="sep"></span>
+      <button id="attack" type="button">give one item a hostile name</button>
+      <button id="reset" type="button">reset</button>
+    </div>
+
+    <div class="grid4">
+      <div class="panel">
+        <h3>1 · string concatenation</h3>
+        <div class="code" id="src-concat" tabindex="0"></div>
+        <div id="out-concat"></div>
+      </div>
+      <div class="panel">
+        <h3>2 · template literal, unescaped</h3>
+        <div class="code" id="src-raw" tabindex="0"></div>
+        <div id="out-raw"></div>
+      </div>
+      <div class="panel good">
+        <h3>3 · template literal, escaped</h3>
+        <div class="code" id="src-safe" tabindex="0"></div>
+        <div id="out-safe"></div>
+      </div>
+      <div class="panel good">
+        <h3>4 · createElement</h3>
+        <div class="code" id="src-dom" tabindex="0"></div>
+        <div id="out-dom"></div>
+      </div>
+    </div>
+
+    <div class="layout" style="margin-top: 12px">
+      <div class="panel">
+        <h3>are the four outputs the same?</h3>
+        <p class="verdict ok" id="same">not built yet</p>
+        <table>
+          <thead>
+            <tr>
+              <th>way</th>
+              <th>source lines</th>
+              <th>the attacker's code ran</th>
+            </tr>
+          </thead>
+          <tbody id="table"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>times the item's name executed</h3>
+        <p class="ran" id="ran">0</p>
+        <p class="note">
+          The hostile name is an <code>onerror</code> attribute on an image that cannot load. A
+          <code>&lt;script&gt;</code> tag inserted as markup does not run, which is exactly why it
+          is the wrong thing to test with.
+        </p>
+      </div>
+
+      <div class="panel">
+        <h3>composition</h3>
+        <div id="out-compose"></div>
+      </div>
+    </div>
+
+    <script>
+      window.__ran = 0;
+      const bump = () => {
+        window.__ran += 1;
+        document.querySelector('#ran').textContent = window.__ran;
+      };
+      window.__bump = bump;
+
+      const SAFE = { id: 'a1', name: 'flour', qty: 2, shelf: 'dry' };
+      const HOSTILE = {
+        id: 'a2',
+        name: '<img src="data:," onerror="window.__bump()">',
+        qty: 1,
+        shelf: 'dry',
+      };
+      let item = SAFE;
+
+      /* ── the four ways, each a function of one item ────────────────────────── */
+
+      function concatRow(item) {
+        return (
+          '<li data-id="' +
+          item.id +
+          '">' +
+          '<span class="name">' +
+          item.name +
+          '</span>' +
+          '<span class="qty">' +
+          item.qty +
+          '</span>' +
+          '</li>'
+        );
+      }
+
+      function rawRow(item) {
+        return `<li data-id="${item.id}">
+  <span class="name">${item.name}</span>
+  <span class="qty">${item.qty}</span>
+</li>`;
+      }
+
+      /* Six lines, and they are the price of the technique. */
+      function esc(value) {
+        return String(value)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;');
+      }
+
+      function safeRow(item) {
+        return `<li data-id="${esc(item.id)}">
+  <span class="name">${esc(item.name)}</span>
+  <span class="qty">${esc(item.qty)}</span>
+</li>`;
+      }
+
+      function domRow(item) {
+        const li = document.createElement('li');
+        li.dataset.id = item.id;
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = item.name;
+        const qty = document.createElement('span');
+        qty.className = 'qty';
+        qty.textContent = item.qty;
+        li.append(name, qty);
+        return li;
+      }
+
+      /* ── composition: three components, each calling the next ──────────────── */
+      const badge = (text) => `<span class="qty">${esc(text)}</span>`;
+      const composedRow = (item) =>
+        `<li data-id="${esc(item.id)}"><span class="name">${esc(item.name)}</span>${badge(item.shelf)}${badge(item.qty)}</li>`;
+      const composedList = (items) => `<ul class="rows">${items.map(composedRow).join('')}</ul>`;
+
+      /* ── the measurements ──────────────────────────────────────────────────── */
+
+      /*
+       * EACH WAY IS MEASURED ON ITS OWN, and that took two attempts. The first version
+       * asked whether the produced markup CONTAINED `onerror`, which is true of the
+       * escaped output too — the text is right there, harmlessly, as text. The only
+       * honest question is whether the attacker's function was called, so the counter is
+       * read before and after each insertion, with a wait in between: an `onerror` on an
+       * unloadable image fires on its own schedule, later than the line that inserted it
+       * and later than a `setTimeout(fn, 0)`.
+       */
+      const WAYS = [
+        { key: 'concat', label: 'string concatenation', fn: concatRow },
+        { key: 'raw', label: 'template literal, unescaped', fn: rawRow },
+        { key: 'safe', label: 'template literal, escaped', fn: safeRow },
+        { key: 'dom', label: 'createElement', fn: domRow },
+      ];
+
+      const lines = (fn) => fn.toString().split('\n').length;
+      const settle = () => new Promise((resolve) => setTimeout(resolve, 90));
+
+      async function build() {
+        window.__ran = 0;
+        document.querySelector('#ran').textContent = 0;
+
+        const measured = [];
+        for (const way of WAYS) {
+          document.querySelector('#src-' + way.key).textContent = way.fn.toString();
+          const host = document.querySelector('#out-' + way.key);
+          const ul = document.createElement('ul');
+          ul.className = 'rows';
+
+          const before = window.__ran;
+          const produced = way.fn(item);
+          if (typeof produced === 'string') ul.innerHTML = produced;
+          else ul.append(produced);
+          host.replaceChildren(ul);
+          await settle();
+
+          measured.push({
+            ...way,
+            executed: window.__ran > before,
+            html: typeof produced === 'string' ? produced : produced.outerHTML,
+          });
+        }
+
+        const rows = document.querySelector('#table');
+        rows.replaceChildren();
+        for (const way of measured) {
+          const tr = document.createElement('tr');
+          for (const [cell, kind] of [
+            [way.label, ''],
+            [String(lines(way.fn)), ''],
+            [way.executed ? 'yes' : 'no', way.executed ? 'no' : 'yes'],
+          ]) {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            if (kind) td.className = kind;
+            tr.append(td);
+          }
+          rows.append(tr);
+        }
+
+        /* Compare the four as text. On a harmless item they agree apart from whitespace,
+           which is the first half of the lesson: the choice is not about output. */
+        const normal = measured.map((way) =>
+          /* Whitespace BETWEEN tags first, then runs inside text. `createElement` emits
+             no indentation and the two string forms do, so a naive collapse reports four
+             different answers for four identical rows. */
+          way.html.replace(/>\s+</g, '><').replace(/\s+/g, ' ').trim(),
+        );
+        const same = normal.every((html) => html === normal[0]);
+        const verdict = document.querySelector('#same');
+        verdict.textContent = same
+          ? 'all four produced identical markup'
+          : 'the four differ — compare the escaped output with the raw one';
+        verdict.className = 'verdict ' + (same ? 'ok' : 'no');
+      }
+
+      document.querySelector('#build').addEventListener('click', build);
+
+      document.querySelector('#attack').addEventListener('click', () => {
+        item = HOSTILE;
+        build();
+      });
+
+      document.querySelector('#reset').addEventListener('click', () => {
+        item = SAFE;
+        build();
+      });
+
+      document.querySelector('#compose').addEventListener('click', () => {
+        const host = document.querySelector('#out-compose');
+        const items = [SAFE, { id: 'a3', name: 'almond milk', qty: 4, shelf: 'cold' }];
+        host.innerHTML = composedList(items);
+        const code = document.createElement('div');
+        code.className = 'code';
+        /* A region that scrolls has to be reachable by keyboard, or there is content only
+           a mouse can get to. axe reports this as `scrollable-region-focusable`. */
+        code.tabIndex = 0;
+        code.textContent = [badge, composedRow, composedList].map((fn) => fn.toString()).join('\n');
+        host.append(code);
+      });
+
+      build();
+    </script>
+  </body>
+</html>

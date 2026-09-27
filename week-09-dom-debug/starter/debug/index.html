@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+  ============================================================================
+  INTENTIONALLY THROWS.
+
+  This is the week-9 Debug Challenge. The application below is deliberately broken:
+  five faults are planted in `js/app.js`, of five different kinds, and finding them is
+  the exercise. One of them raises an uncaught error while the page loads, which is
+  why this file carries the marker above — `tools/gates.mjs` inverts the console gate
+  for it, and reports it if it ever goes quiet.
+
+  DO NOT "TIDY" THIS FILE. The markup is correct and it is not where the faults are.
+
+  The seed data is in `js/guests.js` and it is correct too. Everything you need to
+  change is in `js/app.js`.
+  ============================================================================
+-->
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>רשימת מוזמנים</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="js/app.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">דלג לתוכן</a>
+
+    <header>
+      <h1>רשימת מוזמנים</h1>
+      <p class="sub">ערב סיום הקורס · שלושה מקומות ליד השולחן הראשי</p>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section class="panel" aria-labelledby="add-title">
+        <h2 id="add-title">הוספת מוזמן</h2>
+        <form id="guest-form">
+          <div class="field">
+            <label for="name">שם</label>
+            <input id="name" name="name" type="text" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="seats">מספר מקומות</label>
+            <input id="seats" name="seats" type="number" min="1" max="6" value="1" />
+          </div>
+          <button type="submit">הוסף</button>
+        </form>
+        <p id="form-error" class="error" role="status"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="totals-title">
+        <h2 id="totals-title">מצב האירוע</h2>
+        <dl class="totals">
+          <dt>מוזמנים</dt>
+          <dd id="guest-count">—</dd>
+          <dt>סך המקומות</dt>
+          <dd id="seats-total">—</dd>
+          <dt>אישרו הגעה</dt>
+          <dd id="confirmed-count">—</dd>
+        </dl>
+      </section>
+
+      <div id="lists">
+        <section class="panel" aria-labelledby="seated-title">
+          <h2 id="seated-title">ליד השולחן</h2>
+          <ul id="seated-list" class="guests"></ul>
+        </section>
+
+        <section class="panel" aria-labelledby="waiting-title">
+          <h2 id="waiting-title">רשימת המתנה</h2>
+          <ul id="waiting-list" class="guests"></ul>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
