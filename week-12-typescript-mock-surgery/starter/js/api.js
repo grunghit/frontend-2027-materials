@@ -53,9 +53,10 @@
  *
  *   no key           nothing to register for, nothing to leak in a public repository.
  *                    A key in front-end JavaScript is a key you have published.
- *   CORS-open        it answers with `access-control-allow-origin: *`. Verified from
- *                    this machine on 19 Aug 2026 — see the deck's CORS act for what
- *                    happens when it is not, using data.gov.il, which is not.
+ *   CORS-open        it answers with `access-control-allow-origin: *` — WHEN ASKED with
+ *                    `origin=*` (below). Without that parameter the same URL sends no
+ *                    header and the browser refuses: TypeError: Failed to fetch. Measured
+ *                    in Chromium on 27 Sep 2026 (cycle 3's you-do; demo 07).
  *   Hebrew           the pantry's items are in Hebrew, so the catalogue has to be.
  *   one request      `generator=search` with `prop=extracts` returns the matches AND a
  *                    sentence about each, in one round trip. Two requests per keystroke

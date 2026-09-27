@@ -85,13 +85,14 @@ const isEntry = (value) =>
 /**
  * Turn whatever was on disk into the map this version expects, or an empty one.
  *
- * Three answers, exactly as week 11's `migrate` had:
+ * Three answers — the form on week 11's spine ("Six requests at once, and a shape
+ * from last year", minute 145) and demo 20, on this cache's map of entries:
  *   the current envelope   take the entries, dropping any that fail `isEntry`
  *   a bare object          what version 0 wrote, before there was a version. Adopt it.
  *   anything else          `{}` — a version from the future, or nonsense. Start over.
  */
 function migrate(parsed) {
-  // CODE HERE — three answers, exactly as week 11's migrate had.
+  // CODE HERE — three answers, the form week 11's spine showed at minute 145.
   return {};
 }
 

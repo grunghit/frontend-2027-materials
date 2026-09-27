@@ -8,9 +8,9 @@
  * things.
  *
  * The first is drawing: no `createElement`, no `append`, no `hidden`, no `remove()`.
- * Unchanged from week 9.
+ * Unchanged from week 10.
  *
- * The second is week 10's: THERE IS NO `localStorage` IN THIS FILE, AND NO `JSON`.
+ * The second is the storage half's: THERE IS NO `localStorage` IN THIS FILE, AND NO `JSON`.
  * Five handlers now change the collection — add, edit, +1, remove, and the one added
  * this week that adds an item that came off the network — and not one of them saves
  * anything. THE FIFTH ONE IS THE PROOF: a handler written this week, by somebody who
@@ -34,7 +34,7 @@
  * ── THE FORM IS THE ONE PLACE THIS FILE TOUCHES ELEMENTS, AND IT IS DELIBERATE
  *
  * `readForm` reads the fields, `fillForm` writes them, and `fail` marks one. All
- * three are the same documented exception, which week 9 already carried: THE FORM'S
+ * three are the same documented exception, which week 10 already carried: THE FORM'S
  * FIELDS ARE NOT DRAWN FROM STATE. They cannot be — `render` runs on every keystroke
  * in the search box, and a field whose value is reassigned while somebody is typing
  * in it is a field that fights the user.
@@ -46,7 +46,7 @@
  * ============================================================================
  */
 import { getState, selectEditing, setState } from './state.js';
-import { forget } from './storage.js';
+import { SEED_ITEMS } from './items.js';
 import { ApiError, searchOffline, searchTitles } from './api.js';
 
 /**
@@ -54,7 +54,7 @@ import { ApiError, searchOffline, searchTitles } from './api.js';
  * that came off disk.
  *
  * `Date.now()` in base 36 plus a counter. It has to be unique across SESSIONS now,
- * which a plain counter starting at 100 is not: last week's `a101` was gone when the
+ * which a plain counter starting at 100 is not: week 10's `a101` was gone when the
  * tab closed, and this week it is still there tomorrow morning waiting to be
  * duplicated by the first item you add.
  *
@@ -406,16 +406,17 @@ export function wire() {
   /*
    * CLEAR ALL — the ONE place in this application that asks "are you sure?".
    *
-   * Week 9's rule was: prefer undo to a confirmation, and confirm only what cannot be
+   * Week 10's rule was: prefer undo to a confirmation, and confirm only what cannot be
    * undone. This is the thing that cannot be undone. Everything else on this page is
    * one item; this is all of them, and after the write that follows there is no copy
    * of them left anywhere.
    *
-   * NOTE WHAT IT DOES NOT CALL. It does not remove the key. Clearing the user's data
-   * means SAVING AN EMPTY COLLECTION — `setState` below, and `persist` writes it —
-   * because an absent key means "this browser has never been here" and the next boot
-   * would put the six demo items back. See the header of `forget` in storage.js: that
-   * bug passes every manual test, because nobody reloads immediately after clearing.
+   * NOTE WHAT IT DOES NOT CALL: nothing in storage.js. Clearing is `setState` with an
+   * empty array, and `persist` writes `[]` — so the reload after it shows the same
+   * empty pantry, with its sentence. (Under the project's contract an absent key is
+   * ALSO an empty pantry, so removing the key would look the same today; saving the
+   * empty array is still the honest answer, because it says "the user emptied it"
+   * rather than "nobody has been here".)
    *
    * `confirm()` is a blocking modal and in a real product you would build your own.
    * What is being taught here is WHERE a confirmation belongs, not how to style one.
@@ -430,22 +431,22 @@ export function wire() {
   }
 
   /*
-   * The offer inside the empty state: bring the demo data back.
+   * The offer inside the empty state: load the demo data.
    *
-   * THE ONLY CALLER OF `forget()`, and the only place where deleting the key is the
-   * right thing: "pretend I have never been here". The reload is what makes it
-   * honest — `load()` finds nothing, `app.js` hydrates from the seed, and the same
-   * code path that runs for a genuinely new visitor runs for this one.
+   * THE ONLY WAY THE SAMPLE ITEMS EVER ARRIVE. A first visit is an empty pantry — the
+   * project's rule, and the exam's: a boot that seeds whenever the read comes back
+   * empty cannot tell "nothing saved" from "the read failed". So the six samples are a
+   * user's choice, one `setState`, and `persist` writes them like any other change.
+   * A copy of each, so a `+1` never edits the constant in items.js.
    *
    * It lives inside `#empty`, which `render` hides and shows but never replaces, so
-   * this listener survives every redraw. That is the week-9 rule still earning its
+   * this listener survives every redraw. That is the week-10 rule still earning its
    * keep: a listener goes on something the painter does not throw away.
    */
   const reset = document.querySelector('#reset-demo');
   if (reset) {
     reset.addEventListener('click', () => {
-      forget();
-      location.reload();
+      setState({ items: SEED_ITEMS.map((item) => ({ ...item })) });
     });
   }
 
@@ -508,7 +509,7 @@ export function wire() {
 
   /*
    * ONE listener for every suggestion that will ever exist, on the <ul> — which
-   * render() empties but never replaces. Week 8's delegation, week 9's rule about
+   * render() empties but never replaces. Week 9's delegation, week 10's rule about
    * where a listener goes, and this week it is what makes a list built from a network
    * response no different from a list built from anything else.
    */
@@ -526,7 +527,7 @@ export function wire() {
       /*
        * FROM STATE, NOT FROM THE SCREEN. The title is read off the row because that is
        * the row's identity, and then the DATA is looked up in `state.search.results` —
-       * because week 9's third law does not stop applying just because the data arrived
+       * because week 10's third law does not stop applying just because the data arrived
        * over a network. Scraping `textContent` back out of the row would work today and
        * would break the first time somebody truncates a sentence with CSS.
        */
@@ -535,8 +536,8 @@ export function wire() {
       /*
        * THE HANDLER THAT PROVES THE WHOLE ARGUMENT. It is five lines, it was written
        * this week, it has never heard of `localStorage` — and what it adds is on disk
-       * before the row finishes painting, because `app.js` subscribed `persist` in
-       * week 10 and nothing since has had to know.
+       * before the row finishes painting, because `app.js` subscribed `persist` for
+       * part א and nothing since has had to know.
        *
        * `number: 1` and `category: 'מהקטלוג'` are this application's fields, invented
        * here; `title`, `note` and `source` came from outside. The item that lands in the

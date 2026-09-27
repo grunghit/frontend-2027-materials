@@ -1,0 +1,235 @@
+<!doctype html>
+<!--
+  Six things that are not your data. Week-11 reference deck.
+
+  Two loaders, the same six payloads. The left one is what everybody writes; the right
+  one is the one in the assignment. Each payload is run through BOTH, and what is
+  printed is what actually happened — the thrown error and its message, or the
+  collection that came back.
+
+  THE SIX ARE CHOSEN SO THAT NO SINGLE GUARD CATCHES THEM ALL:
+
+    1. a truncated string        JSON.parse throws            → try/catch catches it
+    2. nothing saved at all      getItem returns null         → a null test catches it
+    3. the string "null"         parse returns null, no throw → NEITHER of the above
+    4. valid JSON, wrong shape   parse succeeds completely    → only a SHAPE check
+    5. our shape, one bad member parse succeeds, one item is  → only a PER-ITEM check
+                                 missing half its fields
+    6. a version from the future parse succeeds, shape fine   → only a VERSION check
+
+  Payloads 3 to 6 are the point of the demo: all four are perfectly valid JSON, and a
+  try/catch around the parse does nothing for any of them. Payload 6 is the one to sit
+  with — the naive loader hands back two items and the page draws two rows with no names
+  in them, which is a screen that is wrong without being broken.
+
+  THE LEFT PANEL SHOWS THE PAGE, NOT JUST THE ERROR. When the loader throws, the panel
+  renders empty — because the throw happened before the first paint, which is what makes
+  this bug expensive: a blank page tells you nothing about where it came from.
+
+  DEMO MOVE: run payloads 1 and 2 and let the room propose `try/catch` and `if (!raw)`.
+  Write both on the board. Then run 3.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>Six things that are not your data</title>
+  </head>
+
+  <body>
+    <h2>The same six payloads through two loaders</h2>
+
+    <div class="bar" id="cases"></div>
+
+    <div class="panel" style="margin-bottom: 12px">
+      <h3>what is on disk</h3>
+      <pre id="raw"></pre>
+    </div>
+
+    <div class="layout">
+      <div class="panel bad">
+        <h3>the loader everybody writes</h3>
+        <pre id="naive-code"></pre>
+        <p class="verdict" id="naive-verdict"></p>
+        <ul class="rows" id="naive-list"></ul>
+      </div>
+      <div class="panel good">
+        <h3>the loader in the assignment</h3>
+        <pre id="safe-code"></pre>
+        <p class="verdict" id="safe-verdict"></p>
+        <ul class="rows" id="safe-list"></ul>
+      </div>
+    </div>
+
+    <p class="note" id="tally"></p>
+
+    <script>
+      const KEY = 'demo06.pantry.v1';
+      const VERSION = 1;
+      const SEED = [{ id: 's1', title: 'נתוני דוגמה', number: 1, category: 'seed' }];
+
+      const GOOD = [
+        { id: 'a1', title: 'קמח מלא', number: 2, category: 'יבשים' },
+        { id: 'a2', title: 'שמן זית', number: 1, category: 'יבשים' },
+      ];
+
+      const CASES = [
+        ['1 · truncated', () => '{"v":1,"items":[{"id":"a1","tit'],
+        ['2 · nothing saved', () => null],
+        ['3 · the string null', () => 'null'],
+        ['4 · valid JSON, wrong shape', () => '{"items":"קמח מלא"}'],
+        [
+          '5 · one bad member',
+          () => JSON.stringify({ v: 1, items: [GOOD[0], { title: 'חצי פריט' }] }),
+        ],
+        [
+          '6 · a version from the future',
+          /* A v4 item, in which `title` became `name` and `number` became `qty`. THE
+             ITEMS MUST NOT HAVE THE CURRENT SHAPE — a future payload whose items happen
+             to look like today's is a payload no version check is needed for, and the
+             row would prove nothing. */
+          () =>
+            JSON.stringify({
+              v: 4,
+              items: [
+                { id: 'a1', name: 'קמח מלא', qty: 2, category: 'יבשים' },
+                { id: 'a2', name: 'שמן זית', qty: 1, category: 'יבשים' },
+              ],
+            }),
+        ],
+        ['0 · perfectly fine', () => JSON.stringify({ v: 1, items: GOOD })],
+      ];
+
+      const NAIVE_CODE = `function load() {
+  const raw = localStorage.getItem(KEY);
+  return JSON.parse(raw).items;
+}`;
+
+      const SAFE_CODE = `function load() {
+  let raw;
+  try { raw = localStorage.getItem(KEY); } catch { return null; }
+  if (raw === null) return null;                       // 2
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch { return null; }   // 1
+  return migrate(parsed);                              // 3, 4, 5, 6
+}`;
+
+      const isItem = (v) =>
+        v !== null &&
+        typeof v === 'object' &&
+        typeof v.id === 'string' &&
+        v.id !== '' &&
+        typeof v.title === 'string' &&
+        Number.isFinite(v.number) &&
+        typeof v.category === 'string';
+
+      function migrate(parsed) {
+        if (Array.isArray(parsed)) return parsed.filter(isItem);
+        if (parsed === null || typeof parsed !== 'object') return null;
+        if (parsed.v === VERSION && Array.isArray(parsed.items)) return parsed.items.filter(isItem);
+        return null;
+      }
+
+      const naive = () => JSON.parse(localStorage.getItem(KEY)).items;
+
+      function safe() {
+        let raw;
+        try {
+          raw = localStorage.getItem(KEY);
+        } catch {
+          return null;
+        }
+        if (raw === null) return null;
+        let parsed;
+        try {
+          parsed = JSON.parse(raw);
+        } catch {
+          return null;
+        }
+        return migrate(parsed);
+      }
+
+      const paint = (mount, items) => {
+        document.querySelector(mount).replaceChildren(
+          ...(items ?? []).map((item) => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.className = 'name';
+            name.textContent = item?.title ?? String(item);
+            const qty = document.createElement('span');
+            qty.className = 'qty';
+            qty.textContent = item?.number ?? '—';
+            li.append(name, qty);
+            return li;
+          }),
+        );
+      };
+
+      let survived = 0;
+      let attempted = 0;
+
+      function run(make, label) {
+        const value = make();
+        if (value === null) localStorage.removeItem(KEY);
+        else localStorage.setItem(KEY, value);
+
+        document.querySelector('#raw').textContent =
+          value === null ? '(the key does not exist)' : value;
+
+        document.querySelector('#naive-code').textContent = NAIVE_CODE;
+        document.querySelector('#safe-code').textContent = SAFE_CODE;
+
+        const naiveEl = document.querySelector('#naive-verdict');
+        let naiveOk = false;
+        try {
+          const items = naive();
+          naiveOk = Array.isArray(items) && items.every(isItem);
+          naiveEl.textContent = naiveOk
+            ? `returned ${items.length} items`
+            : `returned ${JSON.stringify(items)} — NOT a collection, and nothing said so`;
+          paint('#naive-list', Array.isArray(items) ? items : []);
+        } catch (error) {
+          naiveEl.textContent = `THREW ${error.constructor.name}: ${error.message}`;
+          paint('#naive-list', []);
+        }
+        naiveEl.className = 'verdict ' + (naiveOk ? 'ok' : 'no');
+
+        const items = safe();
+        const used = items ?? SEED;
+        const safeEl = document.querySelector('#safe-verdict');
+        safeEl.className = 'verdict ok';
+        safeEl.textContent =
+          items === null
+            ? 'returned null — the caller seeds instead, and the page draws'
+            : `returned ${items.length} item${items.length === 1 ? '' : 's'}` +
+              (label.startsWith('5') ? ' — the broken one was dropped, the good one kept' : '');
+        paint('#safe-list', used);
+
+        attempted += 1;
+        if (naiveOk) survived += 1;
+        document.querySelector('#tally').textContent =
+          `payloads run: ${attempted} · the naive loader produced a usable collection ${survived} of those times.`;
+      }
+
+      document.querySelector('#cases').replaceChildren(
+        ...CASES.map(([label, make]) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = label;
+          b.addEventListener('click', () => {
+            for (const other of document.querySelectorAll('#cases button')) {
+              other.classList.remove('primary');
+            }
+            b.classList.add('primary');
+            run(make, label);
+          });
+          return b;
+        }),
+      );
+
+      document.querySelector('#cases button').click();
+    </script>
+  </body>
+</html>

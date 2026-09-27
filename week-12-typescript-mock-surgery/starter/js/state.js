@@ -4,8 +4,9 @@
  *
  * INSTRUCTOR MATERIAL, and also the file students read after grading.
  *
- * THIS FILE IS WEEK 10's, WITH ONE FIELD ADDED AND ONE DERIVATION. Diff it against last
- * week's: `search` is new, `selectSearchView` is new, and nothing else moved.
+ * THIS FILE IS THE STATE WEEK'S (week 10), WITH TWO FIELDS ADDED AND TWO DERIVATIONS.
+ * Diff it against week 10's: `storageNote`, `search`, `selectSearchView` and
+ * `selectNewSuggestions` are new, and nothing else moved.
  *
  * NOTHING ABOUT SAVING APPEARS HERE, AND NOTHING ABOUT THE NETWORK EITHER. The truth
  * does not know where it is written down and it does not know where it came from. What
@@ -34,8 +35,8 @@
  *
  * Seven fields, and the case for each is still that it cannot be computed from the
  * others. `items` is the collection. `query`, `category` and `sort` are what the user
- * typed and chose. `editingId` is which row is open in the form. `storageError` is what
- * the disk said. `search` is new this week, and it is the only one that describes
+ * typed and chose. `editingId` is which row is open in the form. `storageNote` is the
+ * sentence the disk said, or `null`. `search` is new this week, and it is the only one that describes
  * something that is HAPPENING rather than something that IS.
  *
  * WHAT BELONGS IN STATE, WHAT BELONGS ON DISK, AND WHAT BELONGS ON THE WIRE ARE THREE
@@ -50,7 +51,7 @@ function initialState() {
     category: 'all',
     sort: 'title',
     editingId: null,
-    storageError: null,
+    storageNote: null, // a sentence from storage.js when a read or a write went wrong
 
     /*
      * THE REQUEST, AS A FACT ABOUT THE APPLICATION.
@@ -95,7 +96,7 @@ export const getState = () => state;
 /**
  * Apply a shallow patch and tell everyone who is listening.
  *
- * THE ONE DOOR, and this week a second subscriber walks through it. In week 9 the
+ * THE ONE DOOR, and this week a second subscriber walks through it. In week 10 the
  * only listener was `render`; now `persist` is one too, and it was added by ONE LINE
  * in app.js, without a single handler learning that persistence exists.
  */
@@ -107,7 +108,7 @@ export function setState(patch) {
 /**
  * Subscribe to changes. Returns an unsubscribe function.
  *
- * A `Set` rather than one slot, which cost nothing last week and is what makes this
+ * A `Set` rather than one slot, which cost nothing in week 10 and is what makes this
  * week one line. Two subscribers, both pure consumers of the same object: one paints
  * it, one writes it down.
  */
@@ -117,15 +118,20 @@ export function subscribe(listener) {
 }
 
 /**
- * Put a collection in. Called once, by app.js, at boot — with what came off disk if
- * anything did, and with the seed data if not.
+ * Put what came off disk in. Called ONCE, by app.js, at boot, with the result of
+ * `load()` — `{ items, reason }`, where `items` is always an array.
  *
- * The copy is not decoration. Whatever is handed in came from either a module-level
- * constant or `JSON.parse`, and in the first case sharing the objects would let a
- * `+1` edit the seed for the rest of the session.
+ * NO SEED HERE, AND THAT IS THE PROJECT'S RULE: an absent key is an empty pantry. The
+ * demo data comes in only when the user asks for it (`#reset-demo`, in events.js).
+ * `reason` is the sentence `load` had for a value it could not read, and it goes into
+ * state so `render` can say it.
+ *
+ * The copy is not decoration: the objects came from `JSON.parse` or, from the button,
+ * from a module-level constant — and sharing the second would let a `+1` edit the demo
+ * data for the rest of the session.
  */
-export function hydrate(items) {
-  setState({ items: items.map((item) => ({ ...item })) });
+export function hydrate({ items, reason }) {
+  setState({ items: items.map((item) => ({ ...item })), storageNote: reason });
 }
 
 /* ==========================================================================
@@ -136,7 +142,7 @@ export function hydrate(items) {
  * The collection as it should appear: filtered by the query, then by the shelf, then
  * sorted.
  *
- * Unchanged from week 9, and it is the reason the three view controls are still one
+ * Unchanged from week 10, and it is the reason the three view controls are still one
  * line each. Search, filter and sort are ONE derivation.
  */
 export function selectVisible(state) {
@@ -199,7 +205,7 @@ export function selectSummary(state) {
  * state, not a fact about the screen, and the day a second page wants it there is
  * nothing to copy.
  *
- * Week 6 named four states every UI must have — empty, loading, error, success. Two of
+ * Week 7 named four states every UI must have — empty, loading, error, success. Two of
  * them have had nothing to do all semester, because reading an array from memory is
  * instant and reading it from disk cannot fail halfway. A request can do both, and this
  * is where all four finally exist at once:

@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+  One panel of demo 11. `?save=1` turns persistence on.
+
+  The two panels are THE SAME FILE, which is the point: the difference between an
+  application that forgets and one that does not is the lines guarded by `SAVE` below,
+  and there are four of them.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>panel</title>
+    <style>
+      body {
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <ul class="rows" id="list"></ul>
+    <p class="note" id="meta"></p>
+
+    <script>
+      const SAVE = new URLSearchParams(location.search).get('save') === '1';
+      const KEY = 'demo01.pantry.v1';
+      const NAMES = ['קמח', 'שמן', 'חלב', 'גבינה', 'פפריקה', 'כמון', 'אורז', 'עדשים', 'טחינה'];
+
+      const load = () => {
+        if (!SAVE) return null;
+        try {
+          return JSON.parse(localStorage.getItem(KEY));
+        } catch {
+          return null;
+        }
+      };
+
+      let items = load() ?? [];
+      let n = items.length;
+
+      function save() {
+        if (!SAVE) return;
+        localStorage.setItem(KEY, JSON.stringify(items));
+      }
+
+      function render() {
+        document.querySelector('#list').replaceChildren(
+          ...items.map((item) => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.className = 'name';
+            name.textContent = item.title;
+            const qty = document.createElement('span');
+            qty.className = 'qty';
+            qty.textContent = item.number;
+            li.append(name, qty);
+            return li;
+          }),
+        );
+        document.querySelector('#meta').textContent = SAVE
+          ? `${items.length} items · saved under "${KEY}"`
+          : `${items.length} items · in memory only`;
+      }
+
+      window.ADD = () => {
+        n += 1;
+        items = [...items, { id: `d${n}`, title: `${NAMES[n % NAMES.length]} ${n}`, number: n }];
+        save();
+        render();
+      };
+
+      window.REMOVE = () => {
+        items = items.slice(1);
+        save();
+        render();
+      };
+
+      window.COUNT = () => items.length;
+
+      window.WIPE = () => {
+        try {
+          localStorage.removeItem(KEY);
+        } catch {
+          /* blocked — nothing to do */
+        }
+      };
+
+      render();
+    </script>
+  </body>
+</html>

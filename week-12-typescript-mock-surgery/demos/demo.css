@@ -1,8 +1,8 @@
 /*
- * demo.css — the shared look of week 12's instruments. Copied verbatim from week 11's,
- * which copied week 10's. It is the frame, not the lesson.
+ * demo.css — the shared look of week 12's instruments. Copied from week 11's,
+ * which came from the old storage week (merged into week 11 by batch 06). It is the frame, not the lesson.
  *
- * ── WHY THIS FILE EXISTS, WHEN WEEKS 8 AND 9 HAD NONE
+ * ── WHY THIS FILE EXISTS, WHEN WEEKS 9 AND 10 HAD NONE
  *
  * Those weeks copied ~300 lines of identical CSS into every demo. Ten demos this week
  * would have been three thousand duplicated lines, in a course that spends a semester
@@ -121,8 +121,8 @@ textarea {
   background: #f8fafc;
   padding: 11px 12px;
   /* A grid item's automatic minimum size is its content, so a <pre> inside one never
-     gets the chance to scroll. Week 3's `min-width: auto`, in the course's own
-     material — it cost week 9's demo 07 a 322px overflow at 375px. */
+     gets the chance to scroll. Week 4's `min-width: auto`, in the course's own
+     material — it cost week 11's demo 17 (the storage week's demo 07 before the merge) a 322px overflow at 375px. */
   min-width: 0;
 }
 

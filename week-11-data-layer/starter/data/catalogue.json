@@ -1,0 +1,680 @@
+{
+  "batchcomplete": "",
+  "query": {
+    "pages": {
+      "23478": {
+        "pageid": 23478,
+        "ns": 0,
+        "title": "אורז",
+        "index": 7,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Riso_maturo.jpg/250px-Riso_maturo.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 133
+        },
+        "extract": "אורז (שם מדעי: Oryza) הוא דגן המשמש כמזון בסיסי עבור יותר ממחצית אוכלוסיית העולם, הנפוץ בייחוד באסיה ובאפריקה."
+      },
+      "917489": {
+        "pageid": 917489,
+        "ns": 0,
+        "title": "נייר אורז",
+        "index": 52,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Rice_paper.jpg/250px-Rice_paper.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "נייר אורז הוא השם נפוץ לשני סוגים שונים של חומר גלם."
+      },
+      "366433": {
+        "pageid": 366433,
+        "ns": 0,
+        "title": "פודינג אורז",
+        "index": 33,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Arroz_con_leche.png/250px-Arroz_con_leche.png?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 146
+        },
+        "extract": "פודינג אורז הוא פודינג המבוסס על אורז וסוכר, לרוב בתוספת חלב, הקיים בגרסאות שונות בתרבויות רבות."
+      },
+      "26673": {
+        "pageid": 26673,
+        "ns": 0,
+        "title": "בצל",
+        "index": 10,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Shallots_-_sliced_and_whole.jpg/250px-Shallots_-_sliced_and_whole.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 129
+        },
+        "extract": "בצל (באנגלית: Bulb) הוא איבר אגירה תת-קרקעי הקיים בצמחים מסוימים."
+      },
+      "37883": {
+        "pageid": 37883,
+        "ns": 0,
+        "title": "בצל הגינה",
+        "index": 26,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/ARS_red_onion.jpg/250px-ARS_red_onion.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 294
+        },
+        "extract": "בְּצַל הגִּינָּה (נקרא גם שׁוּם נָבוּב; שם מדעי: Allium cepa) הוא ירק מאכל מסוג שום ממשפחת הנרקיסיים, בעל שורש בצלי יבש וגבעולים ירוקים ורכים."
+      },
+      "2106519": {
+        "pageid": 2106519,
+        "ns": 0,
+        "title": "בצל מטוגן",
+        "index": 59,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/R%C3%B6stzwiebeln.jpg/250px-R%C3%B6stzwiebeln.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "בצל מטוגן הוא מרכיב המשמש לתיבול מאכלים."
+      },
+      "24159": {
+        "pageid": 24159,
+        "ns": 0,
+        "title": "גבינה",
+        "index": 8,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Hartkaese_HardCheeses.jpg/250px-Hartkaese_HardCheeses.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 300
+        },
+        "extract": "גבינה היא מוצר חלב מוצק המיוצר מחלב, בעיקר של בקר וצאן (אך לעיתים משל יונקים אחרים)."
+      },
+      "364002": {
+        "pageid": 364002,
+        "ns": 0,
+        "title": "גבינה שווייצרית",
+        "index": 48,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/NCI_swiss_cheese.jpg/250px-NCI_swiss_cheese.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 218
+        },
+        "extract": "גבינה שווייצרית הוא שם כולל למגוון סוגי גבינה הדומים בצורתם לגבינה השווייצרית אמנטל."
+      },
+      "191098": {
+        "pageid": 191098,
+        "ns": 0,
+        "title": "עוגת גבינה",
+        "index": 32,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Cheesecake_Crumbs-Israeli_style_%D7%A2%D7%95%D7%92%D7%AA_%D7%92%D7%91%D7%99%D7%A0%D7%94_%D7%A4%D7%99%D7%A8%D7%95%D7%A8%D7%99%D7%9D.jpg/250px-Cheesecake_Crumbs-Israeli_style_%D7%A2%D7%95%D7%92%D7%AA_%D7%92%D7%91%D7%99%D7%A0%D7%94_%D7%A4%D7%99%D7%A8%D7%95%D7%A8%D7%99%D7%9D.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 182
+        },
+        "extract": "עוגת גבינה היא עוגה על בסיס גבינה."
+      },
+      "1690297": {
+        "pageid": 1690297,
+        "ns": 0,
+        "title": "גיריות דבש",
+        "index": 55,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Honey_Badger.jpg/250px-Honey_Badger.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 113
+        },
+        "extract": "גיריות דבש (שם מדעי: Mellivorinae) היא תת-משפחה של טורפים ממשפחת הסמוריים החיים באפריקה ודרום אסיה ובעבר התקיימו גם באירופה."
+      },
+      "29104": {
+        "pageid": 29104,
+        "ns": 0,
+        "title": "דבורת הדבש",
+        "index": 24,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Apis_mellifera_%2852848692477%29.jpg/250px-Apis_mellifera_%2852848692477%29.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 147
+        },
+        "extract": "דבורת הדבש או דבורת הדבש האירופית (שם מדעי: Apis mellifera) היא מין של דבורה אאוסוציאלית, החיה בתוך ארגון חברתי משוכלל."
+      },
+      "27377": {
+        "pageid": 27377,
+        "ns": 0,
+        "title": "דבש",
+        "index": 11,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Honey-PNG-Image-83961.png/250px-Honey-PNG-Image-83961.png?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 187
+        },
+        "extract": "דבש הוא סירופ עתיר סוכר (כ-82%) המיוצר ונאגר כמקור מזון על ידי קבוצות מסוימות של דבוראים חברתיים."
+      },
+      "12173": {
+        "pageid": 12173,
+        "ns": 0,
+        "title": "חומוס",
+        "index": 3,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Hummus_from_The_Nile.jpg/250px-Hummus_from_The_Nile.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 133
+        },
+        "extract": "חומוס (מערבית: حُمُّص, ‏‏Ⓘ‏, תעתיק מדויק: חֻמֻּץ) הוא ממרח מגרגרי חִמְצָה (חומוס) טחונים."
+      },
+      "1804797": {
+        "pageid": 1804797,
+        "ns": 0,
+        "title": "חומוס להמונים",
+        "index": 37,
+        "extract": "חומוס להמונים (באנגלית כותרתו: The Hummus Blog) הוא בלוג ישראלי שעוסק בחומוס ובמטבח הים-תיכוני."
+      },
+      "1333105": {
+        "pageid": 1333105,
+        "ns": 0,
+        "title": "קמח חומוס",
+        "index": 53,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Gram_flour_AvL.jpg/250px-Gram_flour_AvL.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 132
+        },
+        "extract": "קמח חומוס הוא קמח העשוי מגרגרי חמצה (חומוס) מיובשים או קלויים, וטחונים."
+      },
+      "17398": {
+        "pageid": 17398,
+        "ns": 0,
+        "title": "חלב",
+        "index": 5,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Glass_of_Milk_%2833657535532%29.jpg/250px-Glass_of_Milk_%2833657535532%29.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 201
+        },
+        "extract": "חלב הוא לרוב נוזל לבן, הנוצר בבלוטות החלב של נקבות היונקים לאחר ההמלטה או הלידה."
+      },
+      "258157": {
+        "pageid": 258157,
+        "ns": 0,
+        "title": "חלב נוכרי",
+        "index": 45,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Brest_2012_-_Terres_et_mers17.JPG/250px-Brest_2012_-_Terres_et_mers17.JPG?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 300
+        },
+        "extract": "חָלָב נׇכְרִי (או חלב עכו\"ם) הוא חלב שנחלב על ידי אדם שאינו יהודי, כאשר לאורך כל תהליך החליבה לא נמצא יהודי בשטח החליבה."
+      },
+      "9608": {
+        "pageid": 9608,
+        "ns": 0,
+        "title": "מוצרי חלב",
+        "index": 21,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/%D0%A0%D1%96%D0%B7%D0%BD%D1%96_%D0%B2%D0%B8%D0%B4%D0%B8_%D0%BC%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D0%B8%D1%85_%D0%BF%D1%80%D0%BE%D0%B4%D1%83%D0%BA%D1%82%D1%96%D0%B2_%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE_%D0%B2%D0%B8%D1%80%D0%BE%D0%B1%D0%BD%D0%B8%D1%86%D1%82%D0%B2%D0%B0.jpg/250px-%D0%A0%D1%96%D0%B7%D0%BD%D1%96_%D0%B2%D0%B8%D0%B4%D0%B8_%D0%BC%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D0%B8%D1%85_%D0%BF%D1%80%D0%BE%D0%B4%D1%83%D0%BA%D1%82%D1%96%D0%B2_%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE_%D0%B2%D0%B8%D1%80%D0%BE%D0%B1%D0%BD%D0%B8%D1%86%D1%82%D0%B2%D0%B0.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 165
+        },
+        "extract": "מוצרי חלב הם כלל מוצרי המזון שמרכיבם העיקרי הוא חלב."
+      },
+      "1403958": {
+        "pageid": 1403958,
+        "ns": 0,
+        "title": "הנסיך מפעל ליצור טחינה",
+        "index": 36,
+        "extract": "הנסיך מפעל ליצור טחינה בע\"מ היא חברה פרטית ישראלית המוכרת במותג טחינה הנסיך."
+      },
+      "13836": {
+        "pageid": 13836,
+        "ns": 0,
+        "title": "טחינה",
+        "index": 4,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Susamdan_tahin_%C3%BCretimi_2022.jpg/250px-Susamdan_tahin_%C3%BCretimi_2022.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 447
+        },
+        "extract": "טחינה (בערבית: طَحِينَة או طَحِينِيَّة, תעתיק מדויק: טַחִינַה, טַחִינֵיַּה) היא מחית של גרעיני שומשום."
+      },
+      "1910519": {
+        "pageid": 1910519,
+        "ns": 0,
+        "title": "טחינת הר ברכה",
+        "index": 57,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/he/thumb/d/d4/%D7%98%D7%97%D7%99%D7%A0%D7%AA_%D7%94%D7%A8_%D7%91%D7%A8%D7%9B%D7%94.jpg/250px-%D7%98%D7%97%D7%99%D7%A0%D7%AA_%D7%94%D7%A8_%D7%91%D7%A8%D7%9B%D7%94.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 200
+        },
+        "extract": "טחינת הר ברכה היא טחינה המיוצרת במפעל ביישוב השומרוני קריית לוזה, בראש הר גריזים ובקרבת היישוב הר ברכה, על ידי חברת \"טחינת הר ברכה\"."
+      },
+      "1587992": {
+        "pageid": 1587992,
+        "ns": 0,
+        "title": "הר כמון",
+        "index": 54,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Michmanim.jpg/250px-Michmanim.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 134
+        },
+        "extract": "הר כַּמּוֹן הוא ההר הגבוה ביותר בהרי הגליל התחתון, ממוקם כחמישה קילומטר מזרחית לכרמיאל."
+      },
+      "543071": {
+        "pageid": 543071,
+        "ns": 0,
+        "title": "כמון",
+        "index": 19,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Cuminum_cyminum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-198.jpg/250px-Cuminum_cyminum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-198.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 264
+        },
+        "extract": "כַּמּוֹן (שם מדעי: Cuminum cyminum, בלשון הדיבור מבוטא גם כַּמּוּן) הוא צמח תבלין חד-שנתי ממשפחת הסוככיים."
+      },
+      "13785": {
+        "pageid": 13785,
+        "ns": 0,
+        "title": "כמון (יישוב)",
+        "index": 23,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/he/6/65/%D7%9C%D7%95%D7%92%D7%95_%D7%9B%D7%9E%D7%95%D7%9F.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+          "width": 143,
+          "height": 136
+        },
+        "extract": "כַּמּוֹן הוא יישוב קהילתי בישראל, בתחומי המועצה האזורית משגב."
+      },
+      "47162": {
+        "pageid": 47162,
+        "ns": 0,
+        "title": "מלח",
+        "index": 13,
+        "extract": "האם התכוונתם ל..."
+      },
+      "11932": {
+        "pageid": 11932,
+        "ns": 0,
+        "title": "מלח בישול",
+        "index": 22,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Salt_-_close-up.jpg/250px-Salt_-_close-up.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 190
+        },
+        "extract": "מלח בישול או מלח שולחן הוא תרכובת יונית המורכבת מנתרן וכלור (נתרן כלורי, NaCl)."
+      },
+      "194838": {
+        "pageid": 194838,
+        "ns": 0,
+        "title": "מלח הארץ (חברה)",
+        "index": 44,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/he/thumb/3/3e/%D7%9E%D7%9C%D7%97_%D7%94%D7%90%D7%A8%D7%A5.svg/250px-%D7%9E%D7%9C%D7%97_%D7%94%D7%90%D7%A8%D7%A5.svg.png?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 91
+        },
+        "extract": "תעשיות מלח לישראל בע\"מ הייתה ברוב שנותיה חברה לייצור מלח בישראל, שהרחיבה פעילותה לתחומים נוספים והפכה לחברת החזקות."
+      },
+      "50902": {
+        "pageid": 50902,
+        "ns": 0,
+        "title": "חד-סוכר",
+        "index": 43,
+        "extract": "חד-סוכר או סוכר פשוט (באנגלית: monosaccharide, מונוסכריד) הוא סוג פחמימה הבסיסי ביותר."
+      },
+      "4421": {
+        "pageid": 4421,
+        "ns": 0,
+        "title": "סוכר",
+        "index": 1,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Sugar_cubes.jpg/250px-Sugar_cubes.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "סוכר הוא שם כולל לקבוצה של פחמימות קצרות אכילות בעלות טעם מתוק אופייני, ומבנה גבישי (חד-סוכר ודו-סוכר), וכן שמו הרווח של הדו-סוכר סוכרוז."
+      },
+      "51760": {
+        "pageid": 51760,
+        "ns": 0,
+        "title": "רב-סוכר",
+        "index": 28,
+        "extract": "רב־סוכר (Polysaccharides, glycans) הוא ביופולימר המורכב ממונומרים של חד סוכרים, בתחום התזונה נקראים רב סוכרים גם פחמימות מורכבות."
+      },
+      "8345": {
+        "pageid": 8345,
+        "ns": 0,
+        "title": "עדשה",
+        "index": 41,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/he/thumb/0/0a/Lentes2.png/250px-Lentes2.png?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 104
+        },
+        "extract": "עדשה היא רכיב אופטי (לרוב שקוף) המשמש להסטת קרני אור ויצירת תופעות אופטיות (לרוב שבירת אור) של מיקוד או פיזור של אור."
+      },
+      "395406": {
+        "pageid": 395406,
+        "ns": 0,
+        "title": "עדשה תרבותית",
+        "index": 18,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Illustration_Lens_culinaris0.jpg/250px-Illustration_Lens_culinaris0.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 312
+        },
+        "extract": "עדשה תרבותית (שם מדעי: Lens culinaris) היא מין צמח ממשפחת הקטניות."
+      },
+      "34590": {
+        "pageid": 34590,
+        "ns": 0,
+        "title": "תל עדשים",
+        "index": 25,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/he/8/8a/TelAdashim.png?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+          "width": 164,
+          "height": 240
+        },
+        "extract": "תֵּל עֲדָשִׁים הוא מושב עובדים בעמק יזרעאל, 5 ק\"מ צפונית לעפולה, בתחום השיפוט של המועצה האזורית עמק יזרעאל."
+      },
+      "145350": {
+        "pageid": 145350,
+        "ns": 0,
+        "title": "פלפל (פרי)",
+        "index": 31,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Paprika.fruits.three.j.jpg/250px-Paprika.fruits.three.j.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "המילה \"פלפל\" הגיעה לעברית דרך הפרסית ושימשה במקור לתיאור התבלין הקרוי כיום פלפל שחור, המיוצר מגרגרי הצמח Piper nigrum."
+      },
+      "744924": {
+        "pageid": 744924,
+        "ns": 0,
+        "title": "פלפל חריף",
+        "index": 50,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Phrik_khi_nu.jpg/250px-Phrik_khi_nu.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 167
+        },
+        "extract": "פלפל חריף (ידוע גם בשמות צ'ילי ופלפל צ'ילי) הוא שם כולל למספר זנים תרבותיים מחמישה מינים שונים של פלפלת, העיקרי ביניהם הוא Capsicum annuum, הידוע גם בשם פלפלת שנתית."
+      },
+      "178232": {
+        "pageid": 178232,
+        "ns": 0,
+        "title": "פלפל שחור",
+        "index": 17,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Piper_Nigrum_W2_IMG_2443.jpg/250px-Piper_Nigrum_W2_IMG_2443.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 165
+        },
+        "extract": "פלפל שחור (שם מדעי: Piper nigrum) הוא צמח מטפס ממשפחת הפלפליים (Piperaceae)."
+      },
+      "362933": {
+        "pageid": 362933,
+        "ns": 0,
+        "title": "המטבח ההונגרי",
+        "index": 47,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Gulasch.jpg/250px-Gulasch.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 196
+        },
+        "extract": "המטבח ההונגרי הוא המטבח המאפיין את הונגריה ואת הקבוצה האתנית המרכזית שבה, המדיארים."
+      },
+      "42805": {
+        "pageid": 42805,
+        "ns": 0,
+        "title": "פפריקה",
+        "index": 12,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Piment%C3%B3n_Tap_de_Cort%C3%AD.jpg/250px-Piment%C3%B3n_Tap_de_Cort%C3%AD.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 136
+        },
+        "extract": "פפריקה, או בשמה העברי פלפלת, היא תבלין אדום המופק מטחינת פלפלת צ'ילי לאבקה, תוך הוספת שמן (לפחות 2%)."
+      },
+      "2302984": {
+        "pageid": 2302984,
+        "ns": 0,
+        "title": "פפריקה (יישומון)",
+        "index": 40,
+        "extract": "פפריקה (באנגלית: Paprika) הם יישומון ואתר אינטרנט אשר מסייעים למשתמש לייצר תפריטים יומיים או שבועיים מותאמים אישית אשר מבוססים על מטרות ספציפיות."
+      },
+      "1314109": {
+        "pageid": 1314109,
+        "ns": 0,
+        "title": "אהוד קינמון",
+        "index": 35,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/%D7%90%D7%94%D7%95%D7%93_%D7%A7%D7%99%D7%A0%D7%9E%D7%95%D7%9F.jpg/250px-%D7%90%D7%94%D7%95%D7%93_%D7%A7%D7%99%D7%A0%D7%9E%D7%95%D7%9F.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 328
+        },
+        "extract": "אהוד קנמון (22 במאי 1931 - 31 באוקטובר 2010) היה ראש עיריית בת ים בשנים 1983–1993."
+      },
+      "1727817": {
+        "pageid": 1727817,
+        "ns": 0,
+        "title": "ברווז קינמון",
+        "index": 56,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Cinnamon_teal_at_Seedskadee_National_Wildlife_Refuge_%2841981782212%29.jpg/250px-Cinnamon_teal_at_Seedskadee_National_Wildlife_Refuge_%2841981782212%29.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 149
+        },
+        "extract": "ברווז קינמון (שם מדעי: Spatula cyanoptera) הוא מין של עוף מים ממשפחת הברווזיים החי באמריקה הצפונית ואמריקה הדרומית."
+      },
+      "1689395": {
+        "pageid": 1689395,
+        "ns": 0,
+        "title": "קינמון",
+        "index": 20,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/%E0%B4%A6%E0%B4%A8%E0%B5%8D%E0%B4%A4%E0%B4%A7%E0%B4%BE%E0%B4%B5%E0%B4%A8%E0%B4%9A%E0%B5%82%E0%B5%BC%E0%B4%A3%E0%B5%8D%E0%B4%A3%E0%B4%82.JPG/250px-%E0%B4%A6%E0%B4%A8%E0%B5%8D%E0%B4%A4%E0%B4%A7%E0%B4%BE%E0%B4%B5%E0%B4%A8%E0%B4%9A%E0%B5%82%E0%B5%BC%E0%B4%A3%E0%B5%8D%E0%B4%A3%E0%B4%82.JPG?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "קינמון הוא תבלין המופק מהקליפה הפנימית של כמה מינים שונים של עצי הקינמונום."
+      },
+      "2022135": {
+        "pageid": 2022135,
+        "ns": 0,
+        "title": "עוגת שוקולד ללא קמח",
+        "index": 58,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Flourless_Chocolate_Cake_with_Bourbon_Vanilla_Ice_Cream.jpg/250px-Flourless_Chocolate_Cake_with_Bourbon_Vanilla_Ice_Cream.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 267
+        },
+        "extract": "עוגת שוקולד ללא קמח (באנגלית Flourless chocolate cake) או עוגת מלכת מונטנגרו או טנרינה (מאיטלקית La Torta Tenerina) היא עוגת שוקולד דחוסה, העשויה מקרם שוקולד ללא קמח."
+      },
+      "104736": {
+        "pageid": 104736,
+        "ns": 0,
+        "title": "קמח",
+        "index": 16,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/All-Purpose_Flour_%284107895947%29.jpg/250px-All-Purpose_Flour_%284107895947%29.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 133
+        },
+        "extract": "קמח הוא אבקה דקה הנוצרת מטחינת רכיבים מסוימים של צמחים, כגון זרעים, אגוזים ופירות."
+      },
+      "2121762": {
+        "pageid": 2121762,
+        "ns": 0,
+        "title": "קמח חיטה מלא",
+        "index": 39,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Whole_wheat_grain_flour_being_scooped.jpg/250px-Whole_wheat_grain_flour_being_scooped.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 133
+        },
+        "extract": "קמח חיטה מלא (להלן: קמח מלא) הוא קמח הנטחן מרכיבי החיטה (מלבד דורום) השונים - הסובין, הנבט והאנדוספרם."
+      },
+      "128040": {
+        "pageid": 128040,
+        "ns": 0,
+        "title": "בית קפה",
+        "index": 30,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/PalestineCafe.jpg/250px-PalestineCafe.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 231
+        },
+        "extract": "בֵּית קָפֶה (או קפה בסלנג) הוא מקום הסעדה שבו מגישים בעיקר קפה, תה, מאפים וגם מאכלים קלים, ומכאן שמו."
+      },
+      "360139": {
+        "pageid": 360139,
+        "ns": 0,
+        "title": "מכונת קפה",
+        "index": 46,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Wikimedia_Coffeemakers_Officey_Photos-10.jpg/250px-Wikimedia_Coffeemakers_Officey_Photos-10.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 129
+        },
+        "extract": "מכונת קפה או מכונת אספרסו היא מכשיר המייצר משקה קפה מסוג אספרסו באמצעות הזרמת מים חמים בלחץ דרך פולי קפה טחונים."
+      },
+      "19949": {
+        "pageid": 19949,
+        "ns": 0,
+        "title": "קפה",
+        "index": 6,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/250px-A_small_cup_of_coffee.JPG?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "קָפֶה הוא שם כולל למספר משקאות חמים וקרים, המופקים מפולי צמח הקפה."
+      },
+      "1040750": {
+        "pageid": 1040750,
+        "ns": 0,
+        "title": "מזרקת שוקולד",
+        "index": 34,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Chocolate_fountain.jpg/250px-Chocolate_fountain.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 304
+        },
+        "extract": "מזרקת שוקולד הוא מתקן המשמש להגשת פונדו שוקולד."
+      },
+      "24454": {
+        "pageid": 24454,
+        "ns": 0,
+        "title": "שוקולד",
+        "index": 9,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Chocolate02.jpg/250px-Chocolate02.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 192
+        },
+        "extract": "שׁוֹקוֹלָד הוא ממתק העשוי מזרעים מותססים, קלויים וטחונים של עץ הקקאו (Theobroma cacao)."
+      },
+      "50671": {
+        "pageid": 50671,
+        "ns": 0,
+        "title": "זית אירופי",
+        "index": 27,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Olea_europaea_subsp_europaea.jpg/250px-Olea_europaea_subsp_europaea.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 267
+        },
+        "extract": "זַיִת אֵירוֹפִּי (שם מדעי: Olea europaea), או בשמו הרווח: עץ הזית, הוא עץ או שיח ירוק-עד תרבותי שממלא תפקיד כלכלי ניכר בכל אגן הים התיכון."
+      },
+      "99456": {
+        "pageid": 99456,
+        "ns": 0,
+        "title": "שמן זית",
+        "index": 15,
+        "extract": "שמן זית הוא שמן המופק מזיתים."
+      },
+      "580766": {
+        "pageid": 580766,
+        "ns": 0,
+        "title": "שמן תעשיות",
+        "index": 49,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/he/thumb/9/9d/Shemen_Ta%27asiyot.svg/250px-Shemen_Ta%27asiyot.svg.png?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 160
+        },
+        "extract": "שמן תעשיות בע\"מ (כיום נקראת שמן נדל\"ן מניב בע\"מ) היא חברה שייצרה בעבר שמנים צמחיים למאכל וכוספא לבעלי חיים, וכיום עוסקת בנכסי נדל\"ן מניבים להשקעה."
+      },
+      "119066": {
+        "pageid": 119066,
+        "ns": 0,
+        "title": "בצק שמרים",
+        "index": 29,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Breaddough2.jpg/250px-Breaddough2.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 200
+        },
+        "extract": "בצק שמרים (בצרפתית: Pâte à pain) הוא בצק המשמש להכנת מאפים רבים, כגון לחמים שונים, פיצה ועוד."
+      },
+      "27675": {
+        "pageid": 27675,
+        "ns": 0,
+        "title": "מרים, אם ישו",
+        "index": 42,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Nazareth._Israel-05225_-_Young_Mary_%2833579203233%29.jpg/250px-Nazareth._Israel-05225_-_Young_Mary_%2833579203233%29.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 300
+        },
+        "extract": "על פי הברית החדשה, מִרְיָם (ביוונית: Μαρία, מַרִיָה; בלטינית: Maria; בארמית סורית: ܡܪܝܡ, מַרְיַם), הייתה אישה יהודייה-גלילית מתקופת בית שני, אמו של ישו ואשתו של יוסף."
+      },
+      "8379": {
+        "pageid": 8379,
+        "ns": 0,
+        "title": "שמרים",
+        "index": 2,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Dry_yeast.jpg/250px-Dry_yeast.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "שמרים הם יצורים אאוקריוטים, חד-תאיים."
+      },
+      "820072": {
+        "pageid": 820072,
+        "ns": 0,
+        "title": "בית תה",
+        "index": 51,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Teahouse-Nanjing.jpg/250px-Teahouse-Nanjing.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "בית תה הוא מקום הסעדה ומפגש חברתי, בדומה לבית קפה, שבו מגישים תה ומנות קלות הנצרכות לצד התה, לדוגמה דים סאם, דברי מתיקה, מאפים וכריכים קטנים."
+      },
+      "1940009": {
+        "pageid": 1940009,
+        "ns": 0,
+        "title": "מערכת תה",
+        "index": 38,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Liotard%2C_Jean-%C3%89tienne_-_Still_Life-_Tea_Set_-_Google_Art_Project.jpg/250px-Liotard%2C_Jean-%C3%89tienne_-_Still_Life-_Tea_Set_-_Google_Art_Project.jpg?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 144
+        },
+        "extract": "מערכת תה (או סט תה, או סרוויס תה) מאגדת פריטים תואמים המשמשים להכנת ולשתיית תה."
+      },
+      "47624": {
+        "pageid": 47624,
+        "ns": 0,
+        "title": "תה",
+        "index": 14,
+        "thumbnail": {
+          "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Black_Tea_in_Cup.JPG/250px-Black_Tea_in_Cup.JPG?utm_source=he.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+          "width": 200,
+          "height": 150
+        },
+        "extract": "תֶּה הוא משקה המכיל קפאין המיוצר על ידי חליטת העלים וניצני העלים של צמח התה במים חמים עד רותחים (לרוב בטמפרטורת 80° עד 95° מעלות צלזיוס)."
+      }
+    }
+  }
+}

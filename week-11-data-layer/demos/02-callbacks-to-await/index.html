@@ -1,0 +1,277 @@
+<!doctype html>
+<!--
+  The same job, three ways. Week-11 reference deck.
+
+  ONE JOB: find a user, then their orders, then the total. Three dependent steps, each
+  one needing the answer of the one before — which is the shape that produces callback
+  hell, and the shape `await` was invented for.
+
+  ALL THREE PANELS RUN THE SAME THREE STEPS AGAINST THE SAME FAKE BACKEND, and the page
+  reports, for each: the ANSWER, the WALL CLOCK, the NESTING DEPTH of the source, and
+  whether the failure path was handled. The numbers are computed from the code that is
+  displayed — the depth is counted, not asserted.
+
+  THE ROW THAT MATTERS IS "one place to put the failure". The callback version needs an
+  `if (err)` at every level and a student writes three of them; the promise chain needs
+  one `.catch`; the await version needs one `try`. That is not a style preference, it is
+  the whole argument, and the FAIL toggle makes it visible: turn it on and the callback
+  version's error arrives three different ways.
+
+  DEMO MOVE: run all three with FAIL off — identical answers, identical times. Then turn
+  FAIL on and run them again.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>Callbacks, promises, await — the same three steps</title>
+
+    <style>
+      /*
+        THE THREE VERDICT FIELDS SIT ON ONE LINE.
+
+        The three panels hold the same three steps written three ways, and the
+        whole demo move is reading one panel against another. The listings are
+        different lengths — 11 lines, 6 and 8 — so with `align-items: start` and
+        an auto-height panel the three verdict fields landed at 537.5, 447.5 and
+        501.3 slide units: 90u apart, 10% of the deck's canvas, for the same
+        control, which reads as a ranking that does not exist.
+
+        Stretch the row and push the verdict down with an auto margin. The panels
+        become one height and the three fields one line; the listings keep their
+        own lengths, which is the thing being compared and must not move.
+      */
+      .layout.three {
+        align-items: stretch;
+      }
+      .layout.three > .panel {
+        display: flex;
+        flex-direction: column;
+      }
+      .layout.three > .panel > .verdict {
+        margin-block-start: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Find the user, then the orders, then the total</h2>
+
+    <div class="bar">
+      <button type="button" id="run" class="primary">run all three</button>
+      <span class="sep"></span>
+      <label><input type="checkbox" id="fail" /> make step 2 fail</label>
+      <span class="sep"></span>
+      <span class="note" id="status">Ready.</span>
+    </div>
+
+    <div class="layout three">
+      <div class="panel bad">
+        <h3>callbacks</h3>
+        <pre id="src-cb"></pre>
+        <p class="verdict" id="out-cb">—</p>
+      </div>
+      <div class="panel warn">
+        <h3>promise chain</h3>
+        <pre id="src-pr"></pre>
+        <p class="verdict" id="out-pr">—</p>
+      </div>
+      <div class="panel good">
+        <h3>async / await</h3>
+        <pre id="src-aw"></pre>
+        <p class="verdict" id="out-aw">—</p>
+      </div>
+    </div>
+
+    <div class="scroll-x" style="margin-top: 12px">
+      <table>
+        <thead>
+          <tr>
+            <th>version</th>
+            <th>answer</th>
+            <th>wall clock</th>
+            <th>deepest indent</th>
+            <th>places the failure is handled</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="note" id="verdict"></p>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+
+      /* ── The fake backend. Three steps, 250ms each, and step 2 can be told to fail.
+         Written once, in the promise form, and the callback version is a wrapper — so
+         all three panels are genuinely doing the same work and the comparison is about
+         the CALLING style and nothing else. */
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      let shouldFail = false;
+
+      async function findUser(name) {
+        await wait(250);
+        return { id: 7, name };
+      }
+      async function findOrders(userId) {
+        await wait(250);
+        if (shouldFail) throw new Error(`orders service is down (user ${userId})`);
+        return [{ total: 120 }, { total: 80 }, { total: 45 }];
+      }
+      async function findTotal(orders) {
+        await wait(250);
+        return orders.reduce((sum, o) => sum + o.total, 0);
+      }
+
+      /* The callback-style API, built on the same three functions. This is what every
+         library looked like before 2015, and `(err, value)` is the convention Node
+         made standard: the error comes FIRST, because forgetting it is the thing that
+         has to be made hard. */
+      const cbify = (fn) => (arg, done) =>
+        fn(arg).then(
+          (value) => done(null, value),
+          (err) => done(err),
+        );
+      const findUserCb = cbify(findUser);
+      const findOrdersCb = cbify(findOrders);
+      const findTotalCb = cbify(findTotal);
+
+      const SRC = {
+        cb: `findUserCb('דנה', (err, user) => {
+  if (err) return show(err);
+  findOrdersCb(user.id, (err, orders) => {
+    if (err) return show(err);
+    findTotalCb(orders, (err, total) => {
+      if (err) return show(err);
+      show(total);
+    });
+  });
+});`,
+        pr: `findUser('דנה')
+  .then((user) => findOrders(user.id))
+  .then((orders) => findTotal(orders))
+  .then((total) => show(total))
+  .catch(show);`,
+        aw: `try {
+  const user = await findUser('דנה');
+  const orders = await findOrders(user.id);
+  const total = await findTotal(orders);
+  show(total);
+} catch (err) {
+  show(err);
+}`,
+      };
+
+      for (const [key, src] of Object.entries(SRC)) el(`src-${key}`).textContent = src;
+
+      /* MEASURED, NOT ASSERTED. The depth is the deepest indentation in the source that
+         is actually on screen, and the handler count is how many times the error is
+         dealt with in it. Change the code above and both numbers change with it. */
+      const depthOf = (src) =>
+        Math.max(...src.split('\n').map((line) => (line.match(/^ */)[0].length / 2) | 0)) + 1;
+      const handlersOf = (src) => (src.match(/if \(err\)|\.catch|catch \(/g) ?? []).length;
+
+      const rows = [];
+      const paint = () => {
+        el('rows').replaceChildren(
+          ...rows.map((r) => {
+            const tr = document.createElement('tr');
+            for (const [text, cls] of [
+              [r.name, ''],
+              [r.answer, r.threw ? 'bad' : 'good'],
+              [`${r.ms} ms`, ''],
+              [String(r.depth), r.depth >= 4 ? 'bad' : ''],
+              [String(r.handlers), r.handlers >= 3 ? 'bad' : 'good'],
+            ]) {
+              const td = document.createElement('td');
+              td.textContent = text;
+              if (cls) td.className = cls;
+              tr.append(td);
+            }
+            return tr;
+          }),
+        );
+        el('verdict').textContent =
+          'All three take the same three quarters of a second, because they do the same ' +
+          'three things one after the other. What differs is how far right the code goes, ' +
+          'and how many places you have to remember to handle a failure in.';
+      };
+
+      const finish = (key, name, value, threw, t0, src) => {
+        const out = el(`out-${key}`);
+        out.className = 'verdict ' + (threw ? 'no' : 'ok');
+        out.textContent = threw ? `threw: ${value}` : `total: ${value}`;
+        rows.push({
+          name,
+          answer: threw ? String(value).slice(0, 34) : String(value),
+          threw,
+          ms: Math.round(performance.now() - t0),
+          depth: depthOf(src),
+          handlers: handlersOf(src),
+        });
+        paint();
+      };
+
+      el('run').addEventListener('click', () => {
+        shouldFail = el('fail').checked;
+        rows.length = 0;
+        paint();
+        el('status').textContent = 'running…';
+        for (const k of ['cb', 'pr', 'aw']) {
+          el(`out-${k}`).className = 'verdict';
+          el(`out-${k}`).textContent = 'waiting…';
+        }
+
+        /* 1 — callbacks. THE PYRAMID. Note that the three `if (err)` lines are not
+           decoration: leave any one of them out and that failure vanishes silently,
+           because there is nothing above a callback to catch anything. */
+        const t1 = performance.now();
+        findUserCb('דנה', (err, user) => {
+          if (err) return finish('cb', 'callbacks', err.message, true, t1, SRC.cb);
+          findOrdersCb(user.id, (err2, orders) => {
+            if (err2) return finish('cb', 'callbacks', err2.message, true, t1, SRC.cb);
+            findTotalCb(orders, (err3, total) => {
+              if (err3) return finish('cb', 'callbacks', err3.message, true, t1, SRC.cb);
+              finish('cb', 'callbacks', total, false, t1, SRC.cb);
+            });
+          });
+        });
+
+        /* 2 — a promise chain. FLAT, because `.then` returns a promise, so returning a
+           promise from inside one joins the chain rather than nesting inside it. That
+           one rule is the whole difference between this panel and the one on its left. */
+        const t2 = performance.now();
+        findUser('דנה')
+          .then((user) => findOrders(user.id))
+          .then((orders) => findTotal(orders))
+          .then((total) => finish('pr', 'promise chain', total, false, t2, SRC.pr))
+          .catch((err) => finish('pr', 'promise chain', err.message, true, t2, SRC.pr));
+
+        /* 3 — await. The same chain, written as if none of it waited. `try/catch` works
+           on it — which it CANNOT do for the callback version, because by the time a
+           callback runs the `try` around the call that scheduled it has long since
+           finished. That is worth saying twice. */
+        (async () => {
+          const t3 = performance.now();
+          try {
+            const user = await findUser('דנה');
+            const orders = await findOrders(user.id);
+            const total = await findTotal(orders);
+            finish('aw', 'async / await', total, false, t3, SRC.aw);
+          } catch (err) {
+            finish('aw', 'async / await', err.message, true, t3, SRC.aw);
+          }
+        })();
+
+        setTimeout(() => {
+          el('status').textContent = el('fail').checked
+            ? 'Step 2 failed. Look at how many places each version needed in order to notice.'
+            : 'Done. Now tick "make step 2 fail" and run it again.';
+        }, 900);
+      });
+    </script>
+  </body>
+</html>

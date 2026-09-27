@@ -44,7 +44,7 @@ export function $<T extends Element = Element>(selector: string, root?: ParentNo
  *
  * `querySelectorAll` returns a `NodeListOf<Element>`, which has `forEach` and nothing
  * else — no `map`, no `filter`. Spreading it once, here, is what lets the rest of the
- * application use the array methods from week 7 on the result.
+ * application use the array methods from week 8 on the result.
  */
 // CODE HERE
 export function $$<T extends Element = Element>(selector: string, root?: ParentNode): T[] {

@@ -1,0 +1,287 @@
+<!doctype html>
+<!--
+  Four ways to wait for five things. Week-11 reference deck.
+
+  FIVE TASKS with different durations, one of which can be made to fail. Four buttons,
+  and the page measures WALL CLOCK and OUTCOME for each:
+
+    await in a loop     one after another. The total is the SUM.
+    Promise.all         all at once, and one failure loses everything.
+    Promise.allSettled  all at once, and every result comes back with its own verdict.
+    Promise.race        all at once, and the FIRST to settle wins — including a failure.
+
+  THE FIRST ROW IS THE ONE THAT PAYS FOR THE DEMO. "await in a loop" is what everybody
+  writes, it is correct, and it is four times slower than the line below it — for five
+  requests that do not depend on each other. The number is measured on the page, not
+  claimed: with the durations below it is about 1.5s versus about 500ms.
+
+  THE FAILURE TOGGLE IS THE SECOND HALF. With task 3 failing:
+    · `all` rejects, and the four that SUCCEEDED are thrown away. Their work was done;
+      you just have no way to reach it.
+    · `allSettled` never rejects at all — it hands back five verdicts, and the caller
+      decides what four out of five is worth.
+    · `race` reports whatever settled first, which may well be the failure.
+
+  AND ONE THING THAT IS TRUE OF ALL FOUR: `Promise.all` DOES NOT CANCEL ANYTHING. When it
+  rejects, the other four requests are still in flight and still arrive. The page counts
+  completions after the rejection to prove it — a real surprise, and the reason people
+  think `all` "stops" on failure.
+
+  DEMO MOVE: run "await in a loop" and "Promise.all" back to back with FAIL off. The room
+  sees the same five results and two very different numbers. Only then turn FAIL on.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../demo.css" />
+    <title>all · allSettled · race · and the loop nobody should have written</title>
+  </head>
+
+  <body>
+    <h2>Five tasks: 500, 300, 200, 400, 100 ms</h2>
+
+    <div class="bar">
+      <button type="button" id="loop">await in a loop</button>
+      <button type="button" id="all" class="primary">Promise.all</button>
+      <button type="button" id="settled">Promise.allSettled</button>
+      <button type="button" id="race">Promise.race</button>
+      <span class="sep"></span>
+      <label><input type="checkbox" id="fail" /> make task 3 fail</label>
+      <span class="sep"></span>
+      <button type="button" id="reset">reset</button>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <h3>what each one returned</h3>
+        <pre id="out">—</pre>
+      </div>
+      <div class="panel">
+        <h3>the shape of each call</h3>
+        <pre>
+for (const t of tasks) out.push(await t());   // sum of all five
+
+await Promise.all(tasks.map(t =&gt; t()));       // slowest one
+await Promise.allSettled(tasks.map(t =&gt; t()));// slowest one, never rejects
+await Promise.race(tasks.map(t =&gt; t()));      // fastest one to SETTLE</pre>
+        <p class="note" id="still-running">—</p>
+      </div>
+    </div>
+
+    <div class="scroll-x" style="margin-top: 12px">
+      <table>
+        <thead>
+          <tr>
+            <th>call</th>
+            <th>wall clock</th>
+            <th>vs the theoretical best</th>
+            <th>outcome</th>
+            <th>results you can actually use</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="note" id="verdict"></p>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+
+      const DURATIONS = [500, 300, 200, 400, 100];
+      const SUM = DURATIONS.reduce((a, b) => a + b, 0); // 1500
+      const SLOWEST = Math.max(...DURATIONS); // 500
+      const FASTEST = Math.min(...DURATIONS); // 100
+
+      /* Counted so the page can prove that a rejected `Promise.all` did not cancel
+         anything: after it rejects, the other four still land, and this goes up. */
+      let completions = 0;
+
+      const task = (i) => () =>
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            completions += 1;
+            el('still-running').textContent =
+              `${completions} tasks have finished in total since the page loaded. ` +
+              `Watch this keep rising for a moment after Promise.all rejects — ` +
+              `rejecting is not cancelling.`;
+            if (i === 2 && el('fail').checked) {
+              reject(new Error(`task 3 failed after ${DURATIONS[i]}ms`));
+            } else {
+              resolve(`task ${i + 1} (${DURATIONS[i]}ms)`);
+            }
+          }, DURATIONS[i]);
+        });
+
+      const tasks = DURATIONS.map((_, i) => task(i));
+
+      const rows = [];
+      const paint = () => {
+        el('rows').replaceChildren(
+          ...rows.map((r) => {
+            const tr = document.createElement('tr');
+            for (const [text, cls] of [
+              [r.name, ''],
+              [`${r.ms} ms`, r.ms > SLOWEST * 1.6 ? 'bad' : 'good'],
+              [r.best, ''],
+              [r.outcome, r.outcome.startsWith('rejected') ? 'bad' : 'good'],
+              [String(r.usable), r.usable === 0 ? 'bad' : 'good'],
+            ]) {
+              const td = document.createElement('td');
+              td.textContent = text;
+              if (cls) td.className = cls;
+              tr.append(td);
+            }
+            return tr;
+          }),
+        );
+      };
+
+      const record = (name, ms, best, outcome, usable, text) => {
+        rows.push({ name, ms: Math.round(ms), best, outcome, usable });
+        paint();
+        el('out').textContent = text;
+      };
+
+      el('loop').addEventListener('click', async () => {
+        el('out').textContent = 'running one after another…';
+        const t0 = performance.now();
+        const got = [];
+        try {
+          /*
+           * AWAITING IN A LOOP. Each iteration STARTS its task only after the previous
+           * one has finished, because `await` suspends the whole loop body. Nothing here
+           * is wrong — it is what you want when step 2 needs step 1's answer. These five
+           * do not, and that is the difference between correct and correct-and-slow.
+           */
+          for (const t of tasks) got.push(await t());
+          record(
+            'await in a loop',
+            performance.now() - t0,
+            `${SUM}ms — the SUM`,
+            'fulfilled',
+            got.length,
+            got.join('\n'),
+          );
+        } catch (err) {
+          /* And it stops at the first failure — the two tasks after it never even
+             START, which is different from `all`, where they were already in flight. */
+          record(
+            'await in a loop',
+            performance.now() - t0,
+            `${SUM}ms — the SUM`,
+            'rejected — the rest never started',
+            got.length,
+            `${got.length} finished, then: ${err.message}`,
+          );
+        }
+      });
+
+      el('all').addEventListener('click', async () => {
+        el('out').textContent = 'running all at once…';
+        const t0 = performance.now();
+        try {
+          const got = await Promise.all(tasks.map((t) => t()));
+          record(
+            'Promise.all',
+            performance.now() - t0,
+            `${SLOWEST}ms — the SLOWEST`,
+            'fulfilled',
+            got.length,
+            got.join('\n'),
+          );
+        } catch (err) {
+          /*
+           * ALL-OR-NOTHING, AND THIS IS THE COST. Four tasks succeeded. Their values
+           * exist. `Promise.all` gives you none of them, because it rejects with the
+           * FIRST reason and there is nowhere in its contract to put the rest.
+           */
+          record(
+            'Promise.all',
+            performance.now() - t0,
+            `${SLOWEST}ms — the SLOWEST`,
+            'rejected on the first failure',
+            0,
+            `${err.message}\n\nThe other four succeeded. You cannot reach any of them.`,
+          );
+        }
+      });
+
+      el('settled').addEventListener('click', async () => {
+        el('out').textContent = 'running all at once…';
+        const t0 = performance.now();
+        /* `allSettled` HAS NO FAILURE PATH. It waits for every promise to settle, either
+           way, and hands back a verdict per promise. There is no `catch` here because
+           there is nothing that could reach it. */
+        const got = await Promise.allSettled(tasks.map((t) => t()));
+        const ok = got.filter((r) => r.status === 'fulfilled');
+        record(
+          'Promise.allSettled',
+          performance.now() - t0,
+          `${SLOWEST}ms — the SLOWEST`,
+          'never rejects',
+          ok.length,
+          got
+            .map((r, i) =>
+              r.status === 'fulfilled'
+                ? `${i + 1}. fulfilled — ${r.value}`
+                : `${i + 1}. rejected  — ${r.reason.message}`,
+            )
+            .join('\n'),
+        );
+      });
+
+      el('race').addEventListener('click', async () => {
+        el('out').textContent = 'running all at once…';
+        const t0 = performance.now();
+        try {
+          const got = await Promise.race(tasks.map((t) => t()));
+          record(
+            'Promise.race',
+            performance.now() - t0,
+            `${FASTEST}ms — the FASTEST`,
+            'fulfilled by the first to settle',
+            1,
+            `${got}\n\nThe other four are still running. race does not cancel them either.`,
+          );
+        } catch (err) {
+          /* THE FIRST TO SETTLE, NOT THE FIRST TO SUCCEED. If the quickest answer is a
+             failure, that is the answer. Which is exactly what makes race the right tool
+             for a timeout — and the wrong tool for "give me whichever server replies". */
+          record(
+            'Promise.race',
+            performance.now() - t0,
+            `${FASTEST}ms — the FASTEST`,
+            'rejected — a failure settled first',
+            0,
+            err.message,
+          );
+        }
+      });
+
+      el('reset').addEventListener('click', () => {
+        rows.length = 0;
+        completions = 0;
+        paint();
+        el('out').textContent = '—';
+        el('verdict').textContent = '';
+        el('still-running').textContent = '—';
+      });
+
+      /* The one sentence the table is for, updated as rows arrive. */
+      const observer = new MutationObserver(() => {
+        const loop = rows.find((r) => r.name === 'await in a loop');
+        const all = rows.find((r) => r.name === 'Promise.all');
+        if (loop && all) {
+          el('verdict').textContent =
+            `Five independent tasks: ${loop.ms}ms in a loop, ${all.ms}ms in parallel — ` +
+            `about ${(loop.ms / all.ms).toFixed(1)} times the wall clock for exactly the ` +
+            `same work. The loop is only right when step N needs step N-1's answer.`;
+        }
+      });
+      observer.observe(el('rows'), { childList: true });
+    </script>
+  </body>
+</html>

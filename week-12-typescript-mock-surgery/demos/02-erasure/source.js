@@ -1,17 +1,15 @@
 function isRecord(value) {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
-export function isItem(value) {
+export function isEntry(value) {
     if (!isRecord(value))
         return false;
-    if (typeof value.id !== 'string' || value.id === '')
-        return false;
-    if (typeof value.title !== 'string')
-        return false;
-    return typeof value.created === 'string';
+    return (typeof value.id === 'string' &&
+        typeof value.title === 'string' &&
+        typeof value.added === 'string');
 }
-export function summarise(items) {
-    const total = items.length;
-    const newest = items.reduce((best, item) => (best === null || item.created > best ? item.created : best), null);
+export function latest(entries) {
+    const total = entries.length;
+    const newest = entries.reduce((best, entry) => (best === null || entry.added > best ? entry.added : best), null);
     return { total, newest };
 }

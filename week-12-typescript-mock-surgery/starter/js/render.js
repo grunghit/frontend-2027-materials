@@ -21,7 +21,7 @@
  * TWO DOCUMENTED EXCEPTIONS IN THE WHOLE APPLICATION, and they are the same exception
  * twice: a browser control is handed back a value it owns.
  *   1. `renderFilters` reads the <select>'s value before rebuilding its options and
- *      puts it back afterwards (week 9).
+ *      puts it back afterwards (week 10).
  *   2. The add/edit form's FIELDS are not drawn from state at all — they are filled by
  *      events.js when editing starts, and read by events.js on submit. What IS drawn
  *      from state is the form's MODE: which button label, whether "cancel" is offered,
@@ -42,7 +42,7 @@ import {
 /**
  * Build ONE row and return it, unattached. A COMPONENT: item in, element out.
  *
- * `data-id`, never `data-index`. Unchanged from week 9, and this week it earns its
+ * `data-id`, never `data-index`. Unchanged from week 10, and this week it earns its
  * keep twice more: an id is what the edit button carries, and an id is what survives
  * `JSON.stringify` and comes back meaning the same thing. An array position does not
  * survive a sort, let alone a reload.
@@ -120,9 +120,9 @@ function renderList(state) {
     ? 'אין כאן כלום. הוסף פריט בטופס שלמעלה.'
     : 'שום פריט לא מתאים לחיפוש ולסינון הנוכחיים.';
 
-  /* The offer to restore the demo data belongs to the first of the two empty states
-     only. Offering "restore the demo data" to somebody whose search matched nothing
-     is offering to delete the collection they are searching. */
+  /* The offer to load the demo data belongs to the first of the two empty states
+     only. Offering it to somebody whose search matched nothing would put six sample
+     items into a collection they are searching. */
   document.querySelector('#reset-demo').hidden = !nothingAtAll;
 }
 
@@ -147,26 +147,18 @@ function renderFormMode(state) {
 }
 
 /**
- * A sentence when a write failed, and nothing at all when it did not.
+ * A sentence when a read or a write went wrong, and nothing at all when neither did.
  *
  * THE POINT OF WRAPPING EVERY ACCESS IS THIS ELEMENT. A `try { … } catch {}` with an
  * empty body gives the user an application that looks exactly like one that is saving
- * and is not, and they find out when they close the tab. Two failures, two different
- * sentences, because they need two different things from the user.
+ * and is not, and they find out when they close the tab. The sentence itself is
+ * written in storage.js, where the failure is understood; `render` only shows it.
  */
 function renderStorageNote(state) {
   const note = document.querySelector('#storage-note');
   if (!note) return;
-
-  const text = {
-    blocked:
-      'הדפדפן חוסם שמירה מקומית באתר הזה, ולכן השינויים לא יישמרו. ' +
-      'בדפדפן פרטי או כשעוגיות חסומות זה מצב רגיל.',
-    full: 'אין מקום פנוי לשמירה, והשינוי האחרון לא נשמר. נקה פריטים או השתמש ב"נקה הכול".',
-  }[state.storageError];
-
-  note.hidden = text === undefined;
-  note.textContent = text ?? '';
+  note.hidden = state.storageNote === null;
+  note.textContent = state.storageNote ?? '';
 }
 
 /**
@@ -207,7 +199,7 @@ export function suggestionRow(suggestion) {
 
   /*
    * `textContent`, on a string that came off the internet and has been through nobody's
-   * review. Week 8's rule has not moved, and this is the week it stops being
+   * review. Week 9's rule has not moved, and this is the week it stops being
    * theoretical: with `innerHTML` here, whoever can edit that article can run code in
    * this page.
    */
@@ -451,7 +443,7 @@ function renderSummary(state) {
 /**
  * THE render function. One entry point, called on every state change, for every page.
  *
- * One more region than last week and not one line of new plumbing: each returns
+ * One more region than week 10 and not one line of new plumbing: each returns
  * immediately when its mount is absent, so the detail page and the summary page are
  * unaffected by a search panel they do not have.
  *

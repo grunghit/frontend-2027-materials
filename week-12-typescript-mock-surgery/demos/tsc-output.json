@@ -4,7 +4,7 @@
   "options": "--noEmit --strict --target ES2022 --module ES2022 --moduleResolution bundler --lib ES2022,DOM,DOM.Iterable --pretty false",
   "cases": {
     "01-date-in-state.ts": {
-      "source": "// THE BUG FROM WEEK 10, AND THE ONE LINE THAT WOULD HAVE STOPPED IT.\n// Everything below is real: `npx tsc --noEmit` produces the message the demo shows.\ninterface Item {\n  id: string;\n  title: string;\n  created: string; // ISO 8601. Not a Date — it has to survive JSON.stringify.\n}\n\nfunction addItem(title: string): Item {\n  return {\n    id: crypto.randomUUID(),\n    title,\n    created: new Date(), // <- the week-10 bug, caught here instead of after a reload\n  };\n}\n\n// INTENTIONALLY UNCOMPILABLE — this file is a teaching example. Its diagnostics are\n// captured by demos/capture-tsc.mjs and shown on the slides; tools/gates.mjs inverts the\n// compile gate for it and reports if it ever starts compiling cleanly.",
+      "source": "// THE BUG FROM WEEK 11, AND THE ONE LINE THAT WOULD HAVE STOPPED IT.\n// Everything below is real: `npx tsc --noEmit` produces the message the demo shows.\ninterface Item {\n  id: string;\n  title: string;\n  created: string; // ISO 8601. Not a Date — it has to survive JSON.stringify.\n}\n\nfunction addItem(title: string): Item {\n  return {\n    id: crypto.randomUUID(),\n    title,\n    created: new Date(), // <- the week-11 bug, caught here instead of after a reload\n  };\n}\n\n// INTENTIONALLY UNCOMPILABLE — this file is a teaching example. Its diagnostics are\n// captured by demos/capture-tsc.mjs and shown on the slides; tools/gates.mjs inverts the\n// compile gate for it and reports if it ever starts compiling cleanly.",
       "messages": [
         {
           "line": 13,

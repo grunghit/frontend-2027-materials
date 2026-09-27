@@ -10,10 +10,10 @@
 
 | המסמך | טוב | גרוע | נבדק לראשונה | מוצג על המסך |
 |---|---|---|---|---|
-| יומן פרומפטים (`PROMPTS.md`) | [prompt-journal-good.md](prompt-journal-good.md) | [prompt-journal-bad.md](prompt-journal-bad.md) | הפרויקט · מטלה 12 | שבוע 8, מחזור 5 — שם נכתבת הרשומה המלאה הראשונה (השורה הראשונה — כבר בשבוע 1); ושוב בשבועות 9 ו-10, לפני רשומה ביומן |
-| הצהרת AI (`AI_USAGE.md`) | [ai-declaration-good.md](ai-declaration-good.md) | [ai-declaration-bad.md](ai-declaration-bad.md) | הפרויקט | שבוע 12 |
+| יומן פרומפטים (`PROMPTS.md`) | [prompt-journal-good.md](prompt-journal-good.md) | [prompt-journal-bad.md](prompt-journal-bad.md) | הפרויקט · מטלה 12 | שבוע 8, מחזור 5 — שם נכתבת הרשומה המלאה הראשונה (השורה הראשונה — כבר בשבוע 1); ושוב בשבועות 9, 10 ו-11, לפני רשומה ביומן |
+| הצהרת AI (`AI_USAGE.md`) | [ai-declaration-good.md](ai-declaration-good.md) | [ai-declaration-bad.md](ai-declaration-bad.md) | הפרויקט | שבוע 12 (מחזור 3, בתחקיר — לפני ההפסקה ולפני חלון המטלה) |
 | סקירה כתובה של פלט AI — שלוש גרסאות של פריסה | [ai-review-good.md](ai-review-good.md) | [ai-review-bad.md](ai-review-bad.md) | מטלה 6 · מטלה 12 | שבוע 6 (מחזור 4) |
-| סקירה כתובה של קוד שנכתב על ידי AI — שלוש פונקציות וההסברים שלהן | [ai-review-js-good.md](ai-review-js-good.md) | [ai-review-js-bad.md](ai-review-js-bad.md) | מטלה 8 (חלק ג) | שבוע 8 (מחזור 5) |
+| סקירה כתובה של קוד שנכתב על ידי AI — שלוש פונקציות וההסברים שלהן | [ai-review-js-good.md](ai-review-js-good.md) | [ai-review-js-bad.md](ai-review-js-bad.md) | מטלה 8 (חלק ג) · מטלה 12 (חלק ה) | שבוע 8 (מחזור 5) · שבוע 12 (מחזור 3) |
 | מפרט פיצ'ר (`FEATURE_SPEC.md`) | [feature-spec-good.md](feature-spec-good.md) | — | מטלה 8 · הפרויקט | שבוע 8 (מחזור 4) |
 | תוכנית פרויקט (`PROJECT_PLAN.md`) כולל שלוש שורות הביקורת על ה-AI | [project-plan-good.md](project-plan-good.md) | — | מטלה 7 · הפרויקט | שבוע 7 (מחזור 4) |
 

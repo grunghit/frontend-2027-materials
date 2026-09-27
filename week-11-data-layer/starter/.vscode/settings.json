@@ -1,0 +1,78 @@
+{
+  // CLAUDE_CODE_BRIEF.md §4.2. Copied into every starter, every homework and the
+  // project scaffold by tools/publish.mjs. Students configure nothing.
+
+  // ── Formatting ───────────────────────────────────────────────────────────
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // ── Files ────────────────────────────────────────────────────────────────
+  // LF everywhere. The class is mixed Mac and Windows; combined with
+  // .gitattributes (* text=auto eol=lf) this is what keeps diffs reviewable,
+  // the auto-grader's file comparisons correct, and week-13 bug injection reliable.
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.encoding": "utf8",
+
+  // ── Live Server ──────────────────────────────────────────────────────────
+  // Port pinned so localStorage keys stay on ONE origin all semester. If the port
+  // moves, week 11's saved data appears to vanish — the storage is per-origin, and
+  // http://127.0.0.1:5500 and http://127.0.0.1:5501 are different origins.
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.host": "127.0.0.1",
+  "liveServer.settings.CustomBrowser": "chrome",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "liveServer.settings.donotVerifyTags": true,
+  "liveServer.settings.fullReload": false,
+
+  // ── Editor quality of life ───────────────────────────────────────────────
+  "editor.rulers": [100],
+  "editor.wordWrap": "off",
+  "editor.linkedEditing": true,
+  "editor.suggestSelection": "first",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "emmet.includeLanguages": { "html": "html" },
+
+  // Show whitespace only where it bites: trailing spaces and mixed indentation.
+  "editor.renderWhitespace": "trailing",
+
+  // ── HTML / CSS validation ────────────────────────────────────────────────
+  "html.validate.scripts": true,
+  "html.validate.styles": true,
+  "css.validate": true,
+  "css.lint.duplicateProperties": "warning",
+  "css.lint.zeroUnits": "ignore",
+  // Tailwind's at-rules are not standard CSS; without this every @apply is a red squiggle.
+  "css.lint.unknownAtRules": "ignore",
+
+  // ── Git ──────────────────────────────────────────────────────────────────
+  // Terminal first, GUI afterwards (§4.2 rule 2) — but when the panel IS used from
+  // week 2, these stop the two mistakes that cost the most time.
+  "git.enableSmartCommit": false,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.postCommitCommand": "none",
+  "git.ignoreMissingGitWarning": false,
+
+  // ── Search / explorer noise ──────────────────────────────────────────────
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.git": true
+  },
+  "files.exclude": {
+    "**/.DS_Store": true
+  }
+}

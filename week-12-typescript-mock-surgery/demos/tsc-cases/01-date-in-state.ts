@@ -1,4 +1,4 @@
-// THE BUG FROM WEEK 10, AND THE ONE LINE THAT WOULD HAVE STOPPED IT.
+// THE BUG FROM WEEK 11, AND THE ONE LINE THAT WOULD HAVE STOPPED IT.
 // Everything below is real: `npx tsc --noEmit` produces the message the demo shows.
 interface Item {
   id: string;
@@ -10,7 +10,7 @@ function addItem(title: string): Item {
   return {
     id: crypto.randomUUID(),
     title,
-    created: new Date(), // <- the week-10 bug, caught here instead of after a reload
+    created: new Date(), // <- the week-11 bug, caught here instead of after a reload
   };
 }
 

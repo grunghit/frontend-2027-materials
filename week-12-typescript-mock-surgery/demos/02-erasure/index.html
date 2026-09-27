@@ -1,14 +1,16 @@
 <!doctype html>
 <!--
-  WHAT SURVIVES COMPILATION. Week-12 deck, act 1.
+  WHAT SURVIVES COMPILATION. Week-12 spine, cycle 1 — the slide "A type is a claim. It is not code."
 
   `source.ts` beside `source.js`, both loaded off disk, both real. `source.js` was
   produced by running `tsc` over `source.ts` with the class assignment's options; it is
-  not a hand-written impression of what the output looks like.
+  not a hand-written impression of what the output looks like. Since batch 06 the module is
+  the class lending library's (the cycles' app), not the pantry's: the pantry's guard is
+  what the assignment asks students to write, and a demo does not hand it to them.
 
   THE INSTRUMENT IS THE COUNTER. The page counts, in each file, how many lines mention a
-  type and how many are executable, and prints the difference. Twelve lines of type
-  vanish; three functions remain, and all three are guards or arithmetic.
+  type and how many are executable, and prints the difference. The type lines vanish;
+  three functions remain, and all three are checks or arithmetic.
 
   THE SENTENCE THIS SETS UP, from the legacy deck and worth keeping verbatim:
   *"TypeScript never changes the runtime behaviour of JavaScript code."*
@@ -74,7 +76,8 @@
 
     <p class="note">
       Both panels are the files on disk. <code>source.js</code> came out of the compiler — run
-      <code>npx tsc source.ts</code> in this folder and the panel changes with it.
+      <code>npx tsc --target ES2022 --module ES2022 --strict source.ts</code> in this folder and the
+      panel changes with it.
     </p>
 
     <script type="module">

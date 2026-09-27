@@ -5,215 +5,131 @@ week: 12
 footer: פיתוח צד לקוח 2027 · המרכז האקדמי רופין
 ---
 
+<!-- Student-facing. Hebrew, masculine forms. One hint per graded row, in the order the rows
+     are met while working — never the solution's text: every "near" tier points at the
+     cycle where the move was typed on the class lending library, under other names.
+     NO HEBREW INSIDE A FENCED CODE BLOCK (`node tools/gates.mjs --fences`). -->
+
 > [!goal]
-> שלוש דרגות. **פתח את הבאה רק אחרי שניסית.** אין TA בחדר, ולכן זה מה שיש במקומו —
-> ובשבוע הבא, במבחן, אין גם את זה.
+> **רמז אחד לכל שורה שנבדקת**, בסדר שבו תפגוש אותן. בכל אחד שתי דרגות: **דחיפה**, ואם לא
+> הספיקה — **איפה הקלדת את זה היום**. הפתרון לא כאן; הוא במחזורים, על ספריית ההשאלה, בשמות
+> אחרים. ובשבוע הבא, במבחן, אין גם את זה.
 
 ---
 
-## דרגה 1 · דחיפה
+## 1 · המפרט קיים ומלא
 
-**"המהדר מוציא ארבעים שגיאות ואני לא יודע מאיפה להתחיל."**
-תקן את **הראשונה בלבד** והרץ שוב. שגיאות טיפוסים מפילות זו את זו: שגיאה אחת בטיפוס
-מוקדם מייצרת עשר שגיאות במקומות שקוראים לו. ארבעים הופכות לשלוש די מהר.
+**דחיפה.** חמש כותרות, ומתחת לכל אחת משהו שאינו הערה. סימן `CODE HERE` שנשאר — גם בתוך
+הערה — הוא הסימן שהסעיף לא נכתב.
 
-**"`Property 'title' does not exist on type 'unknown'`."**
-בדיוק. זה בדיוק מה שביקשת ממנו לומר. `unknown` פירושו "אף אחד עוד לא בדק" — צריך משהו
-שיבדוק, לפני הגישה.
+**איפה הקלדת את זה.** מחזור 4: שלוש השורות על הלוח לפני המהלך הראשון הן סעיף 4 בזעיר אנפין.
 
-**"איפה מתחילים בכלל?"**
-`ts/types.ts`. לא `api.ts`. כל השאר מחזיר משהו שמתואר שם, ומי שמתחיל מהרשת מבלה עשר
-דקות בהמצאת שמות שהוא אחר כך משנה.
+## 2 · המפרט נכתב לפני הקוד
 
-**"אין לי מושג אם `interface` או `type`."**
-שאלה אחת: האם זו **צורה של אובייקט**, או משהו אחר? צורה — `interface`. איחוד, חיתוך או
-כינוי — `type`. איחוד אי אפשר לכתוב כ-`interface` בכלל.
+**דחיפה.** `git log --oneline -- specs/ts-migration.md ts/` — איזה קומיט בא קודם? אם עוד לא
+עשית קומיט למפרט, עשה אותו **עכשיו**, לפני שאתה נוגע ב-`ts/`.
 
-**"מה זה `NodeListOf<Element>' must have a '[Symbol.iterator]'`?"**
-זו לא בעיה בקוד שלך. חסר `"DOM.Iterable"` ב-`lib` — והוא **כבר שם** ב-`tsconfig.json`
-שקיבלת. אם השגיאה מופיעה, כנראה יש `tsconfig.json` שני, או שהעורך פותח תיקייה אחרת.
+**איפה הקלדת את זה.** מחזור 3: כתבת את P2 **לפני** שקראת את ה-P2 שבקובץ. סעיף 5 הוא אותו
+הרגל — ארבעה דברים שתחפש בפלט, לפני שיש פלט.
 
-**"הרצתי `tsc` ולא קרה כלום."**
-פתח את `js/`. אם יש שם `api.js` שנוצר עכשיו — קרה הכול. אם אין — `noEmitOnError` דלוק,
-ויש שגיאה. גלול למעלה בטרמינל.
+## 3 · `ts/types.ts` מתאר את הישות
 
-**"האם למחוק את `js/api.js` הישן?"**
-לא בידיים. תן למהדר לדרוס אותו. אם הוא לא דרס — הוא לא הצליח לקמפל.
+**דחיפה.** שמות השדות כבר קיימים — ב-`js/items.js`. איחוד אחד לפחות של ליטרלים: ארבע הסיבות
+לכישלון ש-`api.js` כבר זורק (חפש את `new ApiError(` וקרא את הארגומנט הראשון).
 
----
+**איפה הקלדת את זה.** מחזור 1, צעד 1: `ShelfEntry` כ-`interface`, `LookupKind` כ-`type`.
 
-## דרגה 2 · אסטרטגיה
+## 4 · השומר מצמצם
 
-### הגבול, בשלוש שורות
+**דחיפה.** טיפוס ההחזרה הוא `value is Item`, לא `boolean`. והגוף בודק שדות — לפחות שלושה,
+עם `typeof`. שומר שמחזיר `true` מתקמפל ולא שומר על כלום.
 
-זו כל חלק ג, מרוכזת:
+**איפה הקלדת את זה.** מחזור 1, צעד 4: `isEntry`. `isRecord` בשורה הראשונה, כי
+`typeof null === 'object'` ו-`typeof [] === 'object'` — ואז שדה אחרי שדה.
 
-```ts
-let payload: unknown;
-payload = await res.json();
-return toSuggestions(payload);
-```
+## 5 · אין `any`
 
-**שורה 1** — אף אחד עוד לא בדק. **שורה 2** — `any` הפך ל-`unknown`, בהצהרה אחת.
-**שורה 3** — הפונקציה שבודקת, ומחזירה טיפוס אמיתי.
+**דחיפה.** `grep -rn "any" ts/`. כל שורה שחוזרת היא או הערה, או מקום שבו כיבית את המהדר.
+`catch (error)` הוא `unknown` תחת strict — והתשובה היא `error instanceof Error`, לא `: any`.
 
-השורה שאסור לכתוב, והיא זו שהמכונה תציע:
+**איפה הקלדת את זה.** מחזור 3, "אנחנו עושים": שני `any` הפכו ל-`unknown`, והמהדר הצביע בדיוק
+על השורות שצריכות בדיקה.
 
-```ts
-const payload = (await res.json()) as WikiPayload;
-```
+## 6 · השומר קפדן ומתירני במקומות הנכונים
 
-**מהדר. בודק כלום.**
+**דחיפה.** מה `render` צריך כדי לא להישבר? את זה בודקים בקפדנות. מה מוצג רק בתנאי? את זה לא
+פוסלים.
 
-**`as` אינו המרה ואינו בדיקה.** הוא אומר למהדר להפסיק לשאול, בדיוק בגבול שבו איש אחר
-לא שואל.
+**איפה הקלדת את זה.** ה-you-do של מחזור 1: `isBook` דחה ספר בלי שם, וקיבל ספר שהשנה שלו `null`.
 
-### מבנה השומר, אם נתקעת עליו
+## 7 · שכבת הרשת היא TypeScript עכשיו
 
-```ts
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-```
+**דחיפה.** אחרי `npx tsc -p tsconfig.json`, פתח את `js/api.js`: אין בו `interface`, אין `: unknown`,
+אין `import type`. אם יש — זה הקובץ הישן, והמהדר לא כתב (כנראה בגלל שגיאה; גלול למעלה בטרמינל).
 
-`isRecord` **ראשון**, תמיד. `typeof null === 'object'` ו-`typeof [] === 'object'` —
-בלי שתי הבדיקות האלה, השומר שלך יאשר `null` ויקרוס בשורה הבאה.
+**איפה הקלדת את זה.** מחזור 1, צעד 2: שתי שגיאות, ו-`js/` לא זז — `noEmitOnError`.
 
-ואז, בגוף `isItem`, שורה אחת לכל שדה שבלעדיו הציור נשבר:
+## 8 · `unknown` בגבול
 
-```ts
-if (typeof value.id !== 'string' || value.id === '') return false;
-```
+**דחיפה.** `res.json()` מחזיר `Promise<any>` — מהספרייה, לא ממך. מילה אחת מחזירה את הגבול:
+המשתנה שמקבל את התשובה מוקלד `unknown`. `as` על התשובה הוא הבטחה, לא בדיקה.
 
-**המחרוזת הריקה היא לא פינה.** `''` הוא string תקין לגמרי מבחינת המהדר, והוא id לא
-חוקי מבחינת היישום. הטיפוס לא יכול לדעת את זה; השומר כן.
+**איפה הקלדת את זה.** מחזור 1: `let parsed: unknown` על `JSON.parse` — אותה בעיה בדיוק, על הדיסק
+במקום על הרשת. ומחזור 3: `as Book[]` החליף את השומר, והמסך אמר 7 כשהיו 6.
 
-### `catch` תחת strict
+## 9 · מתקמפל תחת strict
 
-```ts
-} catch (error) {
-  if (error instanceof Error && error.name === 'AbortError') throw error;
-```
+**דחיפה.** תקן את השגיאה **הראשונה בלבד** והרץ שוב. שגיאה בטיפוס מוקדם מייצרת עשר במקומות
+שקוראים לו. ואם המספר **עלה** אחרי תיקון — זה בדרך כלל סימן טוב.
 
-`error` הוא `unknown`, וזה נכון\: ב-JavaScript אפשר לזרוק מחרוזת.
+**איפה הקלדת את זה.** מחזור 1, צעדים 2–3: שתיים, ארבע, אפס. ואם כתוב
+`Property 'kind' does not exist on type 'ApiError'` — מחזור 3: השדה מוצהר בראש המחלקה.
 
-**מה שהמכונה תציע:** `catch (error: any)`. זה מכבה את השורה בדיוק במקום שבו היא שווה
-משהו — בטיפול בשגיאות, שהוא הקוד שאף אחד לא מריץ בזמן הפיתוח.
+## 10 · ההתנהגות זהה
 
-### הגנריקה של חלק ד, בשורה אחת
+**דחיפה.** העמוד ריק והמהדר עבר? חפש ב-`js/` ייבוא שנגמר בלי `.js`. תשובה של 404 מופיעה
+כתוצאות? בדיקת `res.ok` נעלמה בדרך.
 
-```ts
-export function $<T extends Element = Element>(selector: string): T {
-```
+**איפה הקלדת את זה.** מחזור 1, צעד 4: `from './types'` — אפס שגיאות, עמוד ריק ו-404. ובכל
+מקרה: `git diff js/api.js` מול הקובץ שקיבלת — תנאי שהשתנה הוא התשובה.
 
-תרגום: `T` הוא סוג אלמנט כלשהו (`extends Element` = לא כל דבר), **מי שקורא בוחר איזה**,
-וברירת המחדל `= Element` שומרת על קריאות בלי ארגומנט טיפוס.
+## 11 · ההעברה קראה את הקוד
 
-**מה שהופך את זה למועיל ולא לקישוט:** ההצהרה קורית **פעם אחת**, בפונקציה עם שם, במקום
-שאפשר למצוא. `as HTMLInputElement` בארבעים מקומות הוא אותה הצהרה, ארבעים פעם, ואי אפשר
-לחפש אותה.
+**דחיפה.** שלוש שאלות לעצמך: הסכמה של ה-API מוצהרת ב-`api.ts` ולא מיוצאת? לכל פונקציה מיוצאת יש
+טיפוס החזרה כתוב? ואתה יודע להסביר למה בחרת `interface` או `type`?
 
-### הבדיקה שסוגרת את חלק ג
+**איפה הקלדת את זה.** מחזור 1: `load(): Shelf` ו-`save(...): void` — טיפוס החזרה כתוב, גם כשהוא
+היה נגזר לבד.
 
-```bash
-npx tsc -p tsconfig.json
-git diff js/api.js
-```
+## 12 · העוזר גנרי
 
-אם בדיף יש **תנאי** שהשתנה — שינית התנהגות. סוגריים, רווחים והזחה הם בסדר; `if` שנעלם
-או `&&` שהפך ל-`||` הוא לא.
+**דחיפה.** `<T extends Element = Element>` — שלושה חלקים, וכל אחד עושה משהו. שתי פונקציות
+מיוצאות, ולפחות אחת מהן באמת קוראת ל-`querySelector`. החתימות שבשלד, עם `throw` ו-`return []`,
+הן עוד לא עוזר.
+
+**איפה הקלדת את זה.** מחזור 2, צעדים 2–3: `$` ו-`inputText`. ה-`throw` עם הבורר הוא מה
+שמבדיל עוזר כן מ-`as` בשורה אחת.
+
+## 13 · העוזר מחובר
+
+**דחיפה.** קובץ JavaScript אחד לפחות מייבא מ-`./dom.js` — **הפלט**, לא `./dom.ts` — ומשתמש במה
+שייבא. אחרי החיבור, רענן: הקונסולה נקייה?
+
+**איפה הקלדת את זה.** מחזור 2, צעד 4: `app.js` נשאר JavaScript ומייבא את `$`.
+
+## 14 · הביקורת על מה שהמכונה כתבה
+
+**דחיפה.** שני דברים שהכלי כתב ושינית — ולכל אחד: מה בדקת, ואיך. "הפלט היה בסדר" אינו
+ביקורת. אם הכלי לא החזיר אף אחד מהארבעה שבבריף — מחק כל השתקה והרץ שוב; ואם עדיין לא, כתוב
+את זה, עם מה שהרצת.
+
+**איפה הקלדת את זה.** מחזור 3, ה-you-do: שורת הסקירה, בצורה של
+`ai-exemplars/exemplars/ai-review-js-good.md` בחומרי הקורס — הטענה והמסקנה בשתי שורות, וההוכחה
+היא משהו שרץ.
 
 ---
 
-## דרגה 3 · כמעט הפתרון
-
-### `ts/types.ts` — השלד המלא
-
-```ts
-export type ErrorKind = 'offline' | 'timeout' | 'status' | 'shape';
-export type RequestStatus = 'idle' | 'loading' | 'done' | 'error';
-
-export interface Item {
-  id: string;
-  title: string;
-  number: number;
-  category: string;
-  created: string; // ISO 8601. NOT a Date — see js/items.js
-}
-
-export interface Suggestion {
-  readonly title: string;
-  readonly note: string;
-  readonly url: string;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-export function isItem(value: unknown): value is Item {
-  if (!isRecord(value)) return false;
-  if (typeof value.id !== 'string' || value.id === '') return false;
-  if (typeof value.title !== 'string' || value.title === '') return false;
-  if (typeof value.number !== 'number' || !Number.isFinite(value.number)) return false;
-  if (typeof value.category !== 'string') return false;
-  if (typeof value.created !== 'string') return false;
-  return true;
-}
-```
-
-**התאם את `Item` לשדות שלך.** אם ה-`items.js` שלך נקרא אחרת — אלה השמות שמשנים, לא אלה.
-
-### `ts/api.ts` — ארבע הנקודות שמשנות
-
-```ts
-import type { ErrorKind, Suggestion } from './types.js';
-
-// Their schema, not ours. Declared here, and NOT exported.
-interface WikiPage {
-  title?: unknown;
-  extract?: unknown;
-  index?: unknown;
-}
-
-export class ApiError extends Error {
-  readonly kind: ErrorKind;
-  readonly messageHe: string;
-  constructor(kind: ErrorKind, messageHe: string, detail: string) { /* unchanged */ }
-}
-
-export async function searchTitles(
-  query: string,
-  { signal, retries = 1 }: { signal?: AbortSignal; retries?: number } = {},
-): Promise<Suggestion[]> {
-```
-
-**כל השאר בגוף הפונקציה נשאר מילה במילה.**
-
-### `ts/dom.ts` — שתי הפונקציות שמספיקות
-
-```ts
-export function $<T extends Element = Element>(selector: string, root: ParentNode = document): T {
-  const found = root.querySelector(selector);
-  if (found === null) throw new Error(`dom: no element matches ${selector}`);
-  return found as T;
-}
-
-export function valueOf(selector: string): string {
-  return $<HTMLInputElement>(selector).value.trim();
-}
-```
-
-**ואז, ב-`js/events.js`, שורת ייבוא אחת ושימוש אחד.** זה מספיק כדי שהחלק ייחשב:
-עוזר שנכתב ולא נקרא הוא קובץ, לא ארגון מחדש.
-
-```js
-import { valueOf } from './dom.js';
-// ...
-apiQuery.addEventListener('input', () => scheduleSearch(valueOf('#api-query')));
-```
-
-### אם נגמר הזמן
+## אם נגמר הזמן
 
 **חלקים א, ב ו-ג הם הליבה, והם 72 מתוך 100.** אם נשארו לך עשר דקות — סיים אותם, ותכתוב
 ב-`PROMPTS.md` את הביקורת (חלק ה, 12 נקודות) לפני שאתה מתחיל את חלק ד. **הביקורת לוקחת

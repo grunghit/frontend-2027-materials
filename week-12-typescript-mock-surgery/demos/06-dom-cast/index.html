@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
   TYPING A `querySelector`, WHICH IS THE CASTING THEY WILL ACTUALLY NEED.
-  Week-12 deck, act 6.
+  Week-12 spine, cycle 2 (type the DOM) — the slide "The casting you will actually need".
 
   FOUR REAL DIAGNOSTICS, from ../tsc-cases/06-dom-cast.ts, two of them on one line:
 
@@ -60,7 +60,7 @@
     </div>
 
     <div class="panel">
-      <h3>and what <code>tsc --strict</code> says about the raw version</h3>
+      <h3>and what <code>tsc --strict</code> says — the raw version, the helper, the event</h3>
       <div id="src" class="src"></div>
       <p id="tsc-verdict" class="verdict"></p>
     </div>
@@ -119,7 +119,10 @@
       });
 
       const entry = await caseNamed('06-dom-cast.ts');
-      renderSource(document.querySelector('#src'), entry, { from: 1, to: 6 });
+      /* Lines 1–24: the raw version, the helper, and the event half — the whole case except
+         its closing marker comment. (Until batch 06 this rendered lines 1–6 only, so the
+         `<T extends Element = Element>` the assignment grades was on no slide at all.) */
+      renderSource(document.querySelector('#src'), entry, { from: 1, to: 24 });
       const tv = document.querySelector('#tsc-verdict');
       tv.textContent =
         `${entry.messages.length} diagnostics over the file — ` +
