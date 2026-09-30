@@ -156,6 +156,8 @@ code {
 
 @media (min-width: 64em) {
   .frame {
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
     grid-template-areas:
       'top     top     top'

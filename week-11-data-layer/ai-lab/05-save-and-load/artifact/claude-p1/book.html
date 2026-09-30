@@ -1,9 +1,6 @@
 <!doctype html>
 <!--
-  INTENTIONALLY INACCESSIBLE — P1's first planted failure (מכשול 1): on load the app throws
-  "RangeError: Maximum call stack size exceeded" (persist → setState → persist) before
-  render() draws the page, so this page ends with 0 <h1>. The same markup in start/ and
-  claude-p2/ renders its <h1>. Batch 06 integrity: marked because the a11y gate measured it.
+  INTENTIONALLY INACCESSIBLE — claude-p1/: the answer to P1, pasted in as it came back.
 
   The second page. It has no script of its own: it loads the same entry point as the
   list page, and render() replaces whatever is inside #book. (Week 10, cycle 1.)

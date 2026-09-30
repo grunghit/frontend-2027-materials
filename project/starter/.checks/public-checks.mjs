@@ -89,7 +89,9 @@ const fresh = async (page, ctx) => {
  * that their architecture is sound.
  *
  * What is NOT true of the scaffold is that its markers are gone. That is the cheapest
- * honest proof that there is work here to check.
+ * honest proof that there is work here to check. Same rule as the grader
+ * (grading/lib/drive.mjs hasWork): a line tagged {optional} — the undo path, rating /
+ * status controls — or {stretch} / {challenge} may keep its marker.
  */
 async function notStillTheScaffold(page, ctx) {
   for (const rel of [
@@ -102,7 +104,13 @@ async function notStillTheScaffold(page, ctx) {
   ]) {
     const text = await fileAt(page, ctx, rel);
     if (text === null) return false;
-    if (/CODE HERE/.test(text)) return false;
+    if (
+      text
+        .split('\n')
+        .some((line) => /CODE HERE/.test(line) && !/\{(?:stretch|challenge|optional)\}/.test(line))
+    ) {
+      return false;
+    }
   }
   return true;
 }
@@ -262,7 +270,8 @@ export const publicChecks = [
       const out = code(emitted);
       if (/\binterface\s+\w+|:\s*unknown\b|\bimport\s+type\b|\w+\s+is\s+\w+\s*\{/.test(out))
         return false;
-      if (!/function\s+\w+\s*\(/.test(out)) return false;
+      /* Declaration, function expression or arrow — as the grader and week 12 accept. */
+      if (!/\bfunction\b\s*\w*\s*\(|\b(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?(?:\([^)]*\)|\w+)\s*=>/.test(out)) return false;
 
       await fresh(page, ctx);
       const bad = await page.evaluate(
@@ -274,9 +283,9 @@ export const publicChecks = [
   },
 
   {
-    title: 'ארבעת המסמכים אינם תבנית ריקה',
+    title: 'המסמכים ו-README אינם תבנית ריקה',
     expected:
-      '`PROJECT_PLAN.md` · `PROMPTS.md` · `AI_USAGE.md` · `README.md`. אף `CODE HERE` שנשאר, ולכל אחד תוכן. **מה שכתוב בהם נקרא בעיניים** — מה שנבדק כאן הוא רק שהם לא ריקים, וזו הרצפה ולא הציון.',
+      '`PROJECT_PLAN.md` · `PROMPTS.md` · `AI_USAGE.md` — שלושה מארבעת המסמכים של הבריף — ו-`README.md` (דרישה 41). אף `CODE HERE` שנשאר, ולכל אחד תוכן. המסמך הרביעי, `specs/<feature>.md`, נקרא בעיניים בלבד. **מה שכתוב בכולם נקרא בעיניים** — מה שנבדק כאן הוא רק שהם לא ריקים, וזו הרצפה ולא הציון.',
     run: async (page, ctx) => {
       for (const name of ['PROJECT_PLAN.md', 'PROMPTS.md', 'AI_USAGE.md', 'README.md']) {
         const text = await fileAt(page, ctx, name);

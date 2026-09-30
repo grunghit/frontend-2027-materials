@@ -42,6 +42,50 @@ const at = async (page, width) => {
   await page.waitForTimeout(180);
 };
 
+/**
+ * CODE HERE markers left at the core tier — the grader's rule (grading/lib/checks.mjs,
+ * markersLeft at CORE_ROW). A marker tagged {stretch} / {challenge} / {optional} (or
+ * data-tier="…") may stay: on its own line, on the opening tag it sits inside (Prettier
+ * moves `data-tier` onto a line of its own), or by a next non-empty line that is only
+ * `<!-- {stretch} -->` (Prettier moves a trailing comment there).
+ */
+const SKIP = ['stretch', 'challenge', 'optional'];
+const tierTagged = (text) =>
+  SKIP.some((t) => text.includes(`{${t}}`) || new RegExp(`data-tier\\s*=\\s*["']${t}["']`).test(text));
+const tierCommentOnly = (line) => {
+  const m = line.match(/^\s*<!--\s*\{([a-z]+)\}\s*-->\s*$/);
+  return m !== null && SKIP.includes(m[1]);
+};
+function enclosingTag(text, at, end) {
+  const lt = text.lastIndexOf('<', at);
+  if (lt === -1 || !/[a-zA-Z]/.test(text[lt + 1] || '')) return null;
+  if (text.lastIndexOf('>', at) > lt) return null;
+  const gt = text.indexOf('>', end);
+  const after = text.indexOf('<', end);
+  if (gt === -1 || (after !== -1 && after < gt)) return null;
+  return text.slice(lt, gt + 1);
+}
+function markersLeft(src) {
+  const all = src.split(/\r?\n/);
+  let count = 0;
+  let offset = 0;
+  all.forEach((line, i) => {
+    const start = offset;
+    offset += line.length + (src[start + line.length] === '\r' ? 2 : 1);
+    if (!/CODE HERE/.test(line) || tierTagged(line)) return;
+    const next = all.slice(i + 1).find((l) => l.trim() !== '');
+    if (next !== undefined && tierCommentOnly(next)) return;
+    for (const m of line.matchAll(/CODE HERE/g)) {
+      const at = start + m.index;
+      const tag = enclosingTag(src, at, at + m[0].length);
+      if (tag === null || !tierTagged(tag)) count++;
+    }
+  });
+  return count;
+}
+/** True when no core marker is left in `text` (a fetch that failed is never clean). */
+const clean = (text) => typeof text === 'string' && markersLeft(text) === 0;
+
 export const publicChecks = [
   {
     title: 'העמוד טוען גליון סגנונות חיצוני, והגליון באמת הגיע',
@@ -228,18 +272,21 @@ export const publicChecks = [
       }),
   },
   {
-    title: 'לא נשארו סימוני `CODE HERE` ב-`styles.css`',
-    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת.',
+    title: 'לא נשארו סימוני `CODE HERE` של הליבה ב-`styles.css`',
+    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת. כל סימון `CODE HERE` של הליבה חייב להיעלם; סימון שבשורה שלו כתוב גם שם השכבה בסוגריים מסולסלים (`stretch`, `challenge` או `optional`) מותר להשאיר אם דילגת על החלק הזה.',
     run: async (page) =>
-      page.evaluate(async () => {
-        const link = document.querySelector('link[rel="stylesheet"]');
-        if (!link) return false;
-        try {
-          const source = await (await fetch(link.href)).text();
-          return !/CODE HERE/.test(source);
-        } catch {
-          return false;
-        }
-      }),
+      /* CSS comments are stripped from the CSSOM, so the file itself is read (same
+         origin, just a fetch). The grader's rule — see markersLeft above. */
+      clean(
+        await page.evaluate(async () => {
+          const link = document.querySelector('link[rel="stylesheet"]');
+          if (!link) return null;
+          try {
+            return await (await fetch(link.href)).text();
+          } catch {
+            return null;
+          }
+        }),
+      ),
   },
 ];

@@ -1,7 +1,7 @@
 {
   "//": "Project knobs for the public check set. The publisher copies this to project/.checks/config.json, replacing the template default.",
   "//entry": "index.html — the list page. The other two are reached from it, and the checks follow the links rather than guessing their names.",
-  "//required": "The SIX layer files, the tsconfig and its source, and the four documents. Deliberately NOT listed: item.html and summary.html by name — requirement 2 lets a student name their three pages, and a required-file check that hardcodes them would fail a correct project for a filename.",
+  "//required": "The SIX layer files, the tsconfig and its source, three of the four documents (PROJECT_PLAN, PROMPTS, AI_USAGE; specs/ is read by hand) and README.md. Deliberately NOT listed: item.html and summary.html by name — requirement 9 lets a student name their three pages, and a required-file check that hardcodes them would fail a correct project for a filename.",
   "entry": "index.html",
   "requiredFiles": [
     "index.html",

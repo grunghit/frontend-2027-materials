@@ -5,13 +5,21 @@
    Both are finished markup and neither should be edited.
 
    ── HOW THIS FILE WORKS
-   Every place you write something is marked `CODE HERE`. When there are no CODE
-   HERE markers left above the {stretch} banner, you have finished the core tier.
+   Every place you write something has a marker comment (the capital-letter ones
+   below). When no untagged marker is left, you have finished the core tier. A
+   marker tagged {stretch} or {challenge} on its own line belongs to an optional
+   part: it may stay if you skip that part.
 
    ── SECTIONS 1 AND 2 ARE ALREADY DONE
    The reset, the tokens and the type scale are given. You may paste your own token
    set from week 3 instead, or just change `--hue-brand` and make the page yours.
-   Neither is graded this week — colour was week 3's subject.
+   Neither is graded this week — colour was week 3's subject. Contrast IS checked
+   (axe, the subgrid-and-hygiene row): after changing the hue, a link on a card
+   and on the page background must still reach 4.5 in Chrome's colour picker
+   (week 3, cycle 3).
+   Orange, yellow, green and cyan hues (about 20 to 205) will not as they are —
+   lower the lightness of `--color-accent` (its third number, 44%) until they do;
+   somewhere between 26% and 38%, lower the nearer the hue is to yellow-green.
 
    ── THE ORDER BELOW IS NOT DECORATION. WORK DOWN IT.
 
@@ -639,7 +647,7 @@ h2 {
 .media-row {
   gap: var(--space-4);
 
-  /* CODE HERE — 9.1 */
+  /* CODE HERE — 9.1 {stretch} */
 }
 
 .shot {
@@ -653,7 +661,7 @@ h2 {
   border-radius: var(--radius-sm);
   background: var(--color-surface-2);
 
-  /* CODE HERE — 9.2 */
+  /* CODE HERE — 9.2 {stretch} */
 }
 
 .shot figcaption {
@@ -680,7 +688,7 @@ h2 {
    already sets to zero. That is why nothing here needs !important.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* CODE HERE — 10: a transition and a hover state for .kpi, and a transition for
+/* CODE HERE — 10 {stretch}: a transition and a hover state for .kpi, and a transition for
    .side-nav a and .top-nav a. */
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -714,6 +722,6 @@ h2 {
          progressive enhancement, and it is worth a mark on its own.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* CODE HERE — 11.1 */
+/* CODE HERE — 11.1 {challenge} */
 
-/* CODE HERE — 11.2 */
+/* CODE HERE — 11.2 {challenge} */

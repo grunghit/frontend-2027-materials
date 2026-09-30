@@ -268,7 +268,7 @@ export function renderNotice(notice) {
     return;
   }
 
-  // CODE HERE — render notice.text, and an undo button (`data-action="undo"`) when
+  // CODE HERE {optional} — render notice.text, and an undo button (`data-action="undo"`) when
   //             notice.undo is set. Use tone to pick between ok / warn / danger.
 }
 

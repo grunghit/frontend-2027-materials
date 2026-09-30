@@ -18,6 +18,50 @@
  * nav-links · images-alt · links-quality · paths-portable · finished (CODE HERE).
  */
 
+/**
+ * CODE HERE markers left at the core tier — the grader's rule (grading/lib/checks.mjs,
+ * markersLeft at CORE_ROW). A marker tagged {stretch} / {challenge} / {optional} (or
+ * data-tier="…") may stay: on its own line, on the opening tag it sits inside (Prettier
+ * moves `data-tier` onto a line of its own), or by a next non-empty line that is only
+ * `<!-- {stretch} -->` (Prettier moves a trailing comment there).
+ */
+const SKIP = ['stretch', 'challenge', 'optional'];
+const tierTagged = (text) =>
+  SKIP.some((t) => text.includes(`{${t}}`) || new RegExp(`data-tier\\s*=\\s*["']${t}["']`).test(text));
+const tierCommentOnly = (line) => {
+  const m = line.match(/^\s*<!--\s*\{([a-z]+)\}\s*-->\s*$/);
+  return m !== null && SKIP.includes(m[1]);
+};
+function enclosingTag(text, at, end) {
+  const lt = text.lastIndexOf('<', at);
+  if (lt === -1 || !/[a-zA-Z]/.test(text[lt + 1] || '')) return null;
+  if (text.lastIndexOf('>', at) > lt) return null;
+  const gt = text.indexOf('>', end);
+  const after = text.indexOf('<', end);
+  if (gt === -1 || (after !== -1 && after < gt)) return null;
+  return text.slice(lt, gt + 1);
+}
+function markersLeft(src) {
+  const all = src.split(/\r?\n/);
+  let count = 0;
+  let offset = 0;
+  all.forEach((line, i) => {
+    const start = offset;
+    offset += line.length + (src[start + line.length] === '\r' ? 2 : 1);
+    if (!/CODE HERE/.test(line) || tierTagged(line)) return;
+    const next = all.slice(i + 1).find((l) => l.trim() !== '');
+    if (next !== undefined && tierCommentOnly(next)) return;
+    for (const m of line.matchAll(/CODE HERE/g)) {
+      const at = start + m.index;
+      const tag = enclosingTag(src, at, at + m[0].length);
+      if (tag === null || !tierTagged(tag)) count++;
+    }
+  });
+  return count;
+}
+/** True when no core marker is left in `text` (a fetch that failed is never clean). */
+const clean = (text) => typeof text === 'string' && markersLeft(text) === 0;
+
 export const publicChecks = [
   {
     title: 'שלד המסמך שלם, ול-`title` יש תוכן משלך',
@@ -31,7 +75,8 @@ export const publicChecks = [
           !!document.querySelector('meta[charset]') &&
           !!document.querySelector('meta[name="viewport"]') &&
           title.length >= 3 &&
-          !/change me|untitled|your name here/i.test(title)
+          !/change me|your name here/i.test(title) &&
+          !/^(document|untitled( document)?)$/i.test(title)
         );
       }),
   },
@@ -65,7 +110,12 @@ export const publicChecks = [
         const images = [...document.querySelectorAll('img')];
         if (images.length === 0) return false;
         if (!images.every((el) => el.hasAttribute('alt'))) return false;
-        return images.some((el) => (el.getAttribute('alt') || '').trim().length >= 8);
+        // Same rule as the grader: not blank, not a generic word, not a file name.
+        return images.some((el) => {
+          const t = (el.getAttribute('alt') || '').trim();
+          if (!t || /^(image|picture|photo|img|תמונה)$/i.test(t)) return false;
+          return t.length >= 8 || !/\.(png|jpe?g|gif|svg|webp|avif|bmp)$/i.test(t);
+        });
       }),
   },
   {
@@ -97,13 +147,18 @@ export const publicChecks = [
   {
     title: 'לא נשארו בקובץ סימוני `CODE HERE`',
     expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת.',
+    /* The FILE is read, not the DOM: a comment above <html> is outside documentElement,
+       and the grader reads the file. Same rule as the grader (grading/lib/checks.mjs,
+       markersLeft): a marker tagged {stretch}, {challenge} or {optional} may stay — see markersLeft above. */
     run: async (page) =>
-      page.evaluate(() => {
-        const walker = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_COMMENT);
-        while (walker.nextNode()) {
-          if (/CODE HERE/.test(walker.currentNode.nodeValue || '')) return false;
-        }
-        return true;
-      }),
+      clean(
+        await page.evaluate(async () => {
+          try {
+            return await (await fetch(location.href)).text();
+          } catch {
+            return null;
+          }
+        }),
+      ),
   },
 ];

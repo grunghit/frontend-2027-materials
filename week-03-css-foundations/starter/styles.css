@@ -7,8 +7,10 @@
    Open index.html with LIVE SERVER and keep this file beside it. Every save
    reloads the page, so you can work in small steps and watch each one land.
 
-   Write your code wherever a CODE HERE marker appears, and delete the marker.
-   When no CODE HERE markers are left, you have finished the core tier.
+   Write your code wherever a marker comment appears (the capital-letter ones
+   below), and delete the marker. When no untagged marker is left, you have
+   finished the core tier. A marker tagged {stretch} or {challenge} on its own line
+   belongs to an optional part: it may stay if you skip that part.
 
    ── The order below is not decoration. Work down it.
    A stylesheet written in this order almost never fights itself; one written in
@@ -36,8 +38,9 @@
      no  style="…" in the HTML
      no  framework, no CDN, no copied stylesheet
 
-   The auto-grader checks the RENDERED page, not the text of this file, so there
-   is no phrasing to guess at. If it looks right in the browser, it is right.
+   The auto-grader checks the RENDERED page. It reads this file itself only where
+   pixels cannot tell: the token set, where values come from (the space scale, no
+   raw colours), !important, the selectors used, and the markers left.
    ============================================================================ */
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -145,9 +148,11 @@ body {
                stay small, and a submit button that looks like something you can press
      aside   — a raised surface, so it reads as an aside and not as a paragraph
      details — enough padding that the summary is worth clicking
+
+   This section is stretch step 8 in the brief: its marker is tagged {stretch}.
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* CODE HERE */
+/* CODE HERE {stretch} */
 
 /* ────────────────────────────────────────────────────────────────────────────
    7 — THE STATES
@@ -183,4 +188,4 @@ body {
    that is worth knowing before week 6.
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* CODE HERE */
+/* CODE HERE {stretch} */

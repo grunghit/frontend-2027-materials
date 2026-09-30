@@ -16,7 +16,8 @@
   The three mounts render() writes into:
 
       #summary-count    how many items exist
-      #summary-extra    your second measure
+      #summary-extra    the SUM of every item's `number` (what js/summary.js computes
+                        today; the grader checks exactly this sum)
       #summary-shelves  one row per category, with its count — DERIVED, so a category
                         with nothing left in it disappears without anybody saying so
   ============================================================================

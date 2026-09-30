@@ -39,7 +39,11 @@
  * grading/lib/checks.mjs §2d if that changes.
  */
 
-const at = async (page, width) => {
+/** The core markers: `markerSelector(CORE_ROW)` in grading/lib/checks.mjs, spelled out. */
+const CORE_MARKERS =
+  '[class*="CODE-HERE"]:not([data-tier="stretch"]):not([data-tier="challenge"]):not([data-tier="optional"])';
+
+const at =async (page, width) => {
   await page.setViewportSize({ width, height: 900 });
   await page.waitForTimeout(200);
 };
@@ -145,17 +149,20 @@ export const publicChecks = [
   },
 
   {
-    title: 'לא נשארו סימוני `CODE-HERE`, והשלד באמת נפרס לשלוש עמודות',
+    title: 'לא נשארו סימוני `CODE-HERE` של הליבה, והשלד באמת נפרס לשלוש עמודות',
     expected:
-      'שני חצאים, ובכוונה. שלילי: אף אלמנט לא נושא עוד את המחלקה `CODE-HERE` — בשני העמודים. חיובי: ברוחב 1280 תפריט הצד, העמודה הראשית ואזור הפעילות נמצאים זה לצד זה. מחיקת הסימונים בלי לבנות כלום לא מספיקה.',
+      'שני חצאים, ובכוונה. שלילי: אף אלמנט לא נושא עוד את המחלקה `CODE-HERE` — בשני העמודים. חיובי: ברוחב 1280 תפריט הצד, העמודה הראשית ואזור הפעילות נמצאים זה לצד זה. מחיקת הסימונים בלי לבנות כלום לא מספיקה. כל סימון `CODE-HERE` של הליבה חייב להיעלם; סימון שבשורה שלו כתוב גם שם השכבה בסוגריים מסולסלים או ב-`data-tier` (`stretch`, `challenge` או `optional`) מותר להשאיר אם דילגת על החלק הזה.',
     run: async (page, ctx) => {
+      /* The grader's rule (grading/lib/checks.mjs, markerSelector): an element tagged
+         data-tier="stretch" / "challenge" / "optional" is an optional part and may keep its marker. */
       const markersHere = await page.evaluate(
-        () => document.querySelectorAll('[class*="CODE-HERE"]').length,
+        (sel) => document.querySelectorAll(sel).length,
+        CORE_MARKERS,
       );
       if (markersHere > 0) return false;
 
       const markersThere = await onPage(page, ctx, 'components.html', (p) =>
-        p.evaluate(() => document.querySelectorAll('[class*="CODE-HERE"]').length),
+        p.evaluate((sel) => document.querySelectorAll(sel).length, CORE_MARKERS),
       );
       if (markersThere !== 0) return false;
 
@@ -266,7 +273,17 @@ export const publicChecks = [
       const link = page.locator('.side-nav a:not(.is-current)').first();
       if ((await link.count()) === 0) return false;
 
-      const read = () => link.evaluate((el) => getComputedStyle(el).backgroundColor);
+      /* Anything visible counts — the same list the grader probes (grading/specs/week-06.mjs,
+         HOVER_VISIBLE): background, text colour, underline, border, outline, shadow,
+         transform, opacity. */
+      const read = () =>
+        link.evaluate((el) => {
+          const cs = getComputedStyle(el);
+          return [
+            'backgroundColor', 'color', 'textDecorationLine', 'textDecorationColor', 'borderBottomColor',
+            'borderBottomWidth', 'outlineStyle', 'boxShadow', 'transform', 'opacity',
+          ].map((p) => cs[p]).join('|');
+        });
       const before = await read();
       await link.hover();
       await page.waitForTimeout(220);

@@ -74,4 +74,4 @@ After the code: a list of every place where you decided something the rules did 
 | אין `any` | `: any`, `as any`, `any[]` — גם בתוך `catch (error: any)` | `grep -n "any" ts/api.ts` — אפס שורות |
 | `unknown` בגבול | `res.json()` נכנס למשתנה `: unknown`; השורה הבאה היא `isRecord` / `Array.isArray` / `isBook` | בקובץ `data/books.json` יש שורה בלי שם: הסטטוס אומר **שישה** ספרים ו"שורה אחת לא נקראה" |
 | אין השתקה | `@ts-ignore`, `@ts-expect-error`, `as unknown as` | `grep -n "ts-ignore\|ts-expect" ts/api.ts` — אפס שורות; `npx tsc -p tsconfig.json` — אפס שגיאות **בלי** ההשתקה |
-| אותן בדיקות | `res.ok` לפני `res.json()`; שלושת סוגי ה-`LookupError`; `skipped` שמחושב ולא נכתב כמספר | `git diff` בין `js/api.js` שנוצר לבין הקובץ המקורי: סוגריים ורווחים — בסדר; תנאי שנעלם — לא |
+| אותן בדיקות | `res.ok` לפני `res.json()`; שלושת סוגי ה-`LookupError`; `skipped` שמחושב ולא נכתב כמספר | `git diff` בין `js/api.js` שנוצר לבין הקובץ המקורי: סוגריים, רווחים ובדיקת `typeof` שהמהדר צריך — בסדר; תנאי שנעלם — לא |

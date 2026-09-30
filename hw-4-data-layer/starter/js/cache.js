@@ -139,9 +139,13 @@ export function clearCache() {
  * PURE, and a pure function of two numbers is one the grader — and you — can test
  * without waiting ten minutes.
  *
+ * An entry stamped in the FUTURE (a clock moved backwards) is not an error: it is
+ * `fresh`, with `ageMs` 0 — `Math.max(0, now - fetchedAt)` — never negative, never NaN.
+ *
  * @param {{ fetchedAt: number } | undefined} entry
  * @param {number} now
- * @returns {{ status: 'absent' | 'fresh' | 'stale', ageMs: number }}
+ * @returns {{ status: 'absent' | 'fresh' | 'stale', ageMs: number }} `ageMs` is always
+ *   a finite number >= 0; a future stamp gives `{ status: 'fresh', ageMs: 0 }`.
  */
 export function freshness(entry, now = Date.now()) {
   // CODE HERE — four lines, and they are the four lines the whole assignment turns on.

@@ -7,8 +7,10 @@
    steps and watch each one land — layout is the first thing in this course where
    you can see whether you were right.
 
-   Write your code wherever a CODE HERE marker appears, and delete the marker.
-   When no CODE HERE markers are left, you have finished the core tier.
+   Write your code wherever a marker comment appears (the capital-letter ones
+   below), and delete the marker. When no untagged marker is left, you have
+   finished the core tier. A marker tagged {stretch} or {challenge} on its own line
+   belongs to an optional part: it may stay if you skip that part.
 
    ── YOU TYPED ALL OF THIS TODAY, ONCE
 
@@ -29,7 +31,11 @@
        rules below use still exist.
      · CHANGE THE HUE. `--hue-brand` is one number and it re-colours the whole
        page. Please do change it — a room of forty identical indigo pages is a
-       sad thing to grade.
+       sad thing to grade. Then re-check contrast: a link on a card and on the
+       footer must still reach 4.5 in Chrome's colour picker (week 3, cycle 3).
+       Orange, yellow, green and cyan hues (about 25 to 205) will not as they
+       are — lower the lightness of `--color-accent` (its third number, 42%)
+       until they do; somewhere between 26% and 36%.
 
    ── THE ORDER BELOW IS NOT DECORATION. WORK DOWN IT.
 
@@ -426,20 +432,23 @@ a:hover {
    taking it out of the row.
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* CODE HERE */
+/* CODE HERE {stretch} */
 
 /* ────────────────────────────────────────────────────────────────────────────
    8 — THE FINISHING TOUCHES                                       {challenge}
 
-   Three small things, each of which is a whole slide from today's lecture:
+   Four small things, each of them a step you typed today:
 
    8.1  Pin the header so it stays visible while the page scrolls. One
         declaration and one offset. Watch what happens to the content behind it.
 
-   8.2  Put `.card-badge` on the corner of the first card. It is absolutely
-        positioned — which means the card has to be told to be its anchor, or
-        the badge will end up somewhere you did not intend. You have seen this
-        happen today.
+   8.2  Put `.card-badge` on the top corner (top, right or left) of the first
+        card. You write the `.card-badge` rule: `position: absolute` and
+        offsets to that corner. It
+        is placed against its nearest `position: relative` ancestor — so the
+        card has to be told to be its anchor, or the badge will end up
+        somewhere you did not intend. It is the same idea as `.pill` in
+        cycle 2, and you saw it happen there today.
 
    8.3  Make the pinned header sit ABOVE the page content when they overlap. If
         your first attempt does not work, do not raise the number: look at what
@@ -448,4 +457,4 @@ a:hover {
    8.4  The footer links are a row. Make them one, and let them wrap.
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* CODE HERE */
+/* CODE HERE {challenge} */

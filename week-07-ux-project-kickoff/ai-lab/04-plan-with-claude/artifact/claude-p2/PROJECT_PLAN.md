@@ -84,7 +84,7 @@ const state = {
   room: 'all',         // סינון
   summary: {
     species: null,
-    status: 'idle',    // 'idle' | 'loading' | 'error' | 'success'
+    status: 'empty',   // 'empty' | 'loading' | 'error' | 'success'
     text: null,
     error: null,
   },

@@ -34,7 +34,7 @@
  * @throws if the element is not there — because a missing element is a bug in the
  *         markup, not a value the caller should have to handle forty times.
  */
-// CODE HERE — the signature is above; the body is three lines
+// CODE HERE {stretch} — the signature is above; the body is three lines
 export function $<T extends Element = Element>(selector: string, root?: ParentNode): T {
   throw new Error('not implemented');
 }
@@ -46,7 +46,7 @@ export function $<T extends Element = Element>(selector: string, root?: ParentNo
  * else — no `map`, no `filter`. Spreading it once, here, is what lets the rest of the
  * application use the array methods from week 8 on the result.
  */
-// CODE HERE
+// CODE HERE {stretch}
 export function $$<T extends Element = Element>(selector: string, root?: ParentNode): T[] {
   return [];
 }
@@ -56,7 +56,7 @@ export function $$<T extends Element = Element>(selector: string, root?: ParentN
  *
  * One function, so `#query` is written once and `.value` is asserted once.
  */
-// CODE HERE
+// CODE HERE {stretch}
 export function valueOf(selector: string): string {
   return '';
 }

@@ -16,6 +16,7 @@
 | סקירה כתובה של קוד שנכתב על ידי AI — שלוש פונקציות וההסברים שלהן | [ai-review-js-good.md](ai-review-js-good.md) | [ai-review-js-bad.md](ai-review-js-bad.md) | מטלה 8 (חלק ג) · מטלה 12 (חלק ה) | שבוע 8 (מחזור 5) · שבוע 12 (מחזור 3) |
 | מפרט פיצ'ר (`FEATURE_SPEC.md`) | [feature-spec-good.md](feature-spec-good.md) | — | מטלה 8 · הפרויקט | שבוע 8 (מחזור 4) |
 | תוכנית פרויקט (`PROJECT_PLAN.md`) כולל שלוש שורות הביקורת על ה-AI | [project-plan-good.md](project-plan-good.md) | — | מטלה 7 · הפרויקט | שבוע 7 (מחזור 4) |
+| ה-README של הפרויקט (`README.md`) — לא מסמך על AI, אבל נבדק בעיניים כמו הם | [readme-good.md](readme-good.md) | [readme-bad.md](readme-bad.md) | הפרויקט | שבוע 12 (מחזור 3, בתחקיר — ליד דוגמאות ההצהרה, לפני ההגשה) |
 
 ## מה משותף לכל הדוגמאות הטובות
 

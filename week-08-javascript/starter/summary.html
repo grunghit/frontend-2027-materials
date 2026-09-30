@@ -31,8 +31,10 @@
   Getting this boundary right today is what makes week 10 a refactor rather than a
   rewrite. It is marked.
 
-  Every `class="CODE-HERE"` is a place you write. DELETE THE MARKER when you are
-  done with that element — the grader checks that none are left.
+  Every marker class (the capital-letter one) is a place you write. DELETE THE MARKER
+  when you are done with that element — the grader checks that none are left. A
+  marker tagged {challenge} or data-tier="challenge" on its line belongs to the challenge tier:
+  it may stay if you skip that part.
   ============================================================================
 -->
 <html lang="he" dir="rtl">
@@ -40,7 +42,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
-    <title>CODE-HERE — שם היישום שלך</title>
+    <title>CODE-HERE — שם היישום שלך</title> <!-- {challenge} -->
 
     <script src="vendor/tailwind.js"></script>
     <style type="text/tailwindcss">
@@ -71,7 +73,7 @@
     <!-- STATIC. The nav is on all three pages, and `aria-current` moves. -->
     <header class="border-b border-line">
       <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-6 px-4 py-4" aria-label="ראשי">
-        <span class="CODE-HERE font-bold">שם היישום</span>
+        <span class="CODE-HERE font-bold" data-tier="challenge">שם היישום</span>
         <a href="index.html" class="hover:text-brand">הרשימה</a>
         <a href="item.html" class="hover:text-brand">פריט</a>
         <a href="summary.html" aria-current="page" class="text-brand underline underline-offset-4">סיכום</a>
@@ -79,24 +81,24 @@
     </header>
 
     <main id="main" tabindex="-1" class="mx-auto max-w-3xl px-4 py-8">
-      <h1 class="CODE-HERE text-2xl font-bold">כותרת</h1>
-      <p class="CODE-HERE mt-2 text-muted">משפט אחד: מה מסוכם כאן, ומתוך מה.</p>
+      <h1 class="CODE-HERE text-2xl font-bold" data-tier="challenge">כותרת</h1>
+      <p class="CODE-HERE mt-2 text-muted" data-tier="challenge">משפט אחד: מה מסוכם כאן, ומתוך מה.</p>
 
       <!-- Numbers COUNTED from index.html. They must agree with it. -->
       <div class="mt-6 grid gap-4 sm:grid-cols-3">
         <div class="rounded-lg border border-line bg-panel p-4">
           <p class="text-sm text-muted">סה"כ פריטים</p>
-          <p class="CODE-HERE mt-1 text-3xl font-bold">0</p>
+          <p class="CODE-HERE mt-1 text-3xl font-bold" data-tier="challenge">0</p>
         </div>
-        <!-- CODE HERE — two more derived numbers -->
+        <!-- CODE HERE {challenge} — two more derived numbers -->
       </div>
 
-      <h2 class="CODE-HERE mt-8 text-lg font-semibold">פילוח</h2>
-      <ul id="breakdown" class="CODE-HERE mt-3 grid gap-2">
-        <!-- CODE HERE — one row per group, with its count -->
+      <h2 class="CODE-HERE mt-8 text-lg font-semibold" data-tier="challenge">פילוח</h2>
+      <ul id="breakdown" class="CODE-HERE mt-3 grid gap-2" data-tier="challenge">
+        <!-- CODE HERE {challenge} — one row per group, with its count -->
       </ul>
 
-      <p id="empty" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6 text-muted">
+      <p id="empty" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6 text-muted" data-tier="challenge">
         אין עדיין נתונים לסכם.
       </p>
     </main>

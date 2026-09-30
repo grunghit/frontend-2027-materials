@@ -35,6 +35,50 @@ const groundOf = () => ({
   size: getComputedStyle(document.body).fontSize,
 });
 
+/**
+ * CODE HERE markers left at the core tier — the grader's rule (grading/lib/checks.mjs,
+ * markersLeft at CORE_ROW). A marker tagged {stretch} / {challenge} / {optional} (or
+ * data-tier="…") may stay: on its own line, on the opening tag it sits inside (Prettier
+ * moves `data-tier` onto a line of its own), or by a next non-empty line that is only
+ * `<!-- {stretch} -->` (Prettier moves a trailing comment there).
+ */
+const SKIP = ['stretch', 'challenge', 'optional'];
+const tierTagged = (text) =>
+  SKIP.some((t) => text.includes(`{${t}}`) || new RegExp(`data-tier\\s*=\\s*["']${t}["']`).test(text));
+const tierCommentOnly = (line) => {
+  const m = line.match(/^\s*<!--\s*\{([a-z]+)\}\s*-->\s*$/);
+  return m !== null && SKIP.includes(m[1]);
+};
+function enclosingTag(text, at, end) {
+  const lt = text.lastIndexOf('<', at);
+  if (lt === -1 || !/[a-zA-Z]/.test(text[lt + 1] || '')) return null;
+  if (text.lastIndexOf('>', at) > lt) return null;
+  const gt = text.indexOf('>', end);
+  const after = text.indexOf('<', end);
+  if (gt === -1 || (after !== -1 && after < gt)) return null;
+  return text.slice(lt, gt + 1);
+}
+function markersLeft(src) {
+  const all = src.split(/\r?\n/);
+  let count = 0;
+  let offset = 0;
+  all.forEach((line, i) => {
+    const start = offset;
+    offset += line.length + (src[start + line.length] === '\r' ? 2 : 1);
+    if (!/CODE HERE/.test(line) || tierTagged(line)) return;
+    const next = all.slice(i + 1).find((l) => l.trim() !== '');
+    if (next !== undefined && tierCommentOnly(next)) return;
+    for (const m of line.matchAll(/CODE HERE/g)) {
+      const at = start + m.index;
+      const tag = enclosingTag(src, at, at + m[0].length);
+      if (tag === null || !tierTagged(tag)) count++;
+    }
+  });
+  return count;
+}
+/** True when no core marker is left in `text` (a fetch that failed is never clean). */
+const clean = (text) => typeof text === 'string' && markersLeft(text) === 0;
+
 export const publicChecks = [
   {
     title: 'שלושת העמודים קיימים, וכל אחד מקשר לשני האחרים',
@@ -44,9 +88,15 @@ export const publicChecks = [
       for (const rel of PAGES) {
         const links = await onPage(page, ctx, rel, () =>
           page.evaluate(() =>
-            [...document.querySelectorAll('nav a[href]')].map(
-              (a) => (a.getAttribute('href') || '').split('#')[0],
-            ),
+            /* Resolved against the page, as the grader does: `about.html`,
+               `./about.html` and `/about.html` are the same link; `./` is home. */
+            [...document.querySelectorAll('nav a[href]')].map((a) => {
+              const url = new URL(a.getAttribute('href') || '', location.href);
+              if (url.origin !== location.origin) return url.href;
+              const dir = location.pathname.slice(0, location.pathname.lastIndexOf('/') + 1);
+          if (!url.pathname.startsWith(dir)) return url.pathname; // another folder is another page
+          return url.pathname.slice(dir.length) || 'index.html';
+            }),
           ),
         );
         if (!PAGES.every((target) => links.includes(target))) return false;
@@ -251,29 +301,25 @@ export const publicChecks = [
     },
   },
   {
-    title: 'לא נשארו סימוני `CODE HERE` באף קובץ',
-    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת.',
+    title: 'לא נשארו סימוני `CODE HERE` של הליבה באף קובץ',
+    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת. כל סימון `CODE HERE` של הליבה חייב להיעלם; סימון שבשורה שלו כתוב גם שם השכבה בסוגריים מסולסלים (`stretch`, `challenge` או `optional`) מותר להשאיר אם דילגת על החלק הזה.',
+    /* The FILES are read, not the DOM: a comment above <html> is outside documentElement,
+       and the grader reads the files. Same rule as the grader (grading/lib/checks.mjs,
+       markersLeft): a marker tagged {stretch}, {challenge} or {optional} may stay — see markersLeft above. */
     run: async (page, ctx) => {
       for (const rel of PAGES) {
-        const clean = await onPage(page, ctx, rel, () =>
+        const texts = await onPage(page, ctx, rel, () =>
           page.evaluate(async () => {
-            const walker = document.createTreeWalker(
-              document.documentElement,
-              NodeFilter.SHOW_COMMENT,
-            );
-            while (walker.nextNode()) {
-              if (/CODE HERE/.test(walker.currentNode.nodeValue || '')) return false;
-            }
             const link = document.querySelector('link[rel="stylesheet"]');
-            if (!link) return false;
+            if (!link) return [null];
             try {
-              return !/CODE HERE/.test(await (await fetch(link.href)).text());
+              return [await (await fetch(location.href)).text(), await (await fetch(link.href)).text()];
             } catch {
-              return false;
+              return [null];
             }
           }),
         );
-        if (!clean) return false;
+        if (!texts.every(clean)) return false;
       }
       return true;
     },

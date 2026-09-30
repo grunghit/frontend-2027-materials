@@ -13,11 +13,55 @@
  * `page` is already loaded at the entry file, viewport 1280×900, served over http —
  * so fetch() and page.hover() both work.
  *
- * EVERYTHING HERE IS MEASURED ON THE RENDERED PAGE, not read out of the stylesheet.
- * There is no phrasing to guess at and no property name to copy: a student who gets
- * to the same result a different way passes, and one who writes the "right" text
+ * EVERYTHING HERE IS MEASURED ON THE RENDERED PAGE, not read out of the stylesheet —
+ * except the last row, which reads styles.css for the markers left. There is no
+ * phrasing to guess at and no property name to copy: a student who gets to the same result a different way passes, and one who writes the "right" text
  * without it taking effect does not.
  */
+
+/**
+ * CODE HERE markers left at the core tier — the grader's rule (grading/lib/checks.mjs,
+ * markersLeft at CORE_ROW). A marker tagged {stretch} / {challenge} / {optional} (or
+ * data-tier="…") may stay: on its own line, on the opening tag it sits inside (Prettier
+ * moves `data-tier` onto a line of its own), or by a next non-empty line that is only
+ * `<!-- {stretch} -->` (Prettier moves a trailing comment there).
+ */
+const SKIP = ['stretch', 'challenge', 'optional'];
+const tierTagged = (text) =>
+  SKIP.some((t) => text.includes(`{${t}}`) || new RegExp(`data-tier\\s*=\\s*["']${t}["']`).test(text));
+const tierCommentOnly = (line) => {
+  const m = line.match(/^\s*<!--\s*\{([a-z]+)\}\s*-->\s*$/);
+  return m !== null && SKIP.includes(m[1]);
+};
+function enclosingTag(text, at, end) {
+  const lt = text.lastIndexOf('<', at);
+  if (lt === -1 || !/[a-zA-Z]/.test(text[lt + 1] || '')) return null;
+  if (text.lastIndexOf('>', at) > lt) return null;
+  const gt = text.indexOf('>', end);
+  const after = text.indexOf('<', end);
+  if (gt === -1 || (after !== -1 && after < gt)) return null;
+  return text.slice(lt, gt + 1);
+}
+function markersLeft(src) {
+  const all = src.split(/\r?\n/);
+  let count = 0;
+  let offset = 0;
+  all.forEach((line, i) => {
+    const start = offset;
+    offset += line.length + (src[start + line.length] === '\r' ? 2 : 1);
+    if (!/CODE HERE/.test(line) || tierTagged(line)) return;
+    const next = all.slice(i + 1).find((l) => l.trim() !== '');
+    if (next !== undefined && tierCommentOnly(next)) return;
+    for (const m of line.matchAll(/CODE HERE/g)) {
+      const at = start + m.index;
+      const tag = enclosingTag(src, at, at + m[0].length);
+      if (tag === null || !tierTagged(tag)) count++;
+    }
+  });
+  return count;
+}
+/** True when no core marker is left in `text` (a fetch that failed is never clean). */
+const clean = (text) => typeof text === 'string' && markersLeft(text) === 0;
 
 export const publicChecks = [
   {
@@ -138,37 +182,46 @@ export const publicChecks = [
   },
   {
     title: 'הקישורים נבדלים מהטקסט, ומשתנים במעבר עכבר',
-    expected: 'צבע משלהם, ו-`a:hover` שמשנה משהו שרואים — צבע, קו תחתון, עובי.',
+    expected: 'צבע משלהם, ו-`a:hover` שמשנה משהו שרואים — צבע, רקע, קו תחתון (גם עובי או מרחק), גבול, `outline`, צל, שקיפות, `transform` או עובי גופן. כל אחד מהם מספיק.',
     run: async (page) => {
-      const link = page.locator('main a[href], nav a[href]').first();
-      if ((await link.count()) === 0) return false;
-
-      const before = await link.evaluate((el) => {
-        const s = getComputedStyle(el);
-        return {
-          color: s.color,
-          bodyColor: getComputedStyle(document.body).color,
-          decoration: s.textDecorationLine + ' ' + s.textDecorationThickness,
-          background: s.backgroundColor,
+      // An ordinary link first — the aria-current one is meant to look different — and
+      // the first link as well, as the grader does.
+      const links = [
+        page.locator('main a[href]:not([aria-current]), nav a[href]:not([aria-current])').first(),
+        page.locator('main a[href], nav a[href]').first(),
+      ];
+      for (const link of links) {
+        if ((await link.count()) === 0) continue;
+        await page.mouse.move(0, 0);
+        await page.waitForTimeout(450);
+        /* Any change a reader SEES counts, as in the grader: colour, background,
+           underline (line, style, colour, thickness, offset), border, outline,
+           shadow, opacity, transform, weight. */
+        const PROPS = [
+          'color', 'backgroundColor', 'backgroundImage',
+          'textDecorationLine', 'textDecorationStyle', 'textDecorationThickness',
+          'textDecorationColor', 'textUnderlineOffset',
+          'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor',
+          'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth',
+          'borderTopStyle', 'borderRightStyle', 'borderBottomStyle', 'borderLeftStyle',
+          'outlineStyle', 'outlineColor', 'outlineWidth', 'boxShadow', 'textShadow',
+          'opacity', 'transform', 'scale', 'translate', 'rotate', 'filter',
+          'fontWeight', 'fontStyle',
+        ];
+        const snapshot = (el, props) => {
+          const s = getComputedStyle(el);
+          return Object.fromEntries(props.map((p) => [p, String(s[p] ?? '')]));
         };
-      });
-      if (before.color === before.bodyColor) return false;
+        const before = await link.evaluate(snapshot, PROPS);
+        const bodyColor = await link.evaluate(() => getComputedStyle(document.body).color);
+        if (before.color === bodyColor) continue;
 
-      await link.hover();
-      await page.waitForTimeout(250);
-      const after = await link.evaluate((el) => {
-        const s = getComputedStyle(el);
-        return {
-          color: s.color,
-          decoration: s.textDecorationLine + ' ' + s.textDecorationThickness,
-          background: s.backgroundColor,
-        };
-      });
-      return (
-        after.color !== before.color ||
-        after.decoration !== before.decoration ||
-        after.background !== before.background
-      );
+        await link.hover();
+        await page.waitForTimeout(250);
+        const after = await link.evaluate(snapshot, PROPS);
+        if (PROPS.some((p) => after[p] !== before[p])) return true;
+      }
+      return false;
     },
   },
   {
@@ -260,20 +313,21 @@ export const publicChecks = [
       }),
   },
   {
-    title: 'לא נשארו סימוני `CODE HERE` ב-`styles.css`',
-    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת.',
+    title: 'לא נשארו סימוני `CODE HERE` של הליבה ב-`styles.css`',
+    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת. כל סימון `CODE HERE` של הליבה חייב להיעלם; סימון שבשורה שלו כתוב גם שם השכבה בסוגריים מסולסלים (`stretch`, `challenge` או `optional`) מותר להשאיר אם דילגת על החלק הזה.',
     run: async (page) =>
-      page.evaluate(async () => {
-        /* CSS comments are stripped from the CSSOM, so the file itself has to be read.
-           Same origin, so this is just a fetch. */
-        const link = document.querySelector('link[rel="stylesheet"]');
-        if (!link) return false;
-        try {
-          const source = await (await fetch(link.href)).text();
-          return !/CODE HERE/.test(source);
-        } catch {
-          return false;
-        }
-      }),
+      /* CSS comments are stripped from the CSSOM, so the file itself is read (same
+         origin, just a fetch). The grader's rule — see markersLeft above. */
+      clean(
+        await page.evaluate(async () => {
+          const link = document.querySelector('link[rel="stylesheet"]');
+          if (!link) return null;
+          try {
+            return await (await fetch(link.href)).text();
+          } catch {
+            return null;
+          }
+        }),
+      ),
   },
 ];

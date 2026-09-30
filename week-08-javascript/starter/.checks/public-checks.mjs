@@ -47,6 +47,48 @@ const ITEMS = [
 const titles = (list) => (Array.isArray(list) ? list.map((i) => i && i.title) : null);
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
+/**
+ * CODE HERE markers left at the stretch tier — the grader's rule (grading/lib/checks.mjs,
+ * markersLeft at STRETCH_ROW). A marker tagged {challenge} / data-tier="challenge" (or
+ * optional) may stay: on its own line, on the opening tag it sits inside (Prettier moves
+ * `data-tier` onto a line of its own), or by a next non-empty line that is only
+ * `<!-- {challenge} -->` (Prettier moves a trailing comment there).
+ */
+const SKIP = ['challenge', 'optional'];
+const tierTagged = (text) =>
+  SKIP.some((t) => text.includes(`{${t}}`) || new RegExp(`data-tier\\s*=\\s*["']${t}["']`).test(text));
+const tierCommentOnly = (line) => {
+  const m = line.match(/^\s*<!--\s*\{([a-z]+)\}\s*-->\s*$/);
+  return m !== null && SKIP.includes(m[1]);
+};
+function enclosingTag(text, at, end) {
+  const lt = text.lastIndexOf('<', at);
+  if (lt === -1 || !/[a-zA-Z]/.test(text[lt + 1] || '')) return null;
+  if (text.lastIndexOf('>', at) > lt) return null;
+  const gt = text.indexOf('>', end);
+  const after = text.indexOf('<', end);
+  if (gt === -1 || (after !== -1 && after < gt)) return null;
+  return text.slice(lt, gt + 1);
+}
+function markersLeft(html) {
+  const all = html.split(/\r?\n/);
+  let count = 0;
+  let offset = 0;
+  all.forEach((line, i) => {
+    const start = offset;
+    offset += line.length + (html[start + line.length] === '\r' ? 2 : 1);
+    if (!/CODE-HERE|CODE HERE/.test(line) || tierTagged(line)) return;
+    const next = all.slice(i + 1).find((l) => l.trim() !== '');
+    if (next !== undefined && tierCommentOnly(next)) return;
+    for (const m of line.matchAll(/CODE-HERE|CODE HERE/g)) {
+      const at = start + m.index;
+      const tag = enclosingTag(html, at, at + m[0].length);
+      if (tag === null || !tierTagged(tag)) count++;
+    }
+  });
+  return count;
+}
+
 export const publicChecks = [
   {
     /*
@@ -149,14 +191,14 @@ export const publicChecks = [
   {
     title: 'לא נשארו סימני CODE HERE בשלושת העמודים, ויש בהם תוכן',
     expected:
-      'מחק את הסימן כשסיימת עם המקום שהוא מסמן. ברשימה צריכים להיות לפחות שלושה פריטים שכתבת בעצמך.',
+      'מחק את הסימן כשסיימת עם המקום שהוא מסמן. ברשימה צריכים להיות לפחות שלושה פריטים שכתבת בעצמך. `item.html` ו-`summary.html` הם שכבת האתגר: סימון שבשורה שלו כתוב גם `challenge` בסוגריים מסולסלים או ב-`data-tier` מותר להשאיר אם דילגת על החלק הזה.',
     run: async (page, ctx) => {
       const base = page.url().replace(/\/[^/]*$/, '');
       let clean = true;
       for (const name of ['index.html', 'item.html', 'summary.html']) {
         const res = await page.request.get(`${base}/${name}`);
         const html = await res.text();
-        if (/CODE-HERE|CODE HERE/.test(html)) clean = false;
+        if (markersLeft(html) > 0) clean = false;
       }
       const rows = await page.evaluate(() => {
         const mount = document.querySelector('#list') || document.querySelector('main ul');
@@ -176,7 +218,8 @@ export const publicChecks = [
         if (!mount) return null;
         return {
           inside: mount.querySelectorAll('input, select, textarea').length,
-          total: document.querySelectorAll('main input, main select').length,
+          /* The whole page, like the grader: a toolbar in <header> counts too. */
+          total: document.querySelectorAll('input, select').length,
           rows: mount.querySelectorAll(':scope > li').length,
         };
       });
@@ -189,7 +232,7 @@ export const publicChecks = [
   {
     title: 'המספר בעמוד הסיכום מסכים עם מספר השורות ברשימה',
     expected:
-      'עמוד הסיכום אינו מחזיק נתונים משלו — כל מספר בו נספר מהרשימה. אם כתבת ארבעה פריטים, הוא אומר ארבעה.',
+      'עמוד הסיכום אינו מחזיק נתונים משלו — כל מספר בו נספר מהרשימה. אם כתבת ארבעה פריטים, הוא אומר 4 (בספרות, לבד או בתוך משפט).',
     run: async (page, ctx) => {
       const entry = page.url();
       try {
@@ -200,12 +243,19 @@ export const publicChecks = [
         if (listed === 0) return false;
 
         await page.goto(`${ctx.serverUrl}/summary.html`, { waitUntil: 'networkidle' });
-        const numbers = await page.evaluate(() =>
-          [...document.querySelectorAll('main *')]
-            .filter((el) => el.children.length === 0)
-            .map((el) => Number((el.textContent || '').trim()))
-            .filter((n) => Number.isInteger(n)),
-        );
+        /* Every whole number in digits inside main — "4" and "4 פריטים" both count. */
+        const numbers = await page.evaluate(() => {
+          const root = document.querySelector('main');
+          if (!root) return [];
+          const found = [];
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            for (const token of node.nodeValue.match(/\d+(?:[.,]\d+)*/g) ?? []) {
+              if (/^\d+$/.test(token)) found.push(Number(token));
+            }
+          }
+          return found;
+        });
         return numbers.includes(listed);
       } finally {
         /* The runner hands the SAME page to every check after this one. */

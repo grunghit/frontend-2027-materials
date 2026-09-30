@@ -235,7 +235,10 @@ async function intercept(page, ctx, respond) {
   const requests = [];
   const failures = [];
   const errors = [];
-  page.on('requestfailed', (r) => failures.push(r.failure()?.errorText ?? '?'));
+  const isData = (r) => r.resourceType() === 'fetch' || r.resourceType() === 'xhr';
+  page.on('requestfailed', (r) => {
+    if (isData(r)) failures.push(r.failure()?.errorText ?? '?');
+  });
   page.on('pageerror', (e) => errors.push(e.message));
 
   let bytes = null;
@@ -245,6 +248,8 @@ async function intercept(page, ctx, respond) {
   await page.route('**/*', async (route) => {
     const url = route.request().url();
     if (url.startsWith(ctx.serverUrl)) return route.continue();
+    // Only fetch/XHR count as a request to the API; an image from the API does not.
+    if (!isData(route.request())) return route.abort('blockedbyclient');
     requests.push(url);
     return respond(route, { bytes, n: requests.length });
   });
@@ -616,8 +621,17 @@ export const publicChecks = [
       if (api === null || render === null || events === null) return false;
 
       if (/\bdocument\b|querySelector|\bsetState\b/.test(code(api))) return false;
-      if (/\bfetch\s*\(|\bawait\b|\basync\b|https?:\/\//.test(code(render))) return false;
-      if (/\bfetch\s*\(|https?:\/\//.test(code(events))) return false;
+      if (/\bfetch\s*\(|\bawait\b|\basync\b/.test(code(render))) return false;
+      if (/\bfetch\s*\(/.test(code(events))) return false;
+      /* The API address — host and path of the request the app really sent — only in
+         js/api.js. Comments are ignored; a cover image or an article link is not it. */
+      const sent = new URL(first.net.requests[0]);
+      const address = sent.host + sent.pathname.replace(/\/+$/, '');
+      const noComments = (t) =>
+        t.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1 ');
+      if (sent.pathname.replace(/\/+$/, '') !== '') {
+        if (noComments(render).includes(address) || noComments(events).includes(address)) return false;
+      }
       return /\bsetState\b/.test(code(events));
     },
   },
@@ -675,7 +689,17 @@ export const publicChecks = [
       const emptied = JSON.stringify(JSON.parse(bytes), (key, value) =>
         Array.isArray(value) ? [] : value,
       );
-      for (const body of [emptied, '{}']) {
+      /* A third: arrays of arrays keep their frame (`["q",[],[],[]]`, OpenSearch). */
+      const emptyLeaves = (v) =>
+        Array.isArray(v)
+          ? v.some(Array.isArray)
+            ? v.map((x) => (Array.isArray(x) || (x && typeof x === 'object') ? emptyLeaves(x) : x))
+            : []
+          : v && typeof v === 'object'
+            ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, emptyLeaves(x)]))
+            : v;
+      const framed = JSON.stringify(emptyLeaves(JSON.parse(bytes)));
+      for (const body of [emptied, '{}', framed]) {
         const net = await intercept(page, ctx, (route) =>
           route.fulfill({ status: 200, contentType: 'application/json', body }),
         );
@@ -694,32 +718,51 @@ export const publicChecks = [
   {
     title: 'כשאין רשת, מצב השגיאה אומר משפט ומציע את הקטלוג המקומי — והוא עובד',
     expected:
-      'הבדיקה מפילה כל בקשה החוצה ולוחצת על ההצעה. `data/catalogue.json` מוגש מאותו שרת כמו העמוד ולכן לא מיורט — בדיוק כמו במעבדה בלי אינטרנט.',
+      'הבדיקה מפילה כל בקשה החוצה ולוחצת על ההצעה. `data/catalogue.json` מוגש מאותו שרת כמו העמוד ולכן לא מיורט — בדיוק כמו במעבדה בלי אינטרנט. מילת החיפוש היא "קמח", ואם הקטלוג שלך לא מכיר אותה — מילה מההצעה הראשונה שהיישום שלך מציג מתוך התשובה המוקלטת שלך.',
     run: async (page, ctx) => {
-      const net = await intercept(page, ctx, (route) => route.abort('failed'));
-      await fresh(page, ctx);
-      if (!(await typeQuery(page, 'קמח'))) {
-        await net.unroute();
-        return false;
-      }
-      await waitForState(page, ['error']);
-      const failed = await panelState(page);
-      if (failed.state !== 'error' || failed.errorText.length < 15 || failed.offers < 1) {
-        await net.unroute();
-        return false;
-      }
+      /* The word: 'קמח' first; if your catalogue does not know it, the first word of
+         the first suggestion your app shows from your own recorded response. */
+      const attempt = async (query) => {
+        const net = await intercept(page, ctx, (route) => route.abort('failed'));
+        await fresh(page, ctx);
+        if (!(await typeQuery(page, query))) {
+          await net.unroute();
+          return { stop: true };
+        }
+        await waitForState(page, ['error']);
+        const failed = await panelState(page);
+        if (failed.state !== 'error' || failed.errorText.length < 15 || failed.offers < 1) {
+          await net.unroute();
+          return { stop: true };
+        }
 
-      const offer = page.locator('#api-offline');
-      if ((await offer.count()) === 0 || (await offer.isHidden())) {
+        const offer = page.locator('#api-offline');
+        if ((await offer.count()) === 0 || (await offer.isHidden())) {
+          await net.unroute();
+          return { stop: true };
+        }
+        await offer.click();
+        await page.waitForTimeout(1200);
+        const local = await panelState(page);
+        const crashed = net.errors.length > 0;
         await net.unroute();
-        return false;
-      }
-      await offer.click();
-      await page.waitForTimeout(1200);
-      const local = await panelState(page);
-      const crashed = net.errors.length > 0;
-      await net.unroute();
-      return local.state === 'results' && local.rows.length > 0 && !crashed;
+        return { pass: local.state === 'results' && local.rows.length > 0 && !crashed };
+      };
+
+      const first = await attempt('קמח');
+      if (first.stop) return false;
+      if (first.pass) return true;
+
+      const own = await provesItAsks(page, ctx);
+      await own.net.unroute();
+      if (!own.ok) return false;
+      const words = String(own.view.rows[0] ?? '')
+        .split(/[\s,.;:!?()[\]{}"'׳״\-–—/|]+/u)
+        .filter((w) => /[\p{L}\p{N}]/u.test(w));
+      const word = words.find((w) => [...w].length >= 3) ?? words[0];
+      if (!word || word === 'קמח') return false;
+      const second = await attempt(word);
+      return second.pass === true;
     },
   },
 

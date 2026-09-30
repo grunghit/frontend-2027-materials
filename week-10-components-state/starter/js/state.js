@@ -133,7 +133,7 @@ export function selectCategories(state) {
  * with a way back, not an error and not a blank page.
  */
 export function selectOne(state, id) {
-  // CODE HERE
+  // CODE HERE {stretch}
   return null;
 }
 
@@ -141,11 +141,12 @@ export function selectOne(state, id) {
  * Everything the summary page shows (part ג), computed from the collection and
  * nothing else.
  *
- * Return the total number of items, your second measure, and one row per shelf with
- * its count. The summary page has no data of its own and no script of its own — it
+ * Return the total number of items, `extra` = the SUM of every item's `number` (the
+ * same sum js/summary.js computes today — the grader checks exactly that sum), and one
+ * row per shelf with its count. The summary page has no data of its own and no script of its own — it
  * is a second view of the same object.
  */
 export function selectSummary(state) {
-  // CODE HERE
+  // CODE HERE {stretch}
   return { total: state.items.length, extra: 0, byCategory: [] };
 }

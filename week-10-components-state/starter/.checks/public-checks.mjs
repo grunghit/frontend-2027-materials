@@ -271,15 +271,21 @@ export const publicChecks = [
     expected: 'המטפל של פקד המיון שומר את הבחירה ב-state; מי שממיין הוא הפונקציה שמחשבת מה מוצג.',
     run: async (page, ctx) => {
       await fresh(page, ctx);
+      /* Ascending (as the given app.js does) or descending — the same order after an add. */
       const ascending = (list) => list.every((n, i) => i === 0 || Number(list[i - 1]) <= Number(n));
+      const descending = (list) =>
+        list.every((n, i) => i === 0 || Number(list[i - 1]) >= Number(n));
       const sorted = await setControl(page, '#sort', 'number', 'change');
-      if (!sorted || sorted.numbers.length < 4 || !ascending(sorted.numbers)) return false;
+      if (!sorted || sorted.numbers.length < 4) return false;
+      const up = ascending(sorted.numbers);
+      const down = descending(sorted.numbers);
+      if (!up && !down) return false;
 
       const after = await addItem(page, 'פריט ביניים', 3, 'בדיקה');
       return (
         after !== null &&
         after.numbers.length === sorted.numbers.length + 1 &&
-        ascending(after.numbers)
+        ((up && ascending(after.numbers)) || (down && descending(after.numbers)))
       );
     },
   },
@@ -290,7 +296,7 @@ export const publicChecks = [
      * the full list alone is true of a control nobody wired. The two together are only
      * true of a list that is recomputed from what the user typed.
      */
-    title: 'החיפוש מצמצם, והוא נגזר — `state.query` לבדו קובע מה מוצג',
+    title: 'החיפוש מצמצם, והוא נגזר — שדה החיפוש ב-state לבדו קובע מה מוצג',
     expected:
       'המטפל שומר את מה שהוקלד ב-state; הסינון עצמו קורה בפונקציה שמחשבת מה מוצג — ולכן שינוי השדה ישירות, בלי לגעת בתיבה, מצמצם גם הוא.',
     run: async (page, ctx) => {
@@ -298,8 +304,23 @@ export const publicChecks = [
       const before = await page.evaluate(() => document.querySelectorAll('#list li').length);
       if (before < 3) return false;
 
+      /* The term is the last title on screen that no other title contains, so it works
+         for anyone's entity ("שמן זית" beside "בקבוק שמן זית" is skipped); the last
+         title when every title sits inside another. */
+      const term = await page.evaluate(() => {
+        const titles = [...document.querySelectorAll('#list .item-title')].map((el) =>
+          (el.textContent ?? '').trim(),
+        );
+        const low = titles.map((t) => t.toLowerCase());
+        for (let i = titles.length - 1; i >= 0; i--) {
+          if (!low.some((other, j) => j !== i && other.includes(low[i]))) return titles[i];
+        }
+        return titles.at(-1) ?? '';
+      });
+      if (term === '') return false;
+
       /* Half one: the control is wired. */
-      const typed = await setControl(page, '#query', 'כמון', 'input');
+      const typed = await setControl(page, '#query', term, 'input');
       if (!typed || typed.titles.length === 0 || typed.titles.length >= before) return false;
 
       /*
@@ -309,22 +330,42 @@ export const publicChecks = [
        * not move.
        */
       const derived = await page
-        .evaluate(async () => {
+        .evaluate(async (term) => {
           const state = await import('./js/state.js');
           const view = await import('./js/render.js');
           const titles = () =>
             [...document.querySelectorAll('#list .item-title')].map((el) => el.textContent);
 
-          state.setState({ query: '' });
+          /* `state.query`, or one level down — `state.filters.query` is the same design.
+             Every matching field is set, so a stray top-level key cannot hide the real one. */
+          const isQuery = (k, v) => typeof v === 'string' && k.toLowerCase().includes('quer');
+          const patchFor = (text) => {
+            const s0 = state.getState();
+            const patch = {};
+            for (const k of Object.keys(s0)) {
+              const value = s0[k];
+              if (isQuery(k, value)) patch[k] = text;
+              else if (value && typeof value === 'object' && !Array.isArray(value)) {
+                const subs = Object.keys(value).filter((j) => isQuery(j, value[j]));
+                if (subs.length) {
+                  patch[k] = { ...value, ...Object.fromEntries(subs.map((j) => [j, text])) };
+                }
+              }
+            }
+            return Object.keys(patch).length ? patch : null;
+          };
+          if (patchFor('') === null) return null;
+
+          state.setState(patchFor(''));
           view.render(state.getState());
           await new Promise((resolve) => setTimeout(resolve, 80));
           const wide = titles().length;
 
-          state.setState({ query: 'כמון' });
+          state.setState(patchFor(term));
           view.render(state.getState());
           await new Promise((resolve) => setTimeout(resolve, 80));
           return { wide, narrow: titles().length };
-        })
+        }, term)
         .catch(() => null);
       return (
         derived !== null && derived.wide === before && derived.narrow < before && derived.narrow > 0

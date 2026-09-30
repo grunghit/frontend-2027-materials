@@ -193,8 +193,8 @@ function removeItem(id) {
   const item = selectOne(state, id);
   if (!item) return;
 
-  lastRemoved = { items: [item], label: /* CODE HERE — the item's name */ '' };
-  // CODE HERE — commit the collection without this id, and offer undo:
+  lastRemoved = { items: [item], label: /* CODE HERE {optional} — the item's name */ '' };
+  // CODE HERE {optional} — commit the collection without this id, and offer undo:
   //             reportWrite(commitItems(next), { text: …, undo: 'בטל הסרה' })
 }
 
@@ -209,7 +209,7 @@ function undoRemoval() {
    * the list" to restore — one of the things the architecture buys you.
    */
   const state = getState();
-  // CODE HERE — put the items back, skipping any id that is somehow already there
+  // CODE HERE {optional} — put the items back, skipping any id that is somehow already there
 }
 
 function editItem(id, patch) {
@@ -302,7 +302,7 @@ export function wire() {
       setState({ sort: el.value });
     }
 
-    // CODE HERE — your rating / status controls, if you have them
+    // CODE HERE {optional} — your rating / status controls, if you have them
   });
 
   /*

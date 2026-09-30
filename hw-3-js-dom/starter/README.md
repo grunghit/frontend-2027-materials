@@ -2,7 +2,7 @@
 
 <!--
   Written out by tools/publish.mjs as README.md at the root of every distributed folder.
-  Placeholders: מטלת בית 3 homework/hw-3-js-dom {{DEADLINE}}
+  Placeholders: מטלת בית 3 homework/hw-3 {{DEADLINE}}
   Hebrew, masculine forms (CLAUDE_CODE_BRIEF.md §3).
 -->
 

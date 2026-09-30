@@ -5,12 +5,14 @@
   This is the page you built in week 5. Same content, same DOM, same five regions —
   and no stylesheet at all. Your whole job is the `class` attributes.
 
-  Everywhere you write something there is a `CODE-HERE` marker. Delete it and put the
+  Everywhere you write something there is a marker class (the capital-letter one). Delete it and put the
   utilities in its place. The other class names on those elements — `layout`, `kpi`,
   `side-nav` and so on — are NOT utilities and do nothing: they are there so you can
   tell the regions apart, and so the checker can find them. Leave them alone.
 
-  **When there are no CODE-HERE markers left in the file, the core tier is done.**
+  **When no untagged marker is left in the file, the core tier is done.** A marker whose
+  element carries data-tier="stretch" belongs to an optional part: it may stay if you
+  skip that part.
 
   ── What the page has to do
 
@@ -398,8 +400,8 @@
           </div>
         </section>
 
-        <section class="media CODE-HERE" aria-labelledby="media-title">
-          <h2 id="media-title" class="CODE-HERE">Status board</h2>
+        <section class="media CODE-HERE" data-tier="stretch" aria-labelledby="media-title">
+          <h2 id="media-title" class="CODE-HERE" data-tier="stretch">Status board</h2>
           <!--
             STRETCH TIER, and the one arbitrary value in this file.
 
@@ -408,44 +410,44 @@
             used exactly as intended: a real capability the system does not cover, not a
             number somebody nudged. Compare demos/08-arbitrary/.
           -->
-          <div class="media-row CODE-HERE">
+          <div class="media-row CODE-HERE" data-tier="stretch">
             <figure
-              class="shot CODE-HERE"
+              class="shot CODE-HERE" data-tier="stretch"
             >
               <img
-                class="CODE-HERE"
+                class="CODE-HERE" data-tier="stretch"
                 src="images/panel-wide.svg"
                 alt="A wide chart showing request volume rising through the day"
                 width="600"
                 height="400"
               />
-              <figcaption class="CODE-HERE">Volume</figcaption>
+              <figcaption class="CODE-HERE" data-tier="stretch">Volume</figcaption>
             </figure>
             <figure
-              class="shot CODE-HERE"
+              class="shot CODE-HERE" data-tier="stretch"
             >
               <img
-                class="CODE-HERE"
+                class="CODE-HERE" data-tier="stretch"
                 src="images/panel-tall.svg"
                 alt="A tall chart showing error rate by region"
                 width="400"
                 height="600"
               />
-              <figcaption class="CODE-HERE">
+              <figcaption class="CODE-HERE" data-tier="stretch">
                 Errors by region
               </figcaption>
             </figure>
             <figure
-              class="shot CODE-HERE"
+              class="shot CODE-HERE" data-tier="stretch"
             >
               <img
-                class="CODE-HERE"
+                class="CODE-HERE" data-tier="stretch"
                 src="images/panel-square.svg"
                 alt="A square chart showing worker pool saturation"
                 width="500"
                 height="500"
               />
-              <figcaption class="CODE-HERE">
+              <figcaption class="CODE-HERE" data-tier="stretch">
                 Saturation
               </figcaption>
             </figure>

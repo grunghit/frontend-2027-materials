@@ -19,12 +19,14 @@
   --space-2: 1rem;
   --space-3: 1.5rem;
   --space-4: 2.5rem;
+  --space-5: 4rem;
 
   --radius-sm: 4px;
   --radius-pill: 999px;
 
   --font-body: system-ui, sans-serif;
   --font-size-body: 1.0625rem;
+  --font-size-heading: 1.66rem;
 
   --duration: 150ms;
 }
@@ -70,7 +72,7 @@ h1 {
 }
 
 h2 {
-  font-size: 1.66rem;
+  font-size: var(--font-size-heading);
   line-height: 1.15;
 }
 

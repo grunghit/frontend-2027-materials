@@ -322,15 +322,19 @@ export const publicChecks = [
   },
 
   {
-    title: 'לא נשארו סימוני CODE HERE בגליון הסגנונות',
-    expected: 'כשאין יותר סימונים מעל שכבת ההרחבה — סיימת את שכבת הליבה.',
+    title: 'לא נשארו סימוני CODE HERE של הליבה בגליון הסגנונות',
+    expected: 'כל סימון `CODE HERE` של הליבה חייב להיעלם; סימון שבשורה שלו כתוב גם שם השכבה בסוגריים מסולסלים (`stretch`, `challenge` או `optional`) מותר להשאיר אם דילגת על החלק הזה.',
     run: async (page) =>
       page.evaluate(async () => {
         const link = document.querySelector('link[rel="stylesheet"]');
         if (!link) return false;
         try {
           const source = await (await fetch(link.href)).text();
-          return !/CODE HERE/.test(source);
+          /* The grader's rule (grading/lib/checks.mjs, markersLeft): a marker whose line
+             is tagged {stretch}, {challenge} or {optional} is an optional part and may stay. */
+          return !source
+            .split('\n')
+            .some((line) => /CODE HERE/.test(line) && !/\{(?:stretch|challenge|optional)\}/.test(line));
         } catch {
           return false;
         }

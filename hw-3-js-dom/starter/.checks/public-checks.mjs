@@ -54,13 +54,18 @@ export const publicChecks = [
         };
       });
       const src = await (await page.request.get(page.url())).text();
-      const markup = src.replace(/<!--[\s\S]*?-->/g, '');
-      const handWritten = (markup.match(/<button[\s>]/g) || []).length;
-      /* index.html ships exactly two real buttons of its own: submit, and roll. */
+      /* The FILE, parsed: a button written inside #pads is a hand-written pad. Any other
+         button you add elsewhere on the page is not a pad and is not counted. */
+      const handWritten = await page.evaluate(
+        (html) =>
+          new DOMParser().parseFromString(html, 'text/html').querySelectorAll('#pads button')
+            .length,
+        src,
+      );
       return (
         built.count === built.expected &&
         JSON.stringify(built.keys) === JSON.stringify(built.wanted) &&
-        handWritten <= 2
+        handWritten === 0
       );
     },
   },

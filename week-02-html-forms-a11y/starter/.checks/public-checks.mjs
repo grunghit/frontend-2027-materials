@@ -22,6 +22,50 @@
 
 const FIELDS = 'form input:not([type="submit"]):not([type="button"]):not([type="hidden"]), form textarea, form select';
 
+/**
+ * CODE HERE markers left at the core tier — the grader's rule (grading/lib/checks.mjs,
+ * markersLeft at CORE_ROW). A marker tagged {stretch} / {challenge} / {optional} (or
+ * data-tier="…") may stay: on its own line, on the opening tag it sits inside (Prettier
+ * moves `data-tier` onto a line of its own), or by a next non-empty line that is only
+ * `<!-- {stretch} -->` (Prettier moves a trailing comment there).
+ */
+const SKIP = ['stretch', 'challenge', 'optional'];
+const tierTagged = (text) =>
+  SKIP.some((t) => text.includes(`{${t}}`) || new RegExp(`data-tier\\s*=\\s*["']${t}["']`).test(text));
+const tierCommentOnly = (line) => {
+  const m = line.match(/^\s*<!--\s*\{([a-z]+)\}\s*-->\s*$/);
+  return m !== null && SKIP.includes(m[1]);
+};
+function enclosingTag(text, at, end) {
+  const lt = text.lastIndexOf('<', at);
+  if (lt === -1 || !/[a-zA-Z]/.test(text[lt + 1] || '')) return null;
+  if (text.lastIndexOf('>', at) > lt) return null;
+  const gt = text.indexOf('>', end);
+  const after = text.indexOf('<', end);
+  if (gt === -1 || (after !== -1 && after < gt)) return null;
+  return text.slice(lt, gt + 1);
+}
+function markersLeft(src) {
+  const all = src.split(/\r?\n/);
+  let count = 0;
+  let offset = 0;
+  all.forEach((line, i) => {
+    const start = offset;
+    offset += line.length + (src[start + line.length] === '\r' ? 2 : 1);
+    if (!/CODE HERE/.test(line) || tierTagged(line)) return;
+    const next = all.slice(i + 1).find((l) => l.trim() !== '');
+    if (next !== undefined && tierCommentOnly(next)) return;
+    for (const m of line.matchAll(/CODE HERE/g)) {
+      const at = start + m.index;
+      const tag = enclosingTag(src, at, at + m[0].length);
+      if (tag === null || !tierTagged(tag)) count++;
+    }
+  });
+  return count;
+}
+/** True when no core marker is left in `text` (a fetch that failed is never clean). */
+const clean = (text) => typeof text === 'string' && markersLeft(text) === 0;
+
 export const publicChecks = [
   {
     title: 'הטופס: `fieldset` עם `legend`, ארבעה שדות לפחות, כל שדה עם `label` שה-`for` שלו תואם ל-`id`, שדה `required` וכפתור שליחה',
@@ -76,9 +120,31 @@ export const publicChecks = [
     title: 'תאריך ב-`time` עם `datetime` בפורמט מכונה',
     expected: 'שנה-חודש-יום: `2027-11-02`. לא "2 Nov 2027", לא רווחים. הטקסט בפנים — איך שתרצה.',
     run: async (page) =>
-      page.evaluate(() =>
-        [...document.querySelectorAll('time[datetime]')].some((t) => /^\d{4}(-\d{2}(-\d{2})?)?([T ]\d{2}:\d{2})?$/.test(t.getAttribute('datetime') || '')),
-      ),
+      page.evaluate(() => {
+        // The same forms the grader accepts (the HTML standard's valid datetime strings):
+        // month, date, yearless date, time, local and global date-time, offset, week,
+        // year, and a duration — so `19:30` is green here as it is in the grade.
+        const TIME = '\\d{2}:\\d{2}(:\\d{2}(\\.\\d{1,3})?)?';
+        const OFFSET = '(Z|[+-]\\d{2}:?\\d{2})';
+        const valid = new RegExp(
+          '^(' +
+            [
+              '\\d{4,}-\\d{2}',
+              '\\d{4,}-\\d{2}-\\d{2}',
+              '(--)?\\d{2}-\\d{2}',
+              TIME,
+              `\\d{4,}-\\d{2}-\\d{2}[T ]${TIME}`,
+              OFFSET,
+              `\\d{4,}-\\d{2}-\\d{2}[T ]${TIME}${OFFSET}`,
+              '\\d{4,}-W\\d{2}',
+              '(?=\\d*[1-9])\\d{4,}',
+              'P(?=.)(\\d+D)?(T(?=.)(\\d+H)?(\\d+M)?(\\d+(\\.\\d{1,3})?S)?)?',
+              '\\d+(\\.\\d{1,3})?[wdhms](\\s+\\d+(\\.\\d{1,3})?[wdhms])*',
+            ].join('|') +
+            ')$',
+        );
+        return [...document.querySelectorAll('time[datetime]')].some((t) => valid.test(t.getAttribute('datetime') || ''));
+      }),
   },
   {
     title: 'קישור דילוג ראשון בעמוד אל `main`, ו-`main` עם `id` ו-`tabindex="-1"`',
@@ -104,25 +170,25 @@ export const publicChecks = [
       }),
   },
   {
-    title: 'לא נשארו סימוני `CODE HERE` — לא ב-`index.html` ולא ב-`about.html`',
-    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת, בשני הקבצים.',
+    title: 'לא נשארו סימוני `CODE HERE` של הליבה — לא ב-`index.html` ולא ב-`about.html`',
+    expected: 'כל מקום שסומן `CODE HERE` הוא מקום שבו אתה כותב. מחק את הסימון אחרי שכתבת, בשני הקבצים. כל סימון `CODE HERE` של הליבה חייב להיעלם; סימון שבשורה שלו כתוב גם שם השכבה בסוגריים מסולסלים (`stretch`, `challenge` או `optional`) מותר להשאיר אם דילגת על החלק הזה.',
+    /* The FILES are read, not the DOM: a comment above <html> is outside documentElement,
+       and the grader reads the files. Same rule as the grader (grading/lib/checks.mjs,
+       markersLeft): a marker tagged {stretch}, {challenge} or {optional} may stay — see markersLeft above. */
     run: async (page) => {
-      const here = await page.evaluate(() => {
-        const walker = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_COMMENT);
-        while (walker.nextNode()) if (/CODE HERE/.test(walker.currentNode.nodeValue || '')) return false;
-        return true;
-      });
-      if (!here) return false;
-      const about = await page.evaluate(async () => {
-        try {
-          const res = await fetch('about.html');
-          if (!res.ok) return false;
-          return !/CODE HERE/.test(await res.text());
-        } catch {
-          return false;
+      const texts = await page.evaluate(async () => {
+        const out = [];
+        for (const url of [location.href, 'about.html']) {
+          try {
+            const res = await fetch(url);
+            out.push(res.ok ? await res.text() : null);
+          } catch {
+            out.push(null);
+          }
         }
+        return out;
       });
-      return about;
+      return texts.every(clean);
     },
   },
 ];

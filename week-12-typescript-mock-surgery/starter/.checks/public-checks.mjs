@@ -66,12 +66,18 @@ async function sources(page, ctx) {
  * `CODE HERE` in a `ts/` file is the shortest honest proof that the migration did not
  * happen — and it is the one thing that is NOT true of the untouched starter, which
  * compiles cleanly and contains no `any` at all.
+ *
+ * Same rule as the grader (grading/lib/checks.mjs, markersLeft): a line tagged
+ * {stretch} (ts/dom.ts is part ד), {challenge} or {optional} may keep its marker.
  */
+const CORE_MARKER = (text) =>
+  text.split('\n').some((line) => /CODE HERE/.test(line) && !/\{(?:stretch|challenge|optional)\}/.test(line));
+
 function migrationHappened(files) {
   const present = Object.entries(files).filter(([, text]) => text !== null);
   if (present.length === 0) return { ok: false, why: 'אין אף קובץ ב-ts/' };
 
-  const marked = present.filter(([, text]) => /CODE HERE/.test(text)).map(([name]) => name);
+  const marked = present.filter(([, text]) => CORE_MARKER(text)).map(([name]) => name);
   if (marked.length) return { ok: false, why: `נשארו סימני CODE HERE ב-${marked.join(', ')}` };
 
   const annotated = present.reduce(
@@ -82,6 +88,83 @@ function migrationHappened(files) {
   );
   if (annotated < 3) return { ok: false, why: `רק ${annotated} חתימות מוקלדות ב-ts/` };
   return { ok: true, why: '' };
+}
+
+/* ── The guard, read as the grader reads it (grading/specs/week-12.mjs) ──────
+ * A copy, because this file ships alone to a student repository. If one changes,
+ * change both: this check must never be greener than the grader's row. */
+const IDENT = '[A-Za-z_$][\\w$]*';
+
+function braceBody(source, from) {
+  let depth = 1;
+  for (let i = from; i < source.length; i += 1) {
+    if (source[i] === '{') depth += 1;
+    else if (source[i] === '}') {
+      depth -= 1;
+      if (depth === 0) return source.slice(from, i);
+    }
+  }
+  return null;
+}
+
+function expressionBody(source, from) {
+  let depth = 0;
+  for (let i = from; i < source.length; i += 1) {
+    const c = source[i];
+    if (c === '(' || c === '[' || c === '{') depth += 1;
+    else if (c === ')' || c === ']' || c === '}') {
+      if (depth === 0) return source.slice(from, i);
+      depth -= 1;
+    } else if ((c === ';' || c === ',') && depth === 0) return source.slice(from, i);
+  }
+  return source.slice(from);
+}
+
+/** Every `x is T` guard — declaration, arrow or function expression — as { name, param, body }. */
+function narrowingPredicates(source) {
+  const out = [];
+  const heads = [
+    { re: new RegExp(`\\bfunction\\s+(${IDENT})\\s*(?:<[^>]*>)?\\s*\\(([^)]*)\\)\\s*:\\s*${IDENT}\\s+is\\s+`, 'g'), arrow: false },
+    {
+      re: new RegExp(`\\b(?:const|let|var)\\s+(${IDENT})\\s*=\\s*(?:async\\s+)?function\\b[^(]*\\(([^)]*)\\)\\s*:\\s*${IDENT}\\s+is\\s+`, 'g'),
+      arrow: false,
+    },
+    { re: new RegExp(`\\b(?:const|let|var)\\s+(${IDENT})\\s*=\\s*(?:async\\s+)?(?:<[^>]*>\\s*)?\\(([^)]*)\\)\\s*:\\s*${IDENT}\\s+is\\s+`, 'g'), arrow: true },
+  ];
+  for (const { re, arrow } of heads) {
+    for (const m of source.matchAll(re)) {
+      let depth = 0;
+      let typeRead = false;
+      let at = -1;
+      let kind = null;
+      for (let k = m.index + m[0].length; k < source.length; k += 1) {
+        const c = source[k];
+        if (depth === 0 && typeRead && !arrow && c === '{') { at = k + 1; kind = 'brace'; break; }
+        if (depth === 0 && typeRead && arrow && c === '=' && source[k + 1] === '>') { at = k + 2; kind = 'arrow'; break; }
+        if (depth === 0 && c === ';') break;
+        if ('{(<['.includes(c)) depth += 1;
+        else if ('})>]'.includes(c)) depth -= 1;
+        if (!/\s/.test(c)) typeRead = true;
+      }
+      if (at < 0) continue;
+      let body;
+      if (kind === 'brace') body = braceBody(source, at);
+      else {
+        while (/\s/.test(source[at] ?? '')) at += 1;
+        body = source[at] === '{' ? braceBody(source, at + 1) : expressionBody(source, at);
+      }
+      if (body !== null) out.push({ name: m[1], param: (m[2].match(new RegExp(IDENT)) ?? [''])[0], body });
+    }
+  }
+  return out;
+}
+
+/** `typeof value.id ===`, `typeof value['id'] !==`, or `typeof id ===` on a destructured name. */
+function fieldTypeofChecks({ param, body }) {
+  let n = 0;
+  const re = new RegExp(`typeof\\s+(${IDENT})((?:\\s*\\??\\.\\s*${IDENT}|\\s*\\[[^\\]]+\\])*)\\s*[!=]==?`, 'g');
+  for (const m of body.matchAll(re)) if (m[2].trim() !== '' || m[1] !== param) n += 1;
+  return n;
 }
 
 export const publicChecks = [
@@ -99,14 +182,17 @@ export const publicChecks = [
   {
     title: 'השומר מצמצם — `value is Item` ולא `boolean`',
     expected:
-      'המילה `is` בטיפוס ההחזרה היא כל ההבדל. הבדיקה גם דורשת שהגוף באמת בודק שדות — שומר שמחזיר `true` מיד מהדר מצוין ולא שומר על כלום.',
+      'המילה `is` בטיפוס ההחזרה היא כל ההבדל — כפונקציה, כ-arrow או כביטוי פונקציה. הבדיקה גם דורשת שבגוף השומרים יהיו יחד לפחות שלוש בדיקות `typeof` על שדות — שומר שמחזיר `true` מיד מהדר מצוין ולא שומר על כלום.',
     run: async (page, ctx) => {
       const files = await sources(page, ctx);
       if (!migrationHappened(files).ok) return false;
       const all = Object.values(files).filter(Boolean).map(code).join('\n');
-      const predicate = /function\s+\w+\s*\([^)]*\)\s*:\s*\w+\s+is\s+\w+/.test(all);
-      const checks = (all.match(/typeof\s+\w+(?:\.\w+|\[[^\]]+\])\s*[!=]==/g) ?? []).length;
-      return predicate && checks >= 3;
+      /* The grader's rule (grading/specs/week-12.mjs, row 4): the typeof checks are
+         counted INSIDE the guard bodies only — not across the folder, where ts/api.ts
+         has typeof checks of its own that would make a `return true` guard green. */
+      const found = narrowingPredicates(all);
+      const checks = found.reduce((n, p) => n + fieldTypeofChecks(p), 0);
+      return found.length >= 1 && checks >= 3;
     },
   },
 
@@ -169,7 +255,7 @@ export const publicChecks = [
       'מפרט שנכתב אחרי הקוד תמיד מסכים איתו. הבדיקה רואה רק שהוא מלא; מה שכתוב בו נקרא בעיניים.',
     run: async (page, ctx) => {
       const text = await fileAt(page, ctx, 'specs/ts-migration.md');
-      if (text === null || /CODE HERE/.test(text)) return false;
+      if (text === null || CORE_MARKER(text)) return false;
       const sections = text
         .replace(/<!--[\s\S]*?-->/g, '')
         .split(/^## /m)

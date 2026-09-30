@@ -79,7 +79,7 @@ function renderDetail(state) {
   if (!mount) return;
 
   const id = new URLSearchParams(location.search).get('id');
-  // CODE HERE — selectOne(state, id), then either the item or the empty state.
+  // CODE HERE {stretch} — selectOne(state, id), then either the item or the empty state.
 }
 
 /** The summary page (part ג). */
@@ -87,7 +87,7 @@ function renderSummary(state) {
   const total = document.querySelector('#summary-count');
   if (!total) return;
 
-  // CODE HERE — selectSummary(state) into #summary-count, #summary-extra and
+  // CODE HERE {stretch} — selectSummary(state) into #summary-count, #summary-extra and
   //             #summary-shelves.
 }
 
@@ -96,7 +96,7 @@ function renderUndo(state) {
   const mount = document.querySelector('#undo');
   if (!mount) return;
 
-  // CODE HERE — nothing when there is nothing to undo; a sentence and a button with
+  // CODE HERE {challenge} — nothing when there is nothing to undo; a sentence and a button with
   //             data-action="undo" when there is.
 }
 

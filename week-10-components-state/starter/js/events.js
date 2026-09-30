@@ -7,7 +7,9 @@
  * describes what the screen should look like afterwards. Not one line in this file
  * builds an element, sets textContent, moves a node or hides anything — and if you
  * find yourself writing one, the change belongs in render.js and the handler belongs
- * to be two lines shorter.
+ * to be two lines shorter. The one exception is `fail()`, which moves here with
+ * readForm(): the form is not drawn from state, so its error sentence, aria-invalid
+ * and focus stay with it.
  *
  * That rule is what makes every future change local. "Show the shelf on each row" is
  * a change to render.js alone. "Search the shelf name too" is a change to state.js
@@ -120,7 +122,7 @@ export function wire() {
   if (undoMount) {
     undoMount.addEventListener('click', (event) => {
       if (!event.target.closest('[data-action="undo"]')) return;
-      // CODE HERE
+      // CODE HERE {challenge}
     });
   }
 }

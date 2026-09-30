@@ -6,7 +6,7 @@
 # Education verification, no paid tier, nothing GitHub-Classroom-shaped.
 #
 # Placeholders substituted by the publisher:
-#   homework/hw-4-data-layer   e.g. week-03            — path scope, so a push in week 10 does not
+#   homework/hw-4   e.g. week-03            — path scope, so a push in week 10 does not
 #                                             re-run weeks 1–9 in the semester-long repo
 #   מטלת בית 4  e.g. שבוע 3             — used in the Hebrew summary heading
 #
@@ -29,16 +29,16 @@ name: בדיקות אוטומטיות
 on:
   push:
     paths:
-      - 'homework/hw-4-data-layer/**'
+      - 'homework/hw-4/**'
       - '.github/workflows/check.yml'
   pull_request:
     paths:
-      - 'homework/hw-4-data-layer/**'
+      - 'homework/hw-4/**'
   workflow_dispatch:
 
 # A new push supersedes the previous run — keeps free-tier minutes for work that matters.
 concurrency:
-  group: check-homework/hw-4-data-layer-${{ github.ref }}
+  group: check-homework/hw-4-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -78,7 +78,7 @@ jobs:
       - name: Install check tools
         id: install
         continue-on-error: true
-        working-directory: 'homework/hw-4-data-layer/.checks'
+        working-directory: 'homework/hw-4/.checks'
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
       # --with-deps is NOT optional: `playwright install chromium` downloads the browser
@@ -89,7 +89,7 @@ jobs:
       - name: Install Chromium
         id: browser
         continue-on-error: true
-        working-directory: 'homework/hw-4-data-layer/.checks'
+        working-directory: 'homework/hw-4/.checks'
         run: npx playwright install --with-deps chromium
 
       # If any infrastructure step failed, say so in Hebrew and STOP — with a green
@@ -125,7 +125,7 @@ jobs:
       # From here on, a non-zero exit IS the student's result and must be red.
       - name: Run checks
         if: steps.infra.outputs.skip == 'false'
-        working-directory: 'homework/hw-4-data-layer'
+        working-directory: 'homework/hw-4'
         env:
           WEEK_LABEL: 'מטלת בית 4'
         run: node .checks/run-checks.mjs

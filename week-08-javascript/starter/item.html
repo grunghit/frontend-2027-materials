@@ -28,8 +28,10 @@
   Getting this boundary right today is what makes week 10 a refactor rather than a
   rewrite. It is marked.
 
-  Every `class="CODE-HERE"` is a place you write. DELETE THE MARKER when you are
-  done with that element — the grader checks that none are left.
+  Every marker class (the capital-letter one) is a place you write. DELETE THE MARKER
+  when you are done with that element — the grader checks that none are left. A
+  marker tagged {challenge} or data-tier="challenge" on its line belongs to the challenge tier:
+  it may stay if you skip that part.
   ============================================================================
 -->
 <html lang="he" dir="rtl">
@@ -37,7 +39,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
-    <title>CODE-HERE — שם היישום שלך</title>
+    <title>CODE-HERE — שם היישום שלך</title> <!-- {challenge} -->
 
     <script src="vendor/tailwind.js"></script>
     <style type="text/tailwindcss">
@@ -68,7 +70,7 @@
     <!-- STATIC. The nav is on all three pages, and `aria-current` moves. -->
     <header class="border-b border-line">
       <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-6 px-4 py-4" aria-label="ראשי">
-        <span class="CODE-HERE font-bold">שם היישום</span>
+        <span class="CODE-HERE font-bold" data-tier="challenge">שם היישום</span>
         <a href="index.html" class="hover:text-brand">הרשימה</a>
         <a href="item.html" aria-current="page" class="text-brand underline underline-offset-4">פריט</a>
         <a href="summary.html" class="hover:text-brand">סיכום</a>
@@ -79,17 +81,17 @@
       <p class="text-sm"><a href="index.html" class="text-brand hover:underline">חזרה לרשימה</a></p>
 
       <article class="mt-4">
-        <h1 class="CODE-HERE text-2xl font-bold">שם הפריט</h1>
-        <p class="CODE-HERE mt-2 text-muted">שורת משנה — שדה או שניים.</p>
+        <h1 class="CODE-HERE text-2xl font-bold" data-tier="challenge">שם הפריט</h1>
+        <p class="CODE-HERE mt-2 text-muted" data-tier="challenge">שורת משנה — שדה או שניים.</p>
 
         <!--
           The fields of ONE item. Same field names as the list page uses, because
           in week 10 both are drawn from the same object.
         -->
-        <dl class="CODE-HERE mt-6 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2">
+        <dl class="CODE-HERE mt-6 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2" data-tier="challenge">
           <dt class="text-muted">שדה</dt>
           <dd>ערך</dd>
-          <!-- CODE HERE — the rest of your fields -->
+          <!-- CODE HERE {challenge} — the rest of your fields -->
         </dl>
       </article>
 
@@ -97,8 +99,8 @@
         The empty state for "no such item". Hidden today; week 10 shows it when the
         id in the URL matches nothing.
       -->
-      <p id="missing" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6">
-        <!-- CODE HERE — what a reader sees when the link has gone stale, and the way back -->
+      <p id="missing" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6" data-tier="challenge">
+        <!-- CODE HERE {challenge} — what a reader sees when the link has gone stale, and the way back -->
       </p>
     </main>
   </body>

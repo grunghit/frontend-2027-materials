@@ -25,8 +25,10 @@
   Getting this boundary right today is what makes week 10 a refactor rather than a
   rewrite. It is marked.
 
-  Every `class="CODE-HERE"` is a place you write. DELETE THE MARKER when you are
-  done with that element — the grader checks that none are left.
+  Every marker class (the capital-letter one) is a place you write. DELETE THE MARKER
+  when you are done with that element — the grader checks that none are left. A
+  marker tagged {stretch} or data-tier="stretch" on its line belongs to the stretch tier:
+  it may stay if you skip that part.
   ============================================================================
 -->
 <html lang="he" dir="rtl">
@@ -34,7 +36,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
-    <title>CODE-HERE — שם היישום שלך</title>
+    <title>CODE-HERE — שם היישום שלך</title> <!-- {stretch} -->
 
     <script src="vendor/tailwind.js"></script>
     <style type="text/tailwindcss">
@@ -65,7 +67,7 @@
     <!-- STATIC. The nav is on all three pages, and `aria-current` moves. -->
     <header class="border-b border-line">
       <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-6 px-4 py-4" aria-label="ראשי">
-        <span class="CODE-HERE font-bold">שם היישום</span>
+        <span class="CODE-HERE font-bold" data-tier="stretch">שם היישום</span>
         <a href="index.html" aria-current="page" class="text-brand underline underline-offset-4">הרשימה</a>
         <a href="item.html" class="hover:text-brand">פריט</a>
         <a href="summary.html" class="hover:text-brand">סיכום</a>
@@ -73,8 +75,8 @@
     </header>
 
     <main id="main" tabindex="-1" class="mx-auto max-w-5xl px-4 py-8">
-      <h1 class="CODE-HERE text-2xl font-bold">כותרת העמוד</h1>
-      <p class="CODE-HERE mt-2 text-muted">משפט אחד שאומר מה יש כאן.</p>
+      <h1 class="CODE-HERE text-2xl font-bold" data-tier="stretch">כותרת העמוד</h1>
+      <p class="CODE-HERE mt-2 text-muted" data-tier="stretch">משפט אחד שאומר מה יש כאן.</p>
 
       <!--
         STATIC. The toolbar is not rebuilt on render — a control that is destroyed
@@ -87,13 +89,13 @@
           <input
             id="query"
             type="search"
-            class="CODE-HERE mt-1 rounded-md border border-line bg-page px-3 py-2"
+            class="CODE-HERE mt-1 rounded-md border border-line bg-page px-3 py-2" data-tier="stretch"
           />
         </div>
         <div>
           <label for="sort" class="block text-sm text-muted">מיון</label>
-          <select id="sort" class="CODE-HERE mt-1 rounded-md border border-line bg-page px-3 py-2">
-            <!-- CODE HERE — the sort options your topic needs -->
+          <select id="sort" class="CODE-HERE mt-1 rounded-md border border-line bg-page px-3 py-2" data-tier="stretch">
+            <!-- CODE HERE {stretch} — the sort options your topic needs -->
           </select>
         </div>
       </div>
@@ -102,21 +104,21 @@
         THE MOUNT. In week 10 this <ul> is emptied and refilled by `render(state)`.
         Today: write three or four items by hand, all with the same shape.
       -->
-      <ul id="list" class="CODE-HERE mt-6 grid gap-4">
+      <ul id="list" class="CODE-HERE mt-6 grid gap-4" data-tier="stretch">
         <li class="rounded-lg border border-line p-4">
-          <h2 class="CODE-HERE font-semibold">
+          <h2 class="CODE-HERE font-semibold" data-tier="stretch">
             <a href="item.html" class="hover:text-brand">שם הפריט</a>
           </h2>
-          <p class="CODE-HERE text-sm text-muted">שדה שני · שדה שלישי</p>
+          <p class="CODE-HERE text-sm text-muted" data-tier="stretch">שדה שני · שדה שלישי</p>
         </li>
-        <!-- CODE HERE — at least two more items, same shape -->
+        <!-- CODE HERE {stretch} — at least two more items, same shape -->
       </ul>
 
       <!--
         The empty state. Week 7 required it, and it is markup rather than a plan:
         write the words that will actually be on screen.
       -->
-      <p id="empty" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6 text-muted">
+      <p id="empty" hidden class="CODE-HERE mt-6 rounded-lg border border-line bg-panel p-6 text-muted" data-tier="stretch">
         אין פריטים להצגה.
       </p>
     </main>

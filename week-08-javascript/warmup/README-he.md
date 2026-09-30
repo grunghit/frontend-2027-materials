@@ -3,8 +3,7 @@
 <!-- Student-facing. Hebrew, masculine forms. Ten minutes, ungraded, no git.
      The answers are NOT in this file and NOT in the published folder — they are in
      instructor-notes-he.md §3 and in solution/, and the publisher's denylist refuses
-     both. Week 2 shipped a warm-up answer to students by accident; week 3 fixed the
-     pattern and this follows week 3. -->
+     both. -->
 
 **עשר דקות — ה"אתה עושה" של מחזור 3, בלי AI. לא נבדק, לא מגישים, לא עושים commit.**
 

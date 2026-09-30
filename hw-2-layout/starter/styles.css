@@ -2,8 +2,10 @@
    HOME ASSIGNMENT 2 — REBUILD THE LAYOUT.
 
    You are given a finished page and a screenshot of what it should look like. The
-   markup is done. The layout is not. Every place you write something is marked
-   `CODE HERE`.
+   markup is done. The layout is not. Every place you write something has a marker
+   comment (the capital-letter ones below). When no untagged marker is left, you have
+   finished the core tier. A marker tagged {stretch} on its own line belongs to an
+   optional part: it may stay if you skip that part.
 
    ── WHAT YOU ARE REBUILDING
    images/target-375.png, target-768.png, target-1280.png. Look at all three, in
@@ -51,8 +53,13 @@
 /* ────────────────────────────────────────────────────────────────────────────
    1 — RESET AND TOKENS                                               done for you
 
-   Change `--hue-brand` and the page changes colour. Colour is not graded here —
-   it was graded in week 3 — but a page you like looking at is a page you finish.
+   Change `--hue-brand` and the page changes colour. The hue you pick is not
+   graded here — it was graded in week 3 — but a page you like looking at is a
+   page you finish. Contrast IS checked (axe, the "clean and accessible" row):
+   after changing the hue, the .kicker and the buttons must still reach 4.5 in
+   Chrome's colour picker (week 3, cycle 3). Yellow, green and cyan hues (about
+   45 to 185) will not as they are — lower the lightness of `--color-accent`
+   (its third number, 34%) until they do; somewhere between 28% and 32%.
    ──────────────────────────────────────────────────────────────────────────── */
 
 *,
@@ -271,7 +278,8 @@ img {
         matter of taste.
    4.3  the buttons: a wrapping row.
    4.4  the picture: it must be the same shape at every width and must not
-        distort. Two properties, two different jobs — one sizes the box and
+        distort. The ratio is yours to choose; what is checked is that you
+        declared one, and that the box is the same shape at 375 and at 1280. Two properties, two different jobs — one sizes the box and
         reserves it before the file arrives, the other decides what happens to a
         picture of the wrong shape inside it.
    ══════════════════════════════════════════════════════════════════════════════ */
@@ -533,10 +541,12 @@ h1 {
      · it works at all three widths like everything above it
      · it uses Grid or Flexbox on purpose, and you can say which and why
 
-   This one is marked by hand.
+   This one is checked automatically: it exists, it has a heading, the HTML still
+   validates, and nothing scrolls sideways. Its quality is marked by hand, as part
+   of design-quality.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* CODE HERE — 8 */
+/* CODE HERE — 8 {stretch} */
 
 /* ══════════════════════════════════════════════════════════════════════════════
    9 — POLISH                                                           {stretch}
@@ -555,4 +565,4 @@ h1 {
    already sets to zero. That is why nothing here needs `!important`.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* CODE HERE — 9 */
+/* CODE HERE — 9 {stretch} */

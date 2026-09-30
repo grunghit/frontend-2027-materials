@@ -32,4 +32,31 @@ function byTitle(list) {
 }
 
 print('byTitle(shelf)', titles(byTitle(shelf)));
+
+// 3 · three small ones Part B needs: search, count into an object, one decimal
+function search(list, query) {
+  const term = query.trim().toLowerCase();
+  return list.filter((book) => (book.title ?? '').toLowerCase().includes(term));
+}
+
+function countByDecade(list) {
+  const counts = {};
+  for (const book of list) {
+    const decade = book.year === null ? '?' : `${Math.floor(book.year / 10) * 10}s`;
+    counts[decade] = (counts[decade] ?? 0) + 1;
+  }
+  return Object.entries(counts)
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'he'));
+}
+
+print("search(shelf, ' HO ')", titles(search(shelf, ' HO ')));
+print('countByDecade(shelf)', countByDecade(shelf));
+
+const years = shelf.map((book) => book.year).filter((year) => year !== null);
+let sum = 0;
+for (const year of years) sum += year;
+const mean = sum / years.length;
+print('mean · Math.round · toFixed', [mean, Math.round(mean * 10) / 10, mean.toFixed(1)]);
+
 print('shelf, afterwards', titles(shelf));
