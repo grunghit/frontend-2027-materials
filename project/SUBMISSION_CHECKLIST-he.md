@@ -3,7 +3,7 @@ title: רשימת ההגשה של הפרויקט
 kicker: שבוע 12 · פיתוח צד לקוח
 week: 12
 points: 100
-deadline: בסוף שבוע 12
+deadline: בסוף שיעור 12
 duration: כארבעים דקות
 weight: הפרויקט · חמישים אחוז מהציון
 footer: פיתוח צד לקוח 2027 · המרכז האקדמי רופין
@@ -157,6 +157,7 @@ node .checks/run-checks.mjs
 - [ ] `git status` נקי. **אין `node_modules`, אין `.DS_Store`, אין קובץ עם סיסמה או מפתח.**
 - [ ] **`js/` מחויב.** הדפדפן טוען את הפלט של `tsc`, לא את `ts/`. מי ששם `js/`
       ב-`.gitignore` — היישום שלו לא עולה אצל מי שיקלון אותו, כולל אצלי.
+- [ ] `js/state.js` ו-`js/storage.js` הם **JavaScript כתוב ביד**, ואין `ts/state.ts` או `ts/storage.ts` — `tsc` היה כותב עליהם.
 - [ ] `vendor/tailwind.js` מחויב. **לא CDN.**
 - [ ] ההודעות אומרות משהו. `fix`, `wip` ו-`update` שלוש פעמים עולים נקודות. <!-- coverage:counter-example -->
 - [ ] המרצה עדיין collaborator במאגר. **בלי זה אי אפשר לקלון, ואי אפשר לטעון למכונה

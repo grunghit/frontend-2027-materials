@@ -1,0 +1,140 @@
+/* What's on — my stylesheet for week 5. Mobile-first. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2a24;
+  background: #eef2ee;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 1.6rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 8px;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.masthead {
+  padding: 14px 16px;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #1f5f4a;
+}
+
+.logo {
+  margin: 0;
+  font-weight: 700;
+}
+
+.tagline {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+.side {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.events {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+.event {
+  padding: 12px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.thumb {
+  height: 7rem;
+  aspect-ratio: 3 / 2;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #c5d3c8;
+}
+
+.shelf {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.book {
+  padding: 12px;
+  border: 2px solid #c5d3c8;
+  border-radius: 10px;
+}
+
+.book--pick {
+  grid-column: span 2;
+  border-color: #1f5f4a;
+}
+
+.desks {
+  display: grid;
+  gap: 8px;
+}
+
+.desk {
+  padding: 8px;
+  border-radius: 8px;
+  background: #eef2ee;
+}
+
+@media (min-width: 48em) {
+  .page {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    align-items: start;
+  }
+
+  .masthead {
+    grid-column: 1 / -1;
+  }
+}

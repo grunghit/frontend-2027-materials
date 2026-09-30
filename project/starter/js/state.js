@@ -2,7 +2,7 @@
  * ============================================================================
  * state.js — THE SINGLE SOURCE OF TRUTH, and every question you can ask it.
  *
- * This is the file the surgery exam is written against. Three rules, and they are
+ * This is the file the lab exam is written against. Three rules, and they are
  * the only three:
  *
  *   1. THE STATE OBJECT IS THE ONLY PLACE ANYTHING IS TRUE. If it is on screen, it
