@@ -1,14 +1,14 @@
 # החימום של שבוע 6 — התאם את התיבה
 
-<!-- Student-facing. Hebrew, masculine forms. This is cycle 1's you-do: eight minutes,
+<!-- Student-facing. Hebrew, masculine forms. This is cycle 1's you-do: seven minutes,
      AI-free, ungraded, no git. The answer is NOT in this file and NOT in this folder — it
      is in instructor-notes-he.md §3.1, which the publisher's denylist refuses to publish,
      and solution/ is left behind because the publisher ships this folder file by file. -->
 
-**שמונה דקות, בסוף מחזור 1. בלי AI. לא נבדק, לא מגישים, לא עושים commit.**
+**שבע דקות, בסוף מחזור 1. בלי AI. לא נבדק, לא מגישים, לא עושים commit.**
 
 במחזור 1 ראית כרטיס אחד עובר מ-CSS למחלקות, הצהרה אחרי הצהרה. עכשיו אתה עושה את זה לבד — וזה
-**בלי AI בכוונה**: זה תנאי המבחן של שבוע 13, שמונה דקות מול דפדפן.
+**בלי AI בכוונה**: זה תנאי המבחן של שבוע 13, שבע דקות מול דפדפן.
 
 ---
 

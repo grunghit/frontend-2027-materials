@@ -1,11 +1,11 @@
 # חימום שבוע 8 — חמש פונקציות, ארבע מהן שגויות
 
-<!-- Student-facing. Hebrew, masculine forms. Ten minutes, ungraded, no git.
+<!-- Student-facing. Hebrew, masculine forms. Nine minutes, ungraded, no git.
      The answers are NOT in this file and NOT in the published folder — they are in
      instructor-notes-he.md §3 and in solution/, and the publisher's denylist refuses
      both. -->
 
-**עשר דקות — ה"אתה עושה" של מחזור 3, בלי AI. לא נבדק, לא מגישים, לא עושים commit.**
+**תשע דקות — ה"אתה עושה" של מחזור 3, בלי AI. לא נבדק, לא מגישים, לא עושים commit.**
 
 ---
 
@@ -42,7 +42,7 @@
 **סיימת כשכתוב "חמש מתוך חמש עובדות".**
 
 השופט אומר **מה** לא נכון ולא **איפה**. זה בכוונה: תסמין אפשר לחקור, ותיקון מוכן אפשר
-להעתיק בלי לקרוא — ועשר דקות מספיקות לראשון בלבד.
+להעתיק בלי לקרוא — ותשע דקות מספיקות לראשון בלבד.
 
 > [!note]
 > אם נתקעת על אחת מהן אחרי שמונה דקות, **עזוב אותה**. נדבר על כולן בתחקיר של מחזור 3,
