@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Placeholder portrait">
-  <rect width="240" height="240" rx="18" fill="#e7f1f8" />
-  <circle cx="120" cy="96" r="40" fill="#0b5f8f" />
-  <path d="M40 224c0-40 36-64 80-64s80 24 80 64z" fill="#0b5f8f" />
-  <text x="120" y="222" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" fill="#ffffff">
-    replace me
-  </text>
-</svg>

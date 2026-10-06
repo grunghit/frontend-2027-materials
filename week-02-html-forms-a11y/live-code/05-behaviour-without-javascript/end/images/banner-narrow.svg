@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180" role="img" aria-label="Narrow banner: the words Ruppin Film Club above three cinema seats">
-  <rect width="320" height="180" fill="#5a1f2b"/>
-  <g fill="#a34a5c">
-    <rect x="40" y="120" width="56" height="40" rx="6"/><rect x="132" y="120" width="56" height="40" rx="6"/><rect x="224" y="120" width="56" height="40" rx="6"/>
-  </g>
-  <text x="20" y="52" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#fff">Ruppin Film Club</text>
-  <text x="20" y="80" font-family="ui-monospace, monospace" font-size="13" fill="#f2b8c4">NARROW 320x180 - below 700px</text>
-</svg>

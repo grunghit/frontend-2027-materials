@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400" role="img" aria-label="A wide blue cover with a yellow sun">
-  <rect width="600" height="400" fill="#1d4f91"/>
-  <rect x="40" y="40" width="520" height="320" fill="none" stroke="#f4f2ea" stroke-width="6"/>
-  <circle cx="450" cy="140" r="60" fill="#f2c230"/>
-  <rect x="80" y="250" width="300" height="24" fill="#f4f2ea"/>
-  <rect x="80" y="290" width="200" height="16" fill="#f4f2ea"/>
-</svg>

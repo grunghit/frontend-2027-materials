@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="A winding trail over two hills">
-  <rect width="120" height="120" rx="12" fill="#e7f1f8" />
-  <path d="M0 84 Q30 52 58 74 T120 58 V120 H0 Z" fill="#8fc6a4" />
-  <path d="M0 100 Q34 74 62 92 T120 80 V120 H0 Z" fill="#4f9a72" />
-  <path d="M18 116 C38 96 34 84 54 76 S78 58 96 44" fill="none" stroke="#a05a2c" stroke-width="4" stroke-linecap="round" stroke-dasharray="7 6" />
-  <circle cx="96" cy="30" r="11" fill="#f2b544" />
-</svg>

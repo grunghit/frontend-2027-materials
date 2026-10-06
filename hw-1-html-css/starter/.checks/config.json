@@ -1,5 +1,0 @@
-{
-  "//": "Home assignment 1 knobs for the public check set. The publisher copies this to starter/.checks/config.json, replacing the template default.",
-  "entry": "index.html",
-  "requiredFiles": ["index.html", "about.html", "notes.html", "styles.css"]
-}

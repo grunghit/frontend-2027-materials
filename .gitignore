@@ -1,0 +1,24 @@
+# Never commit these. "No node_modules, no committed secrets" is a rubric line
+# in every assignment from week 1.
+node_modules/
+.env
+.env.*
+*.local
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor noise (but .vscode/ ITSELF is committed on purpose — it is the shared setup)
+.idea/
+*.swp
+*~
+
+# Build output (from week 12, tsc)
+dist/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*

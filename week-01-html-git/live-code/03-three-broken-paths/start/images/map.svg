@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="160" height="120" viewBox="0 0 160 120" role="img" aria-label="A trail map">
-  <rect width="160" height="120" fill="#ecfdf5"/>
-  <path d="M15 100 C 40 60, 70 110, 95 60 S 140 40, 150 20" fill="none" stroke="#166534" stroke-width="4" stroke-dasharray="8 6"/>
-  <circle cx="15" cy="100" r="6" fill="#dc2626"/>
-  <circle cx="150" cy="20" r="6" fill="#dc2626"/>
-</svg>
