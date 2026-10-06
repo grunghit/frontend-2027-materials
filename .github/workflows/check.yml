@@ -43,6 +43,9 @@ permissions:
 jobs:
   check:
     name: 'בדיקות'
+    # The template repo itself is an empty skeleton with nothing to check. Repos created
+    # from it ("Use this template") are not templates, so the checks run there.
+    if: ${{ !github.event.repository.is_template }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
 
