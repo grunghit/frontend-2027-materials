@@ -1,0 +1,14 @@
+{
+  "//": "Home assignment 4 knobs for the public check set. The publisher copies this to starter/.checks/config.json.",
+  "//entry": "index.html — the whole assignment is one page.",
+  "//required": "The page, the stylesheet, and all four modules. `js/cities.js` is required and must not be edited: the grader imports it as it is, and the six ids in that order are part of the contract.",
+  "entry": "index.html",
+  "requiredFiles": [
+    "index.html",
+    "styles.css",
+    "js/app.js",
+    "js/api.js",
+    "js/cache.js",
+    "js/cities.js"
+  ]
+}

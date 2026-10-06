@@ -1,0 +1,7 @@
+{
+  "//": "Week 6 knobs for the public check set. The publisher copies this to starter/.checks/config.json, replacing the template default.",
+  "//tindog": "tindog.html is the CHALLENGE tier and is deliberately NOT required — CI must not go red on a student who finished the core and stretch and stopped there. It is graded privately.",
+  "//vendor": "vendor/tailwind.js is required because without it every page renders unstyled, which looks exactly like a student who wrote no classes. Better to say so in one line than to fail nine checks for it.",
+  "entry": "index.html",
+  "requiredFiles": ["index.html", "components.html", "review-he.md", "vendor/tailwind.js"]
+}

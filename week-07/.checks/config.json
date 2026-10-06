@@ -1,0 +1,13 @@
+{
+  "//": "Week 7 knobs for the public check set (UX/UI + project kickoff; week 6 until batch 04). The publisher copies this to starter/.checks/config.json, replacing the template default.",
+  "//entry": "redesign.html, NOT bad-page.html. The audit target is required to fail every accessibility check — it carries INTENTIONALLY INACCESSIBLE — so pointing CI at it would turn a student's repository red for doing the assignment correctly.",
+  "//required": "PROJECT_PLAN.md and audit-he.md are required because a missing one is the commonest way this assignment arrives half-done, and a one-line CI message about it is cheaper than a grade.",
+  "entry": "redesign.html",
+  "requiredFiles": [
+    "redesign.html",
+    "audit-he.md",
+    "PROJECT_PLAN.md",
+    "bad-page.html",
+    "vendor/tailwind.js"
+  ]
+}

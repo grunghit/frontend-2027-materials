@@ -1,0 +1,18 @@
+{
+  "//": "Week 8 knobs for the public check set. The publisher copies this to starter/.checks/config.json, replacing the template default.",
+  "//entry": "index.html — the list page, which is the week's project milestone. exercises.html is the bench for parts ב and ג; the checks below navigate to it and navigate BACK, because run-checks.mjs loads the entry once and hands every check the same page.",
+  "//required": "The four files of part ד plus the two JavaScript files of parts ב and ג. predict-he.md and review-he.md are required so that a student who forgot to commit a worksheet finds out from their own repository rather than from the grade.",
+  "entry": "index.html",
+  "requiredFiles": [
+    "index.html",
+    "item.html",
+    "summary.html",
+    "exercises.html",
+    "js/exercises.js",
+    "js/review.js",
+    "predict-he.md",
+    "review-he.md",
+    "FEATURE_SPEC.md",
+    "vendor/tailwind.js"
+  ]
+}
